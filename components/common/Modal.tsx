@@ -43,7 +43,7 @@ const Modal: FC<IModal> = ({ isOpen, setIsOpen, children, styleProps = null }) =
             leaveTo="opacity-0 scale-95"
           >
             <div
-              className={`${styleProps} inline-block w-full max-w-md overflow-hidden text-left align-middle transition-all transform bg-gray-100 shadow-xl rounded-2xl dark:bg-gray-900`}
+              className={`${styleProps} inline-block w-full max-w-md overflow-hidden text-left align-middle transition-all transform bg-gray-100 shadow-sm rounded-2xl dark:bg-black`}
             >
               {children}
             </div>
