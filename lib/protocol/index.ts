@@ -139,7 +139,7 @@ const _chargePool = (_pool: IPoolRoot, _chainId: number) => {
     startColor,
     endColor,
     color: `linear-gradient(${startColor}, ${endColor})`,
-    alternateColor: `linear-gradient(270deg, rgba(${hexToRgb(startColor)}, .5) 1.04%, rgba(${hexToRgb(
+    alternateColor: `linear-gradient(270deg, rgba(${hexToRgb(startColor)}, .8) 1.04%, rgba(${hexToRgb(
       endColor
     )}, .5) 98.99%) 0% 0% / 200% 200%`,
     textColor,
