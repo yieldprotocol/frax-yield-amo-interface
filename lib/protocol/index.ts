@@ -11,6 +11,7 @@ import { ERC20Permit__factory } from '../../contracts/types/factories/ERC20Permi
 import { FYToken__factory } from '../../contracts/types/factories/FYToken__factory';
 import { PoolAddedEvent } from '../../contracts/types/Ladle';
 import { SeriesAddedEvent } from '../../contracts/types/Cauldron';
+import { calculateRate, getTimeStretchYears } from '../../utils/yieldMath';
 
 const { seasonColors } = yieldEnv;
 
@@ -108,6 +109,7 @@ export const getPools = async (
         seriesId,
         base,
         fyToken,
+        interestRate: calculateRate(fyTokenReserves, baseReserves, getTimeStretchYears(ts)).toString(),
       } as IPoolRoot;
 
       // only frax
