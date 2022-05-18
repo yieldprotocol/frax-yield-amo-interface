@@ -1,14 +1,15 @@
 import { useMemo } from 'react';
-import { useNetwork, useProvider } from 'wagmi';
-import { CAULDRON, LADLE, WRAP_ETH_MODULE } from '../../constants';
+import { CAULDRON, FRAX_AMO, LADLE } from '../../constants';
 import { getContracts } from '../../lib/protocol';
+import useDefaultProvider from '../useDefaultProvider';
 
-export const CONTRACTS_TO_FETCH = [CAULDRON, LADLE, WRAP_ETH_MODULE];
+export const CONTRACTS_TO_FETCH = [CAULDRON, LADLE, FRAX_AMO];
 
 const useContracts = () => {
-  const provider = useProvider();
-  const { activeChain } = useNetwork();
-  return useMemo(() => getContracts(provider!, activeChain?.id!), [provider, activeChain?.id!]);
+  const provider = useDefaultProvider();
+  // const { activeChain } = useNetwork();
+  const chainId = 1;
+  return useMemo(() => getContracts(provider!, chainId), [provider, chainId]);
 };
 
 export default useContracts;
