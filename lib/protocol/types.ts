@@ -40,6 +40,8 @@ export interface IPoolRoot {
   fyToken: IAsset;
 
   contract: Pool;
+
+  interestRate: string; // market interest rate
 }
 
 export interface IPool extends IPoolRoot {
