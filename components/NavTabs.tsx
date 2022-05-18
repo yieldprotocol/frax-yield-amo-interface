@@ -12,7 +12,7 @@ const NavTabs = () => {
   return (
     <div className="flex items-center justify-center">
       <Tab.Group>
-        <Tab.List className="flex py-1 px-1.5 space-x-1 dark:bg-gray-800 bg-gray-100 rounded-xl">
+        <Tab.List className="flex py-1 px-1.5 space-x-1 dark:bg-gray-900 bg-gray-100 rounded-xl">
           {nav.map((x) => (
             <Tab
               as="div"
