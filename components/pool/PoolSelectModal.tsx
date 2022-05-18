@@ -1,7 +1,6 @@
 import { FC, useCallback, useEffect, useState } from 'react';
 import tw from 'tailwind-styled-components';
-import { IAsset, IPool } from '../../lib/protocol/types';
-import AssetSelect from '../common/AssetSelect';
+import { IPool } from '../../lib/protocol/types';
 import CloseButton from '../common/CloseButton';
 import Modal from '../common/Modal';
 import { Header, TopRow } from '../styles/common';
@@ -40,15 +39,10 @@ const PoolSelectModal: FC<IPoolSelectModal> = ({ pools, open, setOpen, action })
   const _pools = Object.values(pools);
   const [poolList, setPoolList] = useState<IPool[]>(_pools);
   const [maturities, setMaturities] = useState<IMaturitySelect[]>([]);
-  const [assets, setAssets] = useState<IAsset[] | undefined>();
-  const [symbolFilter, setSymbolFilter] = useState<string | undefined>();
   const [maturityFilter, setMaturityFilter] = useState<string | undefined>();
   const [showMatureFilter, setShowMatureFilter] = useState<boolean>(false);
 
   const handleClearFilters = () => {
-    if (symbolFilter) {
-      setSymbolFilter(undefined);
-    }
     if (maturityFilter) {
       setMaturityFilter(undefined);
     }
@@ -69,18 +63,11 @@ const PoolSelectModal: FC<IPoolSelectModal> = ({ pools, open, setOpen, action })
     () =>
       _pools
         .filter((p) => (showMatureFilter ? true : !p.isMature))
-        .filter((p) => (symbolFilter ? p.base.symbol === symbolFilter : true))
         .filter((p) => (maturityFilter ? p.maturity_ === maturityFilter : true)),
-    [maturityFilter, _pools, showMatureFilter, symbolFilter]
+    [maturityFilter, _pools, showMatureFilter]
   );
 
   useEffect(() => {
-    const _baseAssets = poolList.reduce(
-      (_assets, _pool) => (_assets.has(_pool.base.symbol) ? _assets : _assets.set(_pool.base.symbol, _pool.base)),
-      new Map<string, IAsset>()
-    );
-    setAssets(Array.from(_baseAssets.values()));
-
     const _maturities = poolList.reduce(
       (_m, _pool) =>
         _m.has(_pool.maturity_)
@@ -103,23 +90,10 @@ const PoolSelectModal: FC<IPoolSelectModal> = ({ pools, open, setOpen, action })
     <Modal isOpen={open} setIsOpen={setOpen}>
       <div className="grid gap-2 p-5">
         <TopRow>
-          <Header>Select a pool</Header>
-          {(symbolFilter || maturityFilter) && <ClearButton onClick={handleClearFilters}>Clear Filters</ClearButton>}
+          <Header>Select pool</Header>
+          {maturityFilter && <ClearButton onClick={handleClearFilters}>Clear Filters</ClearButton>}
           <CloseButton action={() => setOpen(false)} height="1.2rem" width="1.2rem" />
         </TopRow>
-        {assets && (
-          <div className="flex flex-wrap gap-3 my-2 mt-4 justify-start text-sm">
-            {assets.map((a) => (
-              <div
-                className="dark:text-gray-50 hover:cursor-pointer hover:opacity-70"
-                key={a.address}
-                onClick={() => setSymbolFilter(a.symbol)}
-              >
-                <AssetSelect item={a} />
-              </div>
-            ))}
-          </div>
-        )}
         {maturities && (
           <>
             <div className="flex flex-wrap gap-3 justify-start text-sm">
