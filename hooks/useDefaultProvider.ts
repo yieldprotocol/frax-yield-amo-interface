@@ -1,9 +1,16 @@
 import { ethers } from 'ethers';
 import { useMemo } from 'react';
+import { useNetwork } from 'wagmi';
+import { URLS } from '../config/chains';
 
-export const DEFAULT_CHAIN_ID = Number(process.env.defaultChainId);
+const useDefaultProvider = () => {
+  const { activeChain } = useNetwork();
+  const chainId = activeChain?.id;
 
-const useDefaultProvider = (chainId: number = DEFAULT_CHAIN_ID) =>
-  useMemo(() => new ethers.providers.InfuraProvider(chainId, process.env.infuraKey), [chainId]);
+  return useMemo(
+    () => (chainId ? new ethers.providers.StaticJsonRpcProvider(URLS[chainId][0], chainId) : undefined),
+    [chainId]
+  );
+};
 
 export default useDefaultProvider;
