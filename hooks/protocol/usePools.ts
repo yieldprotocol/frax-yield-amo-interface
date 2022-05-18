@@ -1,19 +1,22 @@
 import useSWR from 'swr';
-import { useAccount, useNetwork } from 'wagmi';
+// import { useNetwork } from 'wagmi';
+import yieldEnv from '../../config/yieldEnv';
+import { FRAX_AMO } from '../../constants';
 import { getPools } from '../../lib/protocol';
 import { IPoolMap } from '../../lib/protocol/types';
 import useDefaultProvider from '../useDefaultProvider';
 import useContracts from './useContracts';
 
 const usePools = () => {
-  const { data: account } = useAccount();
-  const { activeChain } = useNetwork();
+  const chainId = 1;
+  const amoAddress = yieldEnv.addresses[chainId][FRAX_AMO];
+  // const { activeChain } = useNetwork();
   const provider = useDefaultProvider();
   const contractMap = useContracts();
 
   const { data, error } = useSWR(
-    provider ? `/pools/${activeChain?.id!}/${account?.address}` : null,
-    () => getPools(provider!, contractMap!, activeChain?.id!, account?.address!),
+    provider ? `/pools/${chainId}/${amoAddress}` : null,
+    () => getPools(provider!, contractMap!, chainId, amoAddress),
     {
       revalidateOnFocus: false,
     }

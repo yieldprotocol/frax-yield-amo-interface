@@ -31,8 +31,8 @@ export const getPools = async (
   chainId: number = 1,
   account: string | undefined = undefined
 ): Promise<IPoolMap | undefined> => {
-  const Ladle = contractMap[LADLE];
-  const Cauldron = contractMap[CAULDRON];
+  const Ladle = contractMap[LADLE] as contractTypes.Ladle;
+  const Cauldron = contractMap[CAULDRON] as contractTypes.Cauldron;
   if (!Ladle || !Cauldron) return undefined;
 
   console.log('fetching pools');
@@ -109,7 +109,13 @@ export const getPools = async (
         base,
         fyToken,
       } as IPoolRoot;
-      return { ...(await pools), [address]: _chargePool(newPool, chainId) };
+
+      // only frax
+      if (base.symbol.toLowerCase() === 'frax') {
+        return { ...(await pools), [address]: _chargePool(newPool, chainId) };
+      } else {
+        return { ...(await pools) };
+      }
     }, {});
   } catch (e) {
     console.log('error fetching pools', e);
