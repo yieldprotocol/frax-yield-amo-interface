@@ -49,7 +49,7 @@ const InputWrap = ({ name, value, item, balance, handleChange, disabled, unFocus
       </AssetSelectWrap>
       {item && (
         <MaxButton onClick={useMax}>
-          <div>Balance:</div>
+          <div>AMO Balance:</div>
           <div>{valueAtDigits(balance, 6)}</div>
         </MaxButton>
       )}
