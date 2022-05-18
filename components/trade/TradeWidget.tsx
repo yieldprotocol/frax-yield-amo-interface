@@ -96,7 +96,8 @@ const TradeWidget = ({ pools: poolsProps }: { pools: IPoolMap }) => {
         </Grid>
 
         <InputsWrap>
-          <div className="whitespace-nowrap text-sm text-left mb-1">Frax AMO Input{func ? ` (${func})` : ':'}</div>
+          <div className="whitespace-nowrap text-sm text-left mb-1">AMO {func ? <code>{func}</code> : ''} Input</div>
+
           <InputWrap
             name="baseAmount"
             value={updatingRate && baseNeeded_ ? baseNeeded_ : baseAmount}
