@@ -28,7 +28,7 @@ const useRatePreview = (pool: IPool, desiredRate?: number, baseAmount?: string) 
       setBaseNeeded(_baseNeeded);
       setBaseNeeded_(cleanValue(ethers.utils.formatUnits(_baseNeeded, decimals), 2));
 
-      setFunc(+interestRate / 100 > desiredRate! ? 'decreaseRates' : 'inreaseRates');
+      setFunc(+interestRate / 100 > desiredRate! ? 'decreaseRates' : 'increaseRates');
     } else {
       setBaseNeeded(ethers.constants.Zero);
       setBaseNeeded_('');
