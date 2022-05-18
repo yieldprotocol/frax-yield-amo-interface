@@ -1,23 +1,16 @@
 import { useEffect, useState } from 'react';
 import tw from 'tailwind-styled-components';
-import Button from '../common/Button';
 import InputWrap from '../pool/InputWrap';
 import usePools from '../../hooks/protocol/usePools';
 import PoolSelect from '../pool/PoolSelect';
-import { IAsset, IPool, IPoolMap } from '../../lib/protocol/types';
-import useTradePreview from '../../hooks/protocol/useTradePreview';
+import { IPool, IPoolMap } from '../../lib/protocol/types';
 import InterestRateInput from './InterestRateInput';
-import { TradeActions } from '../../lib/protocol/trade/types';
 import { BorderWrap, Header, InputsWrap } from '../styles/common';
-import { useTrade } from '../../hooks/protocol/useTrade';
 import Arrow from './Arrow';
-import Modal from '../common/Modal';
-import TradeConfirmation from './TradeConfirmation';
-import CloseButton from '../common/CloseButton';
-import { cleanValue } from '../../utils/appUtils';
-import useInputValidation from '../../hooks/useInputValidation';
-import SlippageSetting from '../common/SlippageSetting';
-import { useAccount, useBalance, useNetwork } from 'wagmi';
+import { useBalance } from 'wagmi';
+import useRatePreview from '../../hooks/protocol/useRatePreview';
+import useContracts from '../../hooks/protocol/useContracts';
+import { FRAX_AMO } from '../../constants';
 
 const Inner = tw.div`m-4 text-center`;
 const Grid = tw.div`grid my-5 auto-rows-auto gap-2`;
@@ -26,218 +19,46 @@ const ClearButton = tw.button`text-sm`;
 
 export interface ITradeForm {
   pool: IPool | undefined;
-  fromAsset: IAsset | undefined;
-  fromAmount: string;
-  toAsset: IAsset | undefined;
-  toAmount: string;
-  isFyTokenOutput: boolean;
-  tradeAction: TradeActions;
+  desiredRate: string;
+  baseAmount: string;
+  updatingRate: boolean;
 }
 
 const INITIAL_FORM_STATE: ITradeForm = {
   pool: undefined,
-  fromAsset: undefined,
-  fromAmount: '',
-  toAsset: undefined,
-  toAmount: '',
-  isFyTokenOutput: true,
-  tradeAction: TradeActions.SELL_BASE,
+  desiredRate: '',
+  baseAmount: '',
+  updatingRate: true,
 };
 
 const TradeWidget = ({ pools: poolsProps }: { pools: IPoolMap }) => {
-  const { data: account } = useAccount();
-  const { activeChain } = useNetwork();
+  const contracts = useContracts();
+  const fraxAmoAddress = contracts![FRAX_AMO]?.address;
+
+  // const { activeChain } = useNetwork();
+  const chainId = 1;
   const { data: pools } = usePools();
-  const { data: balance } = useBalance({ addressOrName: account?.address, chainId: activeChain?.id });
-  const ethBalance = balance?.formatted;
 
   const [form, setForm] = useState<ITradeForm>(INITIAL_FORM_STATE);
-  const {
-    fyTokenOutPreview,
-    baseOutPreview,
-    fyTokenInPreview,
-    baseInPreview,
-    interestRatePreview,
-    maxFyTokenIn,
-    maxBaseIn,
-  } = useTradePreview(form.pool, form.tradeAction, form.fromAmount, form.toAmount);
-  const { pool, fromAsset, fromAmount, toAsset, toAmount, tradeAction, isFyTokenOutput } = form;
+  const { pool, desiredRate, baseAmount, updatingRate } = form;
+  const { baseNeeded_, func } = useRatePreview(pool!, +desiredRate / 100, baseAmount);
 
-  const max = isFyTokenOutput ? maxBaseIn : maxFyTokenIn; // max limit to be used in validation
-  const isEthPool = ['ETH', 'WETH'].includes(pool?.base?.symbol!);
-  const { errorMsg } = useInputValidation(fromAmount, pool!, [0, max], tradeAction, toAmount, isEthPool);
+  const { data: baseBalance } = useBalance({ addressOrName: fraxAmoAddress });
 
-  const [updatingFromAmount, setUpdatingFromAmount] = useState<boolean>(false);
-  const [updatingToAmount, setUpdatingToAmount] = useState<boolean>(false);
-  const [confirmModalOpen, setConfirmModalOpen] = useState<boolean>(false);
-
-  const description = `Trade ${fromAmount} ${fromAsset?.symbol} to ~${cleanValue(toAmount, toAsset?.digitFormat)} ${
-    toAsset?.symbol
-  }`;
-
-  const { trade, isTransacting, tradeSubmitted } = useTrade(pool!, fromAmount, toAmount, tradeAction, description);
-
-  const handleMaxFrom = () => {
-    setUpdatingFromAmount(true);
-    setUpdatingToAmount(false);
+  const handleMaxBase = () => {
     setForm((f) => ({
       ...f,
-      fromAmount: f.fromAsset?.balance_!,
-    }));
-  };
-
-  const handleMaxTo = () => {
-    setUpdatingFromAmount(false);
-    setUpdatingToAmount(true);
-    setForm((f) => ({
-      ...f,
-      toAmount: f.toAsset?.balance_!,
+      baseAmount: baseBalance?.formatted!,
+      updatingRate: false,
     }));
   };
 
   const handleClearAll = () => setForm(INITIAL_FORM_STATE);
 
-  const handleToggleDirection = () => {
-    setForm((f) => ({
-      ...f,
-      fromAsset: f.toAsset,
-      toAsset: f.fromAsset,
-      isFyTokenOutput: !f.isFyTokenOutput,
-    }));
-  };
-
-  const handleSubmit = () => {
-    setConfirmModalOpen(true);
-  };
-
-  const handleInputChange = (name: string, value: string) => {
-    setForm((f) => ({ ...f, [name]: value }));
-    if (name === 'fromAmount') {
-      setUpdatingFromAmount(true);
-      setUpdatingToAmount(false);
-    } else if (name === 'toAmount') {
-      setUpdatingFromAmount(false);
-      setUpdatingToAmount(true);
-    } else {
-      setUpdatingFromAmount(false);
-      setUpdatingToAmount(false);
-    }
-  };
-
-  // assess what the output value should be based on the trade direction and where the user is inputting
-  useEffect(() => {
-    const _fromValue = () => {
-      if (!updatingFromAmount && !updatingToAmount) return '';
-      switch (tradeAction) {
-        case TradeActions.SELL_FYTOKEN:
-          return updatingFromAmount ? fromAmount : baseOutPreview;
-        case TradeActions.SELL_BASE:
-          return updatingFromAmount ? fromAmount : fyTokenOutPreview;
-        case TradeActions.BUY_BASE:
-          return updatingFromAmount ? fromAmount : fyTokenInPreview;
-        case TradeActions.BUY_FYTOKEN:
-          return updatingFromAmount ? fromAmount : baseInPreview;
-        default:
-          return '';
-      }
-    };
-    setForm((f) => ({ ...f, fromAmount: _fromValue() }));
-  }, [
-    updatingFromAmount,
-    fromAmount,
-    baseOutPreview,
-    fyTokenOutPreview,
-    fyTokenInPreview,
-    baseInPreview,
-    tradeAction,
-    updatingToAmount,
-  ]);
-
-  // assess what the output value should be based on the trade direction and where the user is inputting
-  useEffect(() => {
-    const _toValue = () => {
-      if (!updatingFromAmount && !updatingToAmount) return '';
-      switch (tradeAction) {
-        case TradeActions.SELL_FYTOKEN:
-          return updatingToAmount ? toAmount : baseOutPreview;
-        case TradeActions.SELL_BASE:
-          return updatingToAmount ? toAmount : fyTokenOutPreview;
-        case TradeActions.BUY_BASE:
-          return updatingToAmount ? toAmount : baseOutPreview;
-        case TradeActions.BUY_FYTOKEN:
-          return updatingToAmount ? toAmount : fyTokenOutPreview;
-        default:
-          return '';
-      }
-    };
-    setForm((f) => ({ ...f, toAmount: _toValue() }));
-  }, [
-    updatingFromAmount,
-    fromAmount,
-    baseOutPreview,
-    fyTokenOutPreview,
-    fyTokenInPreview,
-    baseInPreview,
-    tradeAction,
-    updatingToAmount,
-    toAmount,
-  ]);
-
-  // assess the trade action
-  useEffect(() => {
-    if (isFyTokenOutput && updatingToAmount) {
-      setForm((f) => ({ ...f, tradeAction: TradeActions.BUY_FYTOKEN }));
-    } else if (isFyTokenOutput && !updatingToAmount) {
-      setForm((f) => ({ ...f, tradeAction: TradeActions.SELL_BASE }));
-    } else if (!isFyTokenOutput && updatingToAmount) {
-      setForm((f) => ({ ...f, tradeAction: TradeActions.BUY_BASE }));
-    } else if (!isFyTokenOutput && !updatingToAmount) {
-      setForm((f) => ({ ...f, tradeAction: TradeActions.SELL_FYTOKEN }));
-    }
-  }, [isFyTokenOutput, updatingToAmount, tradeAction]);
-
   // reset form when chainId changes
   useEffect(() => {
     setForm(INITIAL_FORM_STATE);
-  }, [activeChain?.id]);
-
-  // change the to and from form values when the pool changes
-  // defaults to going from base to fyToken
-  useEffect(() => {
-    if (form.pool)
-      setForm((f) => ({
-        ...f,
-        fromAsset: f.pool?.base,
-        toAsset: f.pool?.fyToken,
-      }));
-  }, [form.pool]);
-
-  // close modal when the trade was successfullly submitted (user took all actions to get tx through)
-  useEffect(() => {
-    if (tradeSubmitted) {
-      setConfirmModalOpen(false);
-      setForm((f) => ({ ...f, fromAmount: '', toAmount: '' }));
-    }
-  }, [tradeSubmitted]);
-
-  // update the form's from/toAssets whenever the pool changes (i.e. when the user interacts and balances change)
-  useEffect(() => {
-    const _pool = pools && pool?.address! in pools ? pools[pool?.address!] : undefined;
-    if (_pool) {
-      const _fromAsset = isFyTokenOutput ? _pool.base : _pool.fyToken;
-      const _toAsset = isFyTokenOutput ? _pool.fyToken : _pool.base;
-      setForm((f) => ({ ...f, pool: _pool, fromAsset: _fromAsset, toAsset: _toAsset }));
-    }
-  }, [pools, pool, isFyTokenOutput]);
-
-  // update the applicable from/to asset's balance based on if it is eth
-  useEffect(() => {
-    if (isEthPool) {
-      isFyTokenOutput
-        ? setForm((f) => ({ ...f, fromAsset: { ...f.fromAsset!, balance_: ethBalance! } }))
-        : setForm((f) => ({ ...f, toAsset: { ...f.toAsset!, balance_: ethBalance! } }));
-    }
-  }, [ethBalance, isEthPool, isFyTokenOutput, pool]);
+  }, [chainId]);
 
   return (
     <BorderWrap>
@@ -245,7 +66,6 @@ const TradeWidget = ({ pools: poolsProps }: { pools: IPoolMap }) => {
         <TopRow>
           <Header>Trade</Header>
           <div className="flex gap-3">
-            <SlippageSetting />
             <ClearButton onClick={handleClearAll}>Clear All</ClearButton>
           </div>
         </TopRow>
@@ -257,59 +77,38 @@ const TradeWidget = ({ pools: poolsProps }: { pools: IPoolMap }) => {
             setPool={(p) => setForm((f) => ({ ...f, pool: p }))}
             poolsLoading={!pools || !poolsProps}
           />
-          <InterestRateInput
-            rate={interestRatePreview}
-            setRate={(rate: string) => setForm((f) => ({ ...f, interestRate: rate }))}
-            disabled={true}
-            negative={!isFyTokenOutput && +interestRatePreview !== 0}
-          />
+          <InputsWrap>
+            <div className="whitespace-nowrap text-sm text-left mb-1">Pool Interest Rate</div>
+            <InterestRateInput
+              label={'Current'}
+              rate={pool?.interestRate! || ''}
+              disabled={true}
+              unfocused={true}
+              setRate={() => null}
+            />
+            <Arrow />
+            <InterestRateInput
+              label={'New'}
+              rate={desiredRate}
+              setRate={(rate: string) => setForm((f) => ({ ...f, desiredRate: rate, updatingRate: true }))}
+            />
+          </InputsWrap>
         </Grid>
 
         <InputsWrap>
+          <div className="whitespace-nowrap text-sm text-left mb-1">Frax AMO Input{func ? ` (${func})` : ':'}</div>
           <InputWrap
-            name="fromAmount"
-            value={fromAmount}
-            balance={fromAsset?.balance_!}
-            item={fromAsset}
-            handleChange={handleInputChange}
-            unFocused={updatingToAmount && !!pool}
-            useMax={handleMaxFrom}
+            name="baseAmount"
+            value={updatingRate && baseNeeded_ ? baseNeeded_ : baseAmount}
+            balance={baseBalance?.formatted!}
+            item={pool?.base}
+            handleChange={(val) => setForm((f) => ({ ...f, baseAmount: val, updatingRate: false }))}
+            unFocused={updatingRate && !!pool}
+            useMax={handleMaxBase}
             pool={pool}
-          />
-          <Arrow toggleDirection={handleToggleDirection} />
-          <InputWrap
-            name="toAmount"
-            value={toAmount}
-            balance={toAsset?.balance_!}
-            item={toAsset}
-            handleChange={handleInputChange}
-            unFocused={updatingFromAmount && !!pool}
-            useMax={handleMaxTo}
-            pool={pool}
+            disabled
           />
         </InputsWrap>
-        <Button
-          action={handleSubmit}
-          disabled={!account || !pool || isTransacting || !!errorMsg}
-          loading={isTransacting}
-        >
-          {!account ? 'Connect Wallet' : isTransacting ? 'Trade Initiated...' : errorMsg ? errorMsg : 'Trade'}
-        </Button>
-        {confirmModalOpen && pool && (
-          <Modal isOpen={confirmModalOpen} setIsOpen={setConfirmModalOpen} styleProps="p-4">
-            <TopRow>
-              <Header>Confirm Trade</Header>
-              <CloseButton action={() => setConfirmModalOpen(false)} height="1.2rem" width="1.2rem" />
-            </TopRow>
-            <TradeConfirmation
-              form={form}
-              interestRate={interestRatePreview}
-              action={trade}
-              disabled={!account || !pool || isTransacting || !!errorMsg}
-              loading={isTransacting}
-            />
-          </Modal>
-        )}
       </Inner>
     </BorderWrap>
   );
