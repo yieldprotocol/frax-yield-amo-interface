@@ -4,7 +4,7 @@ import { IAsset, IPool } from '../../lib/protocol/types';
 import Button from '../common/Button';
 import useTimeTillMaturity from '../../hooks/useTimeTillMaturity';
 import InfoIcon from '../common/InfoIcon';
-import { ITradeForm } from './TradeWidget';
+import { ITradeForm } from './Widget';
 import { valueAtDigits } from '../../utils/appUtils';
 import { calculateSlippage } from '../../utils/yieldMath';
 import { DEFAULT_SLIPPAGE, SLIPPAGE_KEY } from '../../constants';

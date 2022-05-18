@@ -31,7 +31,7 @@ const INITIAL_FORM_STATE: ITradeForm = {
   updatingRate: true,
 };
 
-const TradeWidget = ({ pools: poolsProps }: { pools: IPoolMap }) => {
+const Widget = ({ pools: poolsProps }: { pools: IPoolMap }) => {
   const contracts = useContracts();
   const fraxAmoAddress = contracts![FRAX_AMO]?.address;
 
@@ -115,4 +115,4 @@ const TradeWidget = ({ pools: poolsProps }: { pools: IPoolMap }) => {
   );
 };
 
-export default TradeWidget;
+export default Widget;

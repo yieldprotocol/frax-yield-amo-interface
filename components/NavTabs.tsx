@@ -5,7 +5,7 @@ import { useRouter } from 'next/router';
 const NavTabs = () => {
   const router = useRouter();
   const nav = [
-    { name: 'Trade', href: '/trade' },
+    { name: 'Rates', href: '/rates' },
     { name: 'Pool', href: '/pool' },
   ];
 

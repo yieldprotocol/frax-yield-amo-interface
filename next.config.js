@@ -10,7 +10,7 @@ const nextConfig = {
     return [
       {
         source: '/',
-        destination: '/trade',
+        destination: '/rates',
         permanent: true,
       },
     ];

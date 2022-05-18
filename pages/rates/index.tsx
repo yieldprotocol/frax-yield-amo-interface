@@ -1,6 +1,6 @@
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { InferGetStaticPropsType } from 'next';
-import TradeWidget from '../../components/trade/TradeWidget';
+import TradeWidget from '../../components/trade/Widget';
 import { URLS } from '../../config/chains';
 import { IPoolMap } from '../../lib/protocol/types';
 import { getContracts, getPools } from '../../lib/protocol';
