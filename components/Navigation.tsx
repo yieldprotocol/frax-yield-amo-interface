@@ -13,7 +13,7 @@ const Container = tw.div`
   text-gray-800
   dark:text-gray-50
   border-gray-200
-  dark:border-gray-800
+  dark:border-gray-900
 `;
 
 const Grid = tw.div`grid grid-cols-3 items-center px-10 py-2`;
