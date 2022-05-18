@@ -1239,19 +1239,34 @@ export const changeRate = (
   const fyTokenReservesNew = baseReservesNew.mul(ONE.add(_desiredRate).pow(u));
   const fyTokenDiff = fyTokenReservesNew.sub(_fyTokenReserves);
 
-  // result is the input into the frax amo funcs, which is the base diff
-  // sellBase (decrease rates {base goes in}) or buyBase (increase rates {base comes out})
-  const result = toBn(baseDiff.abs());
-
-  return [toBn(baseDiff), toBn(fyTokenDiff), toBn(baseReservesNew), toBn(fyTokenReservesNew), result];
+  // result is the input into the frax amo funcs, which is the base diff if decreasing rates, and the fyToken diff if increasing rates
+  // sellBase (decrease rates {base goes in}) or sellFyToken (increase rates {base comes out})
+  return _desiredRate.gt(_currRate) ? toBn(fyTokenDiff.abs()) : toBn(baseDiff.abs());
 };
 
-export const calculateRate = (fyTokenReserves: Decimal, baseReserves: Decimal, timeStretchYears: Decimal) =>
-  fyTokenReserves.div(baseReserves).pow(ONE.div(timeStretchYears)).sub(ONE);
+/**
+ * Calculates the current market interest rate
+ *
+ * @param {BigNumber} baseReserves base reserves of the pool
+ * @param {BigNumber} fyTokenReserves virtual fyToken of the pool
+ * @param {Decimal} timeStretchYears years associated with time stretch
+ *
+ * @returns {Decimal} // market rate in number format (i.e.: 10% is .10)
+ */
+
+export const calculateRate = (
+  fyTokenReserves: BigNumber | Decimal,
+  baseReserves: BigNumber | Decimal,
+  timeStretchYears: Decimal
+) => {
+  const _baseReserves = new Decimal(baseReserves.toString());
+  const _fyTokenReserves = new Decimal(fyTokenReserves.toString());
+  return _fyTokenReserves.div(_baseReserves).pow(ONE.div(timeStretchYears)).sub(ONE);
+};
 
 /**
  * @param ts time stretch associated with series (i.e.: 10 years)
- * @returns num years
+ * @returns {Decimal} num years in decimals
  */
 export const getTimeStretchYears = (ts: BigNumber) => {
   const _ts = new Decimal(BigNumber.from(ts).toString()).div(2 ** 64);
