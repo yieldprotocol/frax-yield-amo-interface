@@ -17,14 +17,14 @@ const Grid = tw.div`grid my-5 auto-rows-auto gap-2`;
 const TopRow = tw.div`flex justify-between align-middle text-center items-center`;
 const ClearButton = tw.button`text-sm`;
 
-export interface ITradeForm {
+export interface IForm {
   pool: IPool | undefined;
   desiredRate: string;
   baseAmount: string;
   updatingRate: boolean;
 }
 
-const INITIAL_FORM_STATE: ITradeForm = {
+const INITIAL_FORM_STATE: IForm = {
   pool: undefined,
   desiredRate: '',
   baseAmount: '',
@@ -39,7 +39,7 @@ const Widget = ({ pools: poolsProps }: { pools: IPoolMap }) => {
   const chainId = 1;
   const { data: pools } = usePools();
 
-  const [form, setForm] = useState<ITradeForm>(INITIAL_FORM_STATE);
+  const [form, setForm] = useState<IForm>(INITIAL_FORM_STATE);
   const { pool, desiredRate, baseAmount, updatingRate } = form;
   const { baseNeeded_, func } = useRatePreview(pool!, +desiredRate / 100, baseAmount);
 
@@ -64,7 +64,7 @@ const Widget = ({ pools: poolsProps }: { pools: IPoolMap }) => {
     <BorderWrap>
       <Inner>
         <TopRow>
-          <Header>Trade</Header>
+          <Header>Rates</Header>
           <div className="flex gap-3">
             <ClearButton onClick={handleClearAll}>Clear All</ClearButton>
           </div>
