@@ -1237,13 +1237,9 @@ export const changeRate = (
 
   const baseReservesNew = top.div(bottom).pow(invA);
   const baseDiff = baseReservesNew.sub(_baseReserves);
-  console.log('🦄 ~ file: yieldMath.ts ~ line 1238 ~ baseReservesNew', baseReservesNew.div(10 ** 18).toString());
-  console.log('🦄 ~ file: yieldMath.ts ~ line 1238 ~ baseDiff ', baseDiff.div(10 ** 18).toString());
 
   const fyTokenReservesNew = baseReservesNew.mul(ONE.add(_desiredRate).pow(u));
   const fyTokenDiff = fyTokenReservesNew.sub(_fyTokenReserves);
-  console.log('🦄 ~ file: yieldMath.ts ~ line 1243 ~ fyTokenReservesNew', fyTokenReservesNew.div(10 ** 18).toString());
-  console.log('🦄 ~ file: yieldMath.ts ~ line 1242 ~ fyTokenDiff', fyTokenDiff.div(10 ** 18).toString());
 
   // result is the input into the frax amo funcs, which is the base diff if decreasing rates, and the fyToken diff if increasing rates
   // sellBase (decrease rates {base goes in}) or sellFyToken (increase rates {base comes out})
