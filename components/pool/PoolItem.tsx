@@ -14,7 +14,7 @@ import { marks } from '../../config/marks';
 const Inner = tw.div`m-4 text-center`;
 const ButtonWrap = tw.div`flex justify-between gap-10`;
 const PoolDataWrap = tw.div`grid my-5 gap-2 flex-nowrap`;
-const PoolDataLabel = tw.div`text-sm dark:text-gray-400 text-gray-500`;
+const PoolDataLabel = tw.div`text-md dark:text-gray-400 text-gray-500`;
 const PoolData = tw.div`text-xl font-semibold dark:text-gray-100 text-gray-800`;
 
 const Wrap = tw.div`mx-auto min-h-[492px] 
