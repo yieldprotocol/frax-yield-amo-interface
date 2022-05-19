@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { ethers } from 'ethers';
 import tw from 'tailwind-styled-components';
 import usePools from '../../hooks/protocol/usePools';
 import { IPool } from '../../lib/protocol/types';
@@ -16,7 +15,6 @@ const Pools = () => {
   useEffect(() => {
     if (pools) {
       const filteredPools = Object.values(pools);
-      // .filter((p) => p.lpTokenBalance.gt(ethers.constants.Zero));
       const sortedPools = filteredPools.sort((a, b) => (a.lpTokenBalance.lte(b.lpTokenBalance) ? 1 : -1));
       setPoolsList(sortedPools);
     }

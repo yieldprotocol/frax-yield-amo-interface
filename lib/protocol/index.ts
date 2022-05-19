@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
 import { BigNumber, ethers } from 'ethers';
-import { CAULDRON, FRAX_AMO, LADLE } from '../../constants';
+import { CAULDRON, LADLE } from '../../constants';
 import { Pool__factory } from '../../contracts/types';
 import { IAsset, IContractMap, IPoolMap, IPoolRoot, Provider } from './types';
 import { hexToRgb, cleanValue, formatFyTokenSymbol, getSeason, SeasonType } from '../../utils/appUtils';
