@@ -61,14 +61,6 @@ const useRatePreview = (
             fyTokenReserves,
             totalSupply
           );
-          console.log(
-            '🦄 ~ file: useRatePreview.ts ~ line 65 ~ useEffect ~ _newFyTokenVirtualReserves',
-            ethers.utils.formatUnits(_newFyTokenVirtualReserves, decimals)
-          );
-          console.log(
-            '🦄 ~ file: useRatePreview.ts ~ line 65 ~ useEffect ~ _newBaseReserves',
-            ethers.utils.formatUnits(_newBaseReserves, decimals)
-          );
 
           newBaseReserves = _newBaseReserves;
           newFyTokenReserves = _newFyTokenVirtualReserves;
