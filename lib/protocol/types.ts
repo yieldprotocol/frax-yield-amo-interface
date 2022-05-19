@@ -42,6 +42,20 @@ export interface IPoolRoot {
   contract: Pool;
 
   interestRate: string; // market interest rate
+
+  // amo specific
+  fraxInContract: BigNumber; // [0] Unallocated Frax
+  fraxInContract_: string;
+  fraxAsCollateral: BigNumber; // [1] Frax being used as collateral to borrow fyFrax
+  fraxAsCollateral_: string;
+  fraxInLP: BigNumber; // [2] The Frax our LP tokens can lay claim to
+  fraxInLP_: string;
+  fyFraxInContract: BigNumber; // [3] fyFrax sitting in AMO, should be 0
+  fyFraxInContract_: string;
+  fyFraxInLP: BigNumber; // [4] fyFrax our LP can claim
+  fyFraxInLP_: string;
+  LPOwned: BigNumber; // [5] number of LP tokens
+  LPOwned_: string;
 }
 
 export interface IPool extends IPoolRoot {
