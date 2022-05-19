@@ -8,7 +8,7 @@ type ButtonProps = {
 };
 
 const Inner = tw.div`
-  h-full w-full dark:bg-gray-900/90 bg-gray-200/70 dark:text-gray-50 text-gray-900 rounded-lg
+  h-full w-full dark:bg-black/80 bg-gray-200/70 dark:text-gray-50 text-gray-900 rounded-lg
   flex p-3 gap-3
 `;
 
