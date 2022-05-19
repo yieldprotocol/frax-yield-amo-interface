@@ -1,3 +1,3 @@
-# YieldSpace UI
+# Frax-Yield AMO UI
 
-Coming Soon™
+Interface to the Frax-Yield AMO smart contract
