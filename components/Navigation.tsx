@@ -24,7 +24,7 @@ const Navigation = () => (
   <Container>
     <Grid>
       <MarkWrap>
-        <Link href="/trade" passHref>
+        <Link href="/rates" passHref>
           <div className="hover:cursor-pointer p-2.5 rounded-full dark:bg-gray-50/20 bg-gray-50/50">
             <YieldMark />
           </div>

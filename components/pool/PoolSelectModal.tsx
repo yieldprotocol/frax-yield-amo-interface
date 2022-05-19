@@ -95,7 +95,7 @@ const PoolSelectModal: FC<IPoolSelectModal> = ({ pools, open, setOpen, action })
     <Modal isOpen={open} setIsOpen={setOpen}>
       <div className="grid gap-2 p-5">
         <TopRow>
-          <Header>Select pool</Header>
+          <Header>Select Series</Header>
           {maturityFilter && <ClearButton onClick={handleClearFilters}>Clear Filters</ClearButton>}
           <CloseButton action={() => setOpen(false)} height="1.2rem" width="1.2rem" />
         </TopRow>

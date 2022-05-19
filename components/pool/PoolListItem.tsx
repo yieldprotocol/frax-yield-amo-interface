@@ -27,7 +27,7 @@ interface IPoolListItem {
 }
 
 const PoolListItem: FC<IPoolListItem> = ({ pool }) => (
-  <Link href={`/pool/${pool.address}`} passHref>
+  <Link href={`/series/${pool.address}`} passHref>
     <Container>
       <ItemOuter
         style={{

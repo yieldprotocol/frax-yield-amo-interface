@@ -78,7 +78,7 @@ const Widget = ({ pools: poolsProps }: { pools: IPoolMap }) => {
             poolsLoading={!pools || !poolsProps}
           />
           <InputsWrap>
-            <div className="whitespace-nowrap text-sm text-left mb-1">Pool Interest Rate</div>
+            <div className="whitespace-nowrap text-sm text-left mb-1">Series Interest Rate</div>
             <InterestRateInput
               label={'Current'}
               rate={pool?.interestRate! || ''}

@@ -6,7 +6,7 @@ const NavTabs = () => {
   const router = useRouter();
   const nav = [
     { name: 'Rates', href: '/rates' },
-    { name: 'Pool', href: '/pool' },
+    { name: 'Series', href: '/series' },
   ];
 
   return (
