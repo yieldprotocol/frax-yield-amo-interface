@@ -19,9 +19,7 @@ const Pool = () => (
           <div className="flex justify-between align-middle gap-10 items-center">
             <Header>Your Positions</Header>
             <Link href="/pool/add" passHref>
-              <div className="w-30">
-                <Button>+New Position</Button>
-              </div>
+              <div className="w-30">{/* <Button>+New Position</Button> */}</div>
             </Link>
           </div>
         </Inner>

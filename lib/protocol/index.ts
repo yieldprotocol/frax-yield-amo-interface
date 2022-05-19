@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
 import { BigNumber, ethers } from 'ethers';
-import { CAULDRON, LADLE } from '../../constants';
+import { CAULDRON, FRAX_AMO, LADLE } from '../../constants';
 import { Pool__factory } from '../../contracts/types';
 import { IAsset, IContractMap, IPoolMap, IPoolRoot, Provider } from './types';
 import { hexToRgb, cleanValue, formatFyTokenSymbol, getSeason, SeasonType } from '../../utils/appUtils';
@@ -110,6 +110,7 @@ export const getPools = async (
         base,
         fyToken,
         interestRate: calculateRate(fyTokenReserves, baseReserves, getTimeStretchYears(ts)).toString(),
+        // ...showAllocations(),
       } as IPoolRoot;
 
       // only frax
@@ -237,4 +238,20 @@ export const getBalance = (
     console.log('error getting balance for', tokenAddress);
     return ethers.constants.Zero;
   }
+};
+
+/**
+ * returns the output of showAllocations from the amo
+ * @param seriesId
+ * @returns {[ BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber ]}
+ *  fraxInContract, // [0] Unallocated Frax
+    fraxAsCollateral, // [1] Frax being used as collateral to borrow fyFrax
+    fraxInLP, // [2] The Frax our LP tokens can lay claim to
+    fyFraxInContract, // [3] fyFrax sitting in AMO, should be 0
+    fyFraxInLP, // [4] fyFrax our LP can claim
+    LPOwned // [5] number of LP tokens
+ */
+export const showAllocations = (seriesId: string) => {
+  // const contract = FraxAmo__factory.connect(FRAX_AMO, provider)
+  // return contract.showAllocations()
 };
