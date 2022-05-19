@@ -3,12 +3,10 @@ import tw from 'tailwind-styled-components';
 import usePools from '../../hooks/protocol/usePools';
 import { IPool } from '../../lib/protocol/types';
 import PoolListItem from './PoolListItem';
-import { useAccount } from 'wagmi';
 
 const Container = tw.div`p-2 max-w-lg`;
 
 const Pools = () => {
-  const { data: account } = useAccount();
   const { data: pools, loading } = usePools();
   const [poolsList, setPoolsList] = useState<IPool[]>([]);
 
@@ -21,7 +19,6 @@ const Pools = () => {
   }, [pools]);
 
   if (loading) return null;
-  if (!account) return <Container>Please connect to your wallet</Container>;
 
   return (
     <Container>
