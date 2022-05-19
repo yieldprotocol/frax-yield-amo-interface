@@ -9,7 +9,7 @@ const Inner = tw.div`m-4 text-center`;
 const Header = tw.div`text-lg justify-items-start align-middle`;
 const Button = tw.button`w-full bg-primary-700/80 align-middle px-4 py-2 text-gray-50 rounded-md hover:bg-primary-800/50`;
 const InnerWrap = tw.div`flex gap-10`;
-const Wrap = tw.div`mx-auto min-w-md p-2 shadow-md rounded-xl dark:bg-gray-900 bg-gray-100 dark:text-gray-50`;
+const Wrap = tw.div`mx-auto min-w-md p-2 shadow-md rounded-xl dark:bg-black/80 bg-gray-100 dark:text-gray-50`;
 
 const Pool = () => (
   <Container>
