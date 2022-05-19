@@ -17,7 +17,7 @@ const Container = tw.div`
   sm:dark:bg-gray-800
 `;
 
-const Grid = tw.div`grid grid-cols-3 items-center md:px-10 py-2`;
+const Grid = tw.div`grid grid-cols-3 items-center md:px-10 py-2 px-1`;
 const MarkWrap = tw.div`flex`;
 
 const Navigation = () => (

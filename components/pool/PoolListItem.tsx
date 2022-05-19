@@ -11,7 +11,7 @@ const Inner = tw.div`align-middle text-left p-3`;
 const PoolDataWrap = tw.div`my-2 flex items-center gap-3`;
 const PoolDataLabel = tw.div`dark:text-gray-400 text-gray-500`;
 const PoolData = tw.div`font-medium dark:text-gray-100 text-gray-800`;
-const Header = tw.div`text-lg font-bold text-left justify-items-start align-middle dark:text-gray-50`;
+const Header = tw.div`text-sm md:text-lg font-bold text-left justify-items-start align-middle dark:text-gray-50`;
 
 const ItemInner = tw.div`
   h-full w-full dark:bg-black/80 bg-gray-200/70 dark:text-gray-50 text-gray-900 rounded-lg
