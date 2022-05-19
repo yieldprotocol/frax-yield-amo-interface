@@ -43,6 +43,8 @@ export interface IPoolRoot {
 
   interestRate: string; // market interest rate
 
+  timeStretchYears_: string; // time stretch associated years
+
   // amo specific
   fraxInContract: BigNumber; // [0] Unallocated Frax
   fraxInContract_: string;

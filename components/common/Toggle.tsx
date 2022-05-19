@@ -15,17 +15,17 @@ const Toggle: FC<IToggle> = ({ enabled, setEnabled, label, disabled }) => (
         checked={enabled}
         onChange={setEnabled}
         className={`${
-          enabled ? 'bg-primary-600' : 'dark:bg-gray-700 bg-gray-400'
+          enabled ? 'bg-gray-500' : 'dark:bg-gray-700 bg-gray-400'
         } relative inline-flex items-center h-6 rounded-full w-11`}
         disabled={disabled}
       >
         <span
           className={`${
             enabled ? 'translate-x-6' : 'translate-x-1'
-          } inline-block w-4 h-4 transform bg-primary-400 rounded-full ease-in-out duration-200`}
+          } inline-block w-4 h-4 transform bg-gray-300 rounded-full ease-in-out duration-200`}
         />
       </Switch>
-      <Switch.Label className="text-sm hover:cursor-pointer">{label}</Switch.Label>
+      <Switch.Label className={`text-sm ${disabled ? '' : 'hover:cursor-pointer'}`}>{label}</Switch.Label>
     </div>
   </Switch.Group>
 );

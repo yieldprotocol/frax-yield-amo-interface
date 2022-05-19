@@ -85,6 +85,7 @@ export const getPools = async (
       const fyToken = await getAsset(provider, fyTokenAddress, account, true);
       const getTimeTillMaturity = () => maturity - Math.round(new Date().getTime() / 1000);
       const seriesId = fyTokenToSeries.get(fyToken.address);
+      const timeStretchYears = getTimeStretchYears(ts);
 
       const newPool = {
         address,
@@ -109,7 +110,8 @@ export const getPools = async (
         seriesId,
         base,
         fyToken,
-        interestRate: calculateRate(fyTokenReserves, baseReserves, getTimeStretchYears(ts)).toString(),
+        interestRate: calculateRate(fyTokenReserves, baseReserves, timeStretchYears).toString(),
+        timeStretchYears_: timeStretchYears.toString(),
         // ...showAllocations(),
       } as IPoolRoot;
 

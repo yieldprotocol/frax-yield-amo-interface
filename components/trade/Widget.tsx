@@ -11,6 +11,7 @@ import { useBalance } from 'wagmi';
 import useRatePreview from '../../hooks/protocol/useRatePreview';
 import useContracts from '../../hooks/protocol/useContracts';
 import { FRAX_AMO } from '../../constants';
+import Toggle from '../common/Toggle';
 
 const Inner = tw.div`m-4 text-center`;
 const Grid = tw.div`grid my-5 auto-rows-auto gap-2`;
@@ -22,6 +23,7 @@ export interface IForm {
   desiredRate: string;
   baseAmount: string;
   updatingRate: boolean;
+  increasingRate: boolean;
 }
 
 const INITIAL_FORM_STATE: IForm = {
@@ -29,6 +31,7 @@ const INITIAL_FORM_STATE: IForm = {
   desiredRate: '',
   baseAmount: '',
   updatingRate: true,
+  increasingRate: true,
 };
 
 const Widget = ({ pools: poolsProps }: { pools: IPoolMap }) => {
@@ -40,8 +43,14 @@ const Widget = ({ pools: poolsProps }: { pools: IPoolMap }) => {
   const { data: pools } = usePools();
 
   const [form, setForm] = useState<IForm>(INITIAL_FORM_STATE);
-  const { pool, desiredRate, baseAmount, updatingRate } = form;
-  const { baseNeeded_, func } = useRatePreview(pool!, +desiredRate / 100, baseAmount);
+  const { pool, desiredRate, baseAmount, updatingRate, increasingRate } = form;
+  const { baseNeeded_, func, ratePreview } = useRatePreview(
+    pool!,
+    +desiredRate / 100,
+    baseAmount,
+    updatingRate,
+    increasingRate
+  );
 
   const { data: baseBalance } = useBalance({ addressOrName: fraxAmoAddress });
 
@@ -51,6 +60,10 @@ const Widget = ({ pools: poolsProps }: { pools: IPoolMap }) => {
       baseAmount: baseBalance?.formatted!,
       updatingRate: false,
     }));
+  };
+
+  const handleBaseChange = (name: string, value: string) => {
+    setForm((f) => ({ ...f, [name]: value, updatingRate: false }));
   };
 
   const handleClearAll = () => setForm(INITIAL_FORM_STATE);
@@ -89,25 +102,35 @@ const Widget = ({ pools: poolsProps }: { pools: IPoolMap }) => {
             <Arrow />
             <InterestRateInput
               label={'New'}
-              rate={desiredRate}
+              rate={updatingRate ? desiredRate : ratePreview}
               setRate={(rate: string) => setForm((f) => ({ ...f, desiredRate: rate, updatingRate: true }))}
+              unfocused={!updatingRate}
             />
           </InputsWrap>
         </Grid>
 
         <InputsWrap>
-          <div className="whitespace-nowrap text-sm text-left mb-1">AMO {func ? <code>{func}</code> : ''} Input</div>
+          <div className="flex items-center justify-between mb-1">
+            <div className="whitespace-nowrap text-sm text-left mb-1">AMO {func ? <code>{func}</code> : ''} Input</div>
+            {!updatingRate && (
+              <Toggle
+                enabled={increasingRate}
+                setEnabled={() => setForm((f) => ({ ...f, increasingRate: !f.increasingRate }))}
+                label={increasingRate ? 'Increase Rate' : 'Decrease Rate'}
+                disabled={updatingRate}
+              />
+            )}
+          </div>
 
           <InputWrap
             name="baseAmount"
-            value={updatingRate && baseNeeded_ ? baseNeeded_ : baseAmount}
+            value={baseNeeded_}
             balance={baseBalance?.formatted!}
             item={pool?.base}
-            handleChange={(val) => setForm((f) => ({ ...f, baseAmount: val, updatingRate: false }))}
+            handleChange={handleBaseChange}
             unFocused={updatingRate && !!pool}
             useMax={handleMaxBase}
             pool={pool}
-            disabled
           />
         </InputsWrap>
       </Inner>

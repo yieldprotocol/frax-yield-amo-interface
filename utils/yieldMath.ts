@@ -1028,7 +1028,7 @@ export const calcLiquidationPrice = (
  *  @param {BigNumber}  baseChange
  * @param {BigNumber}  fyTokenChange
  * @param {BigNumber}  poolBaseReserves
- * @param {BigNumber}  poolFyTokenRealReserves
+ * @param {BigNumber}  poolFyTokenReserves
  * @param {BigNumber}  poolTotalSupply
  *
  * @returns {BigNumber[]} [newBaseReserves, newFyTokenRealReserves, newTotalSupply, newFyTokenVirtualReserves]
@@ -1037,7 +1037,7 @@ export const newPoolState = (
   baseChange: BigNumber,
   fyTokenChange: BigNumber,
   poolBaseReserves: BigNumber,
-  poolFyTokenRealReserves: BigNumber,
+  poolFyTokenReserves: BigNumber,
   poolTotalSupply: BigNumber
 ): {
   baseReserves: BigNumber;
@@ -1046,14 +1046,14 @@ export const newPoolState = (
   fyTokenVirtualReserves: BigNumber;
 } => {
   const newBaseReserves = poolBaseReserves.add(baseChange);
-  const newFyTokenRealReserves = poolFyTokenRealReserves.add(fyTokenChange);
+  const newFyTokenReserves = poolFyTokenReserves.add(fyTokenChange);
   const newTotalSupply = poolTotalSupply.add(fyTokenChange);
-  const newFyTokenVirtualReserves = newTotalSupply.add(newFyTokenRealReserves); // virtualReserves  = totalsupply + realBalance
+  const newFyTokenRealReserves = newFyTokenReserves.sub(newTotalSupply); // real = totalSupply - virtual
   return {
     baseReserves: newBaseReserves,
     fyTokenRealReserves: newFyTokenRealReserves,
     totalSupply: newTotalSupply,
-    fyTokenVirtualReserves: newFyTokenVirtualReserves,
+    fyTokenVirtualReserves: newFyTokenReserves,
   };
 };
 
@@ -1216,7 +1216,9 @@ export const changeRate = (
 ) => {
   // format series data
   const _baseReserves = new Decimal(baseReserves.toString());
+  console.log('🦄 ~ file: yieldMath.ts ~ line 1219 ~  _baseReserves ', _baseReserves.div(10 ** 18).toString());
   const _fyTokenReserves = new Decimal(fyTokenReserves.toString());
+  console.log('🦄 ~ file: yieldMath.ts ~ line 1221 ~  _fyTokenReserves', _fyTokenReserves.div(10 ** 18).toString());
 
   const u = getTimeStretchYears(ts);
 
@@ -1235,9 +1237,13 @@ export const changeRate = (
 
   const baseReservesNew = top.div(bottom).pow(invA);
   const baseDiff = baseReservesNew.sub(_baseReserves);
+  console.log('🦄 ~ file: yieldMath.ts ~ line 1238 ~ baseReservesNew', baseReservesNew.div(10 ** 18).toString());
+  console.log('🦄 ~ file: yieldMath.ts ~ line 1238 ~ baseDiff ', baseDiff.div(10 ** 18).toString());
 
   const fyTokenReservesNew = baseReservesNew.mul(ONE.add(_desiredRate).pow(u));
   const fyTokenDiff = fyTokenReservesNew.sub(_fyTokenReserves);
+  console.log('🦄 ~ file: yieldMath.ts ~ line 1243 ~ fyTokenReservesNew', fyTokenReservesNew.div(10 ** 18).toString());
+  console.log('🦄 ~ file: yieldMath.ts ~ line 1242 ~ fyTokenDiff', fyTokenDiff.div(10 ** 18).toString());
 
   // result is the input into the frax amo funcs, which is the base diff if decreasing rates, and the fyToken diff if increasing rates
   // sellBase (decrease rates {base goes in}) or sellFyToken (increase rates {base comes out})
