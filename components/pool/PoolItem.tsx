@@ -10,6 +10,7 @@ import useRemoveLiqPreview from '../../hooks/protocol/useRemoveLiqPreview';
 import { RemoveLiquidityActions } from '../../lib/protocol/liquidity/types';
 import { cleanValue, hexToRgb } from '../../utils/appUtils';
 import { marks } from '../../config/marks';
+import CopyWrap from '../common/CopyWrap';
 
 const Inner = tw.div`m-4 text-center`;
 const ButtonWrap = tw.div`flex justify-between gap-10`;
@@ -71,7 +72,9 @@ const PoolItem: FC = () => {
           <Middle>
             <Logo symbol={pool.base.symbol} />
             <div className="mt-10">
-              <Header>{pool.displayName}</Header>
+              <CopyWrap value={pool.seriesId}>
+                <Header>{pool.displayName}</Header>
+              </CopyWrap>
               <PoolDataWrap>
                 <PoolDataLabel>Frax in contract</PoolDataLabel>
                 <PoolData>{cleanValue(pool.fraxInContract_, 2)}</PoolData>
