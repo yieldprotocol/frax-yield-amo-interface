@@ -72,7 +72,7 @@ const PoolItem: FC = () => {
           <Middle>
             <Logo symbol={pool.base.symbol} />
             <div className="mt-10">
-              <CopyWrap value={pool.seriesId}>
+              <CopyWrap value={pool.seriesId} label="copy series id">
                 <Header>{pool.displayName}</Header>
               </CopyWrap>
               <PoolDataWrap>

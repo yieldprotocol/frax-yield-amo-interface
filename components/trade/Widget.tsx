@@ -12,6 +12,7 @@ import useRatePreview from '../../hooks/protocol/useRatePreview';
 import useContracts from '../../hooks/protocol/useContracts';
 import { FRAX_AMO } from '../../constants';
 import Toggle from '../common/Toggle';
+import CopyWrap from '../common/CopyWrap';
 
 const Inner = tw.div`m-4 text-center`;
 const Grid = tw.div`grid my-5 auto-rows-auto gap-2`;
@@ -44,7 +45,7 @@ const Widget = ({ pools: poolsProps }: { pools: IPoolMap }) => {
 
   const [form, setForm] = useState<IForm>(INITIAL_FORM_STATE);
   const { pool, desiredRate, baseAmount, updatingRate, increasingRate } = form;
-  const { baseNeeded_, func, ratePreview } = useRatePreview(
+  const { baseNeededWad, baseNeeded_, func, ratePreview } = useRatePreview(
     pool!,
     +desiredRate / 100,
     baseAmount,
@@ -112,7 +113,13 @@ const Widget = ({ pools: poolsProps }: { pools: IPoolMap }) => {
 
         <InputsWrap>
           <div className="flex items-center justify-between mb-1">
-            <div className="whitespace-nowrap text-sm text-left mb-1">AMO {func ? <code>{func}</code> : ''} Input</div>
+            <div className="whitespace-nowrap text-sm text-left mb-1">
+              {baseNeeded_ && (
+                <CopyWrap value={baseNeededWad} label="copy wad">
+                  <span>{func ? <code>{func}</code> : ''} Input</span>
+                </CopyWrap>
+              )}
+            </div>
             {!updatingRate && (
               <Toggle
                 enabled={increasingRate}

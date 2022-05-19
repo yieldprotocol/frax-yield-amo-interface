@@ -13,7 +13,7 @@ const useRatePreview = (
   increaseRates = true
 ) => {
   const [ratePreview, setRatePreview] = useState<string>(''); // percentage format (i.e.: 10%)
-  const [baseNeeded, setBaseNeeded] = useState<BigNumber>();
+  const [baseNeeded, setBaseNeeded] = useState<BigNumber>(ethers.constants.Zero);
   const [baseNeeded_, setBaseNeeded_] = useState<string>('');
 
   const [func, setFunc] = useState<string>();
@@ -44,6 +44,7 @@ const useRatePreview = (
       } else {
         // if changing base amount input, estimate the change in base and fyToken reserves based on rate change direction
         setBaseNeeded_(baseAmount!);
+        setBaseNeeded(ethers.utils.parseUnits(baseAmount!, decimals));
 
         if (+baseAmount! === 0) {
           return setRatePreview(interestRate);
@@ -98,7 +99,13 @@ const useRatePreview = (
     }
   }, [baseAmount, desiredRate, increaseRates, pool, updatingRate]);
 
-  return { ratePreview, baseNeeded_, func };
+  return {
+    ratePreview,
+    baseNeeded,
+    baseNeeded_,
+    baseNeededWad: baseNeeded.toString(),
+    func,
+  };
 };
 
 export default useRatePreview;

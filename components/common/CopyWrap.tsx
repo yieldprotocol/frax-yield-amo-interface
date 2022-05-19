@@ -6,9 +6,10 @@ import InfoIcon from './InfoIcon';
 interface Props {
   children: ReactNode;
   value: string;
+  label: string;
 }
 
-const CopyWrap = ({ children, value }: Props) => {
+const CopyWrap = ({ children, value, label }: Props) => {
   const [copied, setCopied] = useState<boolean>(false);
 
   const copy = (e: any) => {
@@ -27,7 +28,7 @@ const CopyWrap = ({ children, value }: Props) => {
       {copied ? (
         <CheckCircleIcon className="h-4 w-4" />
       ) : (
-        <InfoIcon infoText={'copy series id'}>
+        <InfoIcon infoText={label}>
           <ClipboardCheckIcon className="h-4 w-4" />
         </InfoIcon>
       )}
