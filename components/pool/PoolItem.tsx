@@ -14,7 +14,7 @@ import { marks } from '../../config/marks';
 const Inner = tw.div`m-4 text-center`;
 const ButtonWrap = tw.div`flex justify-between gap-10`;
 const PoolDataWrap = tw.div`grid my-5 gap-2 flex-nowrap`;
-const PoolDataLabel = tw.div`text-lg dark:text-gray-400 text-gray-500`;
+const PoolDataLabel = tw.div`text-md dark:text-gray-400 text-gray-500`;
 const PoolData = tw.div`text-xl font-semibold dark:text-gray-100 text-gray-800`;
 
 const Wrap = tw.div`mx-auto min-h-[492px] 
@@ -48,11 +48,6 @@ const PoolItem: FC = () => {
   const { address } = router.query;
 
   const [pool, setPool] = useState<IPool | undefined>();
-  const { baseReceived: basePreview, fyTokenReceived: fyTokenPreview } = useRemoveLiqPreview(
-    pool!,
-    pool?.lpTokenBalance_!,
-    RemoveLiquidityActions.BURN_FOR_BASE
-  );
 
   useEffect(() => {
     if (pools) {
@@ -78,19 +73,28 @@ const PoolItem: FC = () => {
             <div className="mt-10">
               <Header>{pool.displayName}</Header>
               <PoolDataWrap>
-                <PoolDataLabel>LP Token Balance:</PoolDataLabel>
-                <PoolData>{cleanValue(pool.lpTokenBalance_, pool.base.digitFormat)}</PoolData>
+                <PoolDataLabel>Frax in contract</PoolDataLabel>
+                <PoolData>{cleanValue(pool.fraxInContract_, 2)}</PoolData>
               </PoolDataWrap>
               <PoolDataWrap>
-                <PoolDataLabel>LP Token Value:</PoolDataLabel>
-                <PoolData>
-                  {cleanValue(basePreview, pool.base.digitFormat)} {pool.base.symbol}
-                </PoolData>
-                {fyTokenPreview && (
-                  <PoolData>
-                    {cleanValue(fyTokenPreview, pool.fyToken.digitFormat)} {pool.fyToken.symbol}
-                  </PoolData>
-                )}
+                <PoolDataLabel>Frax as collateral</PoolDataLabel>
+                <PoolData>{cleanValue(pool.fraxAsCollateral_, 2)}</PoolData>
+              </PoolDataWrap>
+              <PoolDataWrap>
+                <PoolDataLabel>Frax in LP</PoolDataLabel>
+                <PoolData>{cleanValue(pool.fraxInLP_, 2)}</PoolData>
+              </PoolDataWrap>
+              <PoolDataWrap>
+                <PoolDataLabel>fyFrax in contract</PoolDataLabel>
+                <PoolData>{cleanValue(pool.fyFraxInContract_, 2)}</PoolData>
+              </PoolDataWrap>
+              <PoolDataWrap>
+                <PoolDataLabel>fyFrax in LP</PoolDataLabel>
+                <PoolData>{cleanValue(pool.fyFraxInLP_, 2)}</PoolData>
+              </PoolDataWrap>
+              <PoolDataWrap>
+                <PoolDataLabel>LP owned</PoolDataLabel>
+                <PoolData>{cleanValue(pool.LPOwned_, 2)}</PoolData>
               </PoolDataWrap>
             </div>
           </Middle>
