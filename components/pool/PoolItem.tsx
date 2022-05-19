@@ -96,8 +96,8 @@ const PoolItem: FC = () => {
           </Middle>
         </Wrap>
         <ButtonWrap>
-          {!pool.isMature && <Button action={() => router.push(`/pool/add/${address}`)}>Add Liquidity</Button>}
-          <Button action={() => router.push(`/pool/remove/${address}`)}>Remove</Button>
+          {/* {!pool.isMature && <Button action={() => router.push(`/pool/add/${address}`)}>Add Liquidity</Button>}
+          <Button action={() => router.push(`/pool/remove/${address}`)}>Remove</Button> */}
         </ButtonWrap>
       </Inner>
     </BorderWrap>
