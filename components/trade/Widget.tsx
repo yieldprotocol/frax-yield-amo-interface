@@ -57,8 +57,9 @@ const Widget = ({ pools: poolsProps }: { pools: IPoolMap }) => {
   const handleMaxBase = () => {
     setForm((f) => ({
       ...f,
-      baseAmount: baseBalance?.formatted!,
+      baseAmount: baseBalance?.formatted ?? '0',
       updatingRate: false,
+      increasingRate: !updatingRate && +ratePreview > +pool?.interestRate!,
     }));
   };
 
@@ -116,7 +117,11 @@ const Widget = ({ pools: poolsProps }: { pools: IPoolMap }) => {
               <Toggle
                 enabled={increasingRate}
                 setEnabled={() => setForm((f) => ({ ...f, increasingRate: !f.increasingRate }))}
-                label={increasingRate ? 'Increase Rate' : 'Decrease Rate'}
+                label={
+                  increasingRate || (!updatingRate && +ratePreview > +pool?.interestRate!)
+                    ? 'Increase Rate'
+                    : 'Decrease Rate'
+                }
                 disabled={updatingRate}
               />
             )}

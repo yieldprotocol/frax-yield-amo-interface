@@ -44,6 +44,11 @@ const useRatePreview = (
       } else {
         // if changing base amount input, estimate the change in base and fyToken reserves based on rate change direction
         setBaseNeeded_(baseAmount!);
+
+        if (+baseAmount! === 0) {
+          return setRatePreview(interestRate);
+        }
+
         const _baseAmount = ethers.utils.parseUnits(baseAmount || '0', decimals);
 
         let newBaseReserves: BigNumber;
