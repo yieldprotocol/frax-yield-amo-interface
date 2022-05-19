@@ -7,7 +7,7 @@ import { Header, TopRow } from '../styles/common';
 import PoolSelectItem from './PoolSelectItem';
 
 const Grid = tw.div`grid auto-rows-auto gap-2 overflow-auto p-5 max-h-[428px]`;
-const Inner = tw.div`dark:bg-gray-900/90 bg-gray-200/70 dark:text-gray-50 text-gray-900 rounded-lg p-3 gap-3`;
+const Inner = tw.div`dark:bg-black/80 bg-gray-200/70 dark:text-gray-50 text-gray-900 rounded-lg p-3 gap-3`;
 const Outer = tw.button`hover:opacity-80 flex p-[1px] rounded-lg gap-3 align-middle items-center`;
 const ClearButton = tw.button`text-sm dark:text-gray-50 text-gray-700`;
 
@@ -41,6 +41,7 @@ const PoolSelectModal: FC<IPoolSelectModal> = ({ pools, open, setOpen, action })
   const [maturities, setMaturities] = useState<IMaturitySelect[]>([]);
   const [maturityFilter, setMaturityFilter] = useState<string | undefined>();
   const [showMatureFilter, setShowMatureFilter] = useState<boolean>(false);
+  const [hasMature, setHasMature] = useState<boolean>(false);
 
   const handleClearFilters = () => {
     if (maturityFilter) {
@@ -86,6 +87,10 @@ const PoolSelectModal: FC<IPoolSelectModal> = ({ pools, open, setOpen, action })
     setPoolList(handleFilter());
   }, [handleFilter]);
 
+  useEffect(() => {
+    setHasMature(!!Object.values(_pools).find((m) => m.isMature));
+  }, [_pools]);
+
   return (
     <Modal isOpen={open} setIsOpen={setOpen}>
       <div className="grid gap-2 p-5">
@@ -108,9 +113,11 @@ const PoolSelectModal: FC<IPoolSelectModal> = ({ pools, open, setOpen, action })
                 ))}
             </div>
             <div className="mt-1">
-              <ClearButton onClick={() => setShowMatureFilter(!showMatureFilter)}>
-                {showMatureFilter ? 'Hide Matured Pools' : 'Show Matured Pools'}
-              </ClearButton>
+              {hasMature && (
+                <ClearButton onClick={() => setShowMatureFilter(!showMatureFilter)}>
+                  {showMatureFilter ? 'Hide Matured Pools' : 'Show Matured Pools'}
+                </ClearButton>
+              )}
             </div>
           </>
         )}
