@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { useState } from 'react';
 import tw from 'tailwind-styled-components';
 import { IPool } from '../../lib/protocol/types';
 import PoolSelectItem from './PoolSelectItem';
@@ -20,7 +20,7 @@ interface IPoolSelect {
   poolsLoading?: boolean;
 }
 
-const PoolSelect: FC<IPoolSelect> = ({ pools, pool, setPool, poolsLoading }) => {
+const PoolSelect = ({ pools, pool, setPool, poolsLoading }: IPoolSelect) => {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
 
   return (

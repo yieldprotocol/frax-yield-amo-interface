@@ -56,7 +56,6 @@ const AddLiquidity = () => {
   const [useFyTokenToggle, setUseFyTokenToggle] = useState<boolean>(false);
   const [updatingBaseAmount, setUpdatingBaseAmount] = useState<boolean>(true);
   const [updatingFyTokenAmount, setUpdatingFyTokenAmount] = useState<boolean>(false);
-  const [useWETH] = useState<boolean>(false);
 
   const { fyTokenNeeded_, baseNeeded_ } = useAddLiqPreview(
     pool!,
@@ -65,13 +64,11 @@ const AddLiquidity = () => {
     fyTokenAmount,
     updatingFyTokenAmount
   );
-  const isEthPool = pool?.base.symbol === 'ETH';
-  const baseIsEth = isEthPool && !useWETH;
-  const { errorMsg } = useInputValidation(baseAmount, pool, [], method!, fyTokenAmount, baseIsEth);
+  const { errorMsg } = useInputValidation(baseAmount, pool, [], method!, fyTokenAmount, false);
 
   const { addLiquidity, isAddingLiquidity, addSubmitted } = useAddLiquidity(pool, baseAmount, fyTokenAmount, method);
 
-  const baseBalanceToUse = isEthPool ? (useWETH ? pool?.base.balance_ : ethBalance) : pool?.base.balance_;
+  const baseBalanceToUse = pool?.base.balance_;
 
   const handleMaxBase = () => {
     setUpdatingBaseAmount(true);
@@ -205,9 +202,6 @@ const AddLiquidity = () => {
               label={`Use fy${pool?.base.symbol} Balance`}
             />
           )}
-          {/* {isEthPool && +pool?.base.balance_ > 0 && (
-            <Toggle enabled={useWETH} setEnabled={setUseWETH} label={`Use ${useWETH ? 'ETH' : 'WETH'} Balance`} />
-          )} */}
         </Grid>
         <Button
           action={handleSubmit}

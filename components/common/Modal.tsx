@@ -1,5 +1,5 @@
 import { Dialog, Transition } from '@headlessui/react';
-import { Fragment, FC, ReactNode } from 'react';
+import { Fragment, ReactNode } from 'react';
 
 export interface IModal {
   isOpen: boolean;
@@ -8,7 +8,7 @@ export interface IModal {
   styleProps?: string;
 }
 
-const Modal: FC<IModal> = ({ isOpen, setIsOpen, children, styleProps = null }) => {
+const Modal = ({ isOpen, setIsOpen, children, styleProps = undefined }: IModal) => {
   const closeModal = () => {
     setIsOpen(false);
   };

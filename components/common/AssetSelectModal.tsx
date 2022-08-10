@@ -1,4 +1,3 @@
-import { FC } from 'react';
 import tw from 'tailwind-styled-components';
 import AssetLogo from './AssetLogo';
 import Modal from './Modal';
@@ -11,7 +10,7 @@ type IAssetSelectModal = {
   action: (asset: string) => void;
 };
 
-const AssetSelectModal: FC<IAssetSelectModal> = ({ open, setOpen, action }) => (
+const AssetSelectModal = ({ open, setOpen, action }: IAssetSelectModal) => (
   <Modal isOpen={open} setIsOpen={setOpen}>
     {['ETH', 'USDC'].map((asset: string) => (
       <Button

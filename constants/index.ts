@@ -23,6 +23,6 @@ export const ETH_BYTES = ethers.utils.formatBytes32String('ETH-A');
 export const BLANK_ADDRESS = ethers.constants.AddressZero;
 
 // localStorage keys
-export const THEME_KEY = 'yieldspace-theme';
-export const SLIPPAGE_KEY = 'yieldspace-slippageTolerance';
+export const THEME_KEY = 'frax-amo-theme';
+export const SLIPPAGE_KEY = 'frax-amo-slippageTolerance';
 export const DEFAULT_SLIPPAGE = '.5'; // .5%

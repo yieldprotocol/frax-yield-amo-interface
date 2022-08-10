@@ -31,8 +31,7 @@ export default function Web3Provider({ children }) {
 
   const theme = merge(colorTheme === 'dark' ? darkTheme() : undefined, {
     colors: {
-      accentColor:
-        'linear-gradient(135deg, rgba(247, 149, 51, 0.5), rgba(243, 112, 85, 0.5), rgba(239, 78, 123, 0.5), rgba(161, 102, 171, 0.5), rgba(80, 115, 184, 0.5), rgba(16, 152, 173, 0.5), rgba(7, 179, 155, 0.5), rgba(111, 186, 130, 0.5));',
+      accentColor: '#60a5fab3',
     },
 
     fonts: { body: 'inter' },

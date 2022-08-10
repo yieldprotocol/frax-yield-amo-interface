@@ -7,8 +7,8 @@ const Container = tw.div`flex gap-2 items-center px-2 dark:bg-gray-700/50 border
 const Inner = tw.div`text-sm`;
 
 const ETHBalance = () => {
-  const { data: account } = useAccount();
-  const { data: balance } = useBalance({ addressOrName: account?.address! });
+  const { address: account } = useAccount();
+  const { data: balance } = useBalance({ addressOrName: account });
 
   return (
     <Container>

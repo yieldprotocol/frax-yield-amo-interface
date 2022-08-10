@@ -5,11 +5,6 @@ const yieldEnv = {
       Ladle: '0x6cb18ff2a33e981d1e38a663ca056c0a5265066a',
       FraxAMO: '0x8971946467a77b798762823434c0f407d20f9df9',
     },
-    5: {
-      Cauldron: '0xf39bf75997176915a117bb274ef6f20784b91568',
-      Ladle: '0xe34989e754e6ff29a0bcbe0a9b0ea818c93bff05',
-      FraxAMO: '',
-    },
   },
   seasonColors: {
     1: {
