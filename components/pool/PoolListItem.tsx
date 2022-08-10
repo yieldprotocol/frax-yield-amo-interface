@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { FC } from 'react';
 import tw from 'tailwind-styled-components';
 import { IPool } from '../../lib/protocol/types';
 import { cleanValue } from '../../utils/appUtils';
@@ -26,7 +25,7 @@ interface IPoolListItem {
   pool: IPool;
 }
 
-const PoolListItem: FC<IPoolListItem> = ({ pool }) => (
+const PoolListItem = ({ pool }: IPoolListItem) => (
   <Link href={`/series/${pool.address}`} passHref>
     <Container>
       <ItemOuter

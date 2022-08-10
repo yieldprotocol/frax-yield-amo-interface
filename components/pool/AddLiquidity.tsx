@@ -9,7 +9,6 @@ import usePools from '../../hooks/protocol/usePools';
 import PoolSelect from './PoolSelect';
 import { IPool } from '../../lib/protocol/types';
 import { BorderWrap, Header } from '../styles/common';
-import { useAddLiquidity } from '../../hooks/protocol/useAddLiquidity';
 import Modal from '../common/Modal';
 import AddConfirmation from './AddConfirmation';
 import CloseButton from '../common/CloseButton';
@@ -18,6 +17,7 @@ import Arrow from '../trade/Arrow';
 import useInputValidation from '../../hooks/useInputValidation';
 import useAddLiqPreview from '../../hooks/protocol/useAddLiqPreview';
 import { useAccount, useBalance, useNetwork } from 'wagmi';
+import { useAddLiquidity } from '../../hooks/actions/useAddLiquidity';
 
 const Inner = tw.div`m-4 text-center`;
 const HeaderSmall = tw.div`align-middle text-sm font-bold justify-start text-left`;

@@ -1,14 +1,14 @@
-import { FC, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import tw from 'tailwind-styled-components';
 import { IPool } from '../../lib/protocol/types';
-// import Button from '../common/Button';
 import { BorderWrap, Header } from '../styles/common';
 import usePools from '../../hooks/protocol/usePools';
 import BackButton from '../common/BackButton';
 import { cleanValue, hexToRgb } from '../../utils/appUtils';
 import { marks } from '../../config/marks';
 import CopyWrap from '../common/CopyWrap';
+import Button from '../common/Button';
 
 const Inner = tw.div`m-4 text-center`;
 const ButtonWrap = tw.div`flex justify-between gap-10`;
@@ -41,7 +41,7 @@ export const Logo = ({ symbol }: { symbol: string }) => {
   );
 };
 
-const PoolItem: FC = () => {
+const PoolItem = () => {
   const router = useRouter();
   const { data: pools } = usePools();
   const { address } = router.query;
@@ -101,8 +101,8 @@ const PoolItem: FC = () => {
           </Middle>
         </Wrap>
         <ButtonWrap>
-          {/* {!pool.isMature && <Button action={() => router.push(`/pool/add/${address}`)}>Add Liquidity</Button>}
-          <Button action={() => router.push(`/pool/remove/${address}`)}>Remove</Button> */}
+          {!pool.isMature && <Button action={() => router.push(`/series/add/${address}`)}>Add Liquidity</Button>}
+          <Button action={() => router.push(`/pool/remove/${address}`)}>Remove</Button>
         </ButtonWrap>
       </Inner>
     </BorderWrap>

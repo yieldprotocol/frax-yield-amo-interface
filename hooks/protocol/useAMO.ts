@@ -1,16 +1,15 @@
 import { BigNumberish, ContractTransaction, PayableOverrides } from 'ethers';
 import { useSigner } from 'wagmi';
-import { LADLE, WRAP_ETH_MODULE } from '../../constants';
-import { Ladle, Pool, WrapEtherModule } from '../../contracts/types';
+import { LADLE } from '../../constants';
+import { Ladle, Pool } from '../../contracts/types';
 import { LadleActions, RoutedActions } from '../../lib/tx/operations';
 import { ILadleAction } from '../../lib/tx/types';
 import useContracts from './useContracts';
 
-const useLadle = () => {
+const useAMO = () => {
   const contracts = useContracts();
   const { data: signer } = useSigner();
   const ladle = contracts ? (contracts[LADLE]?.connect(signer!) as Ladle) : undefined;
-  const wrapEthModule = contracts ? (contracts[WRAP_ETH_MODULE]?.connect(signer!) as WrapEtherModule) : undefined;
 
   /**
    * Formatted representation of the batch function that allows for easier filtering/ignoring of actions
@@ -138,12 +137,6 @@ const useLadle = () => {
       ])
     );
 
-  const wrapETHAction = (poolContract: Pool, etherWithSlippage: BigNumberish): string | undefined =>
-    moduleCallAction(
-      wrapEthModule?.address!,
-      wrapEthModule?.interface.encodeFunctionData(RoutedActions.Fn.WRAP, [poolContract.address, etherWithSlippage])!
-    );
-
   const exitETHAction = (receiver: string): string | undefined =>
     ladle?.interface.encodeFunctionData(LadleActions.Fn.EXIT_ETHER, [receiver]);
 
@@ -162,11 +155,10 @@ const useLadle = () => {
     mintAction,
     burnForBaseAction,
     burnAction,
-    wrapETHAction,
     exitETHAction,
     redeemFYToken,
     ladleContract: ladle,
   };
 };
 
-export default useLadle;
+export default useAMO;
