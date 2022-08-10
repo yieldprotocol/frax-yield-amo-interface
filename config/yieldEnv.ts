@@ -1,13 +1,13 @@
 const yieldEnv = {
   addresses: {
     1: {
-      Cauldron: '0xc88191F8cb8e6D4a668B047c1C8503432c3Ca867',
-      Ladle: '0x6cB18fF2A33e981D1e38A663Ca056c0a5265066A',
-      FraxAMO: '',
+      Cauldron: '0xc88191f8cb8e6d4a668b047c1c8503432c3ca867',
+      Ladle: '0x6cb18ff2a33e981d1e38a663ca056c0a5265066a',
+      FraxAMO: '0x8971946467a77b798762823434c0f407d20f9df9',
     },
     5: {
-      Cauldron: '0xF39bf75997176915a117Bb274eF6F20784B91568',
-      Ladle: '0xE34989E754e6fF29A0bcbe0A9b0ea818C93bff05',
+      Cauldron: '0xf39bf75997176915a117bb274ef6f20784b91568',
+      Ladle: '0xe34989e754e6ff29a0bcbe0a9b0ea818c93bff05',
       FraxAMO: '',
     },
   },
