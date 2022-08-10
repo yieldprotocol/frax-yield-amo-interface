@@ -9,7 +9,7 @@ import useContracts from './useContracts';
 
 const usePools = () => {
   const { chain } = useNetwork();
-  const amoAddress = yieldEnv.addresses[chain?.id!][FRAX_AMO];
+  const amoAddress = yieldEnv.addresses[chain?.id!][FRAX_AMO] as string;
   const provider = useDefaultProvider();
   const contractMap = useContracts();
 

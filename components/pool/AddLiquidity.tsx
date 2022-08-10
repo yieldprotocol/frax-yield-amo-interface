@@ -66,7 +66,7 @@ const AddLiquidity = () => {
   );
   const { errorMsg } = useInputValidation(baseAmount, pool, [], method!, fyTokenAmount, false);
 
-  const { addLiquidity, isAddingLiquidity, addSubmitted } = useAddLiquidity(pool, baseAmount, fyTokenAmount, method);
+  const { addLiquidity, isAddingLiquidity, addSubmitted } = useAddLiquidity(pool, baseAmount, fyTokenAmount);
 
   const baseBalanceToUse = pool?.base.balance_;
 

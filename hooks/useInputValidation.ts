@@ -14,9 +14,9 @@ const useInputValidation = (
   secondaryInput: string = '', // this is the "to" amount when trading
   isEth = false // if the asset is eth
 ) => {
-  const { data: account } = useAccount();
-  const { activeChain } = useNetwork();
-  const { data: balance } = useBalance({ addressOrName: account?.address, chainId: activeChain?.id });
+  const { address: account } = useAccount();
+  const { chain } = useNetwork();
+  const { data: balance } = useBalance({ addressOrName: account, chainId: chain?.id });
   const ethBalance = balance?.formatted;
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
