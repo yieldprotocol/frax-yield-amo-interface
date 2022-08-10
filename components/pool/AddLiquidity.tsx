@@ -44,10 +44,10 @@ const INITIAL_FORM_STATE: IAddLiquidityForm = {
 const AddLiquidity = () => {
   const router = useRouter();
   const { address } = router.query;
-  const { activeChain } = useNetwork();
-  const { data: account } = useAccount();
+  const { chain } = useNetwork();
+  const { address: account } = useAccount();
   const { data: pools } = usePools();
-  const { data: balance } = useBalance({ addressOrName: account?.address, chainId: activeChain?.id });
+  const { data: balance } = useBalance({ addressOrName: account, chainId: chain?.id });
   const ethBalance = balance?.formatted;
 
   const [form, setForm] = useState<IAddLiquidityForm>(INITIAL_FORM_STATE);
@@ -110,7 +110,7 @@ const AddLiquidity = () => {
   // reset chosen pool when chainId changes
   useEffect(() => {
     setForm((f) => ({ ...f, pool: undefined }));
-  }, [activeChain?.id]);
+  }, [chain?.id]);
 
   // use pool address from router query if available
   useEffect(() => {

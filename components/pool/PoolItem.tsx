@@ -102,7 +102,7 @@ const PoolItem = () => {
         </Wrap>
         <ButtonWrap>
           {!pool.isMature && <Button action={() => router.push(`/series/add/${address}`)}>Add Liquidity</Button>}
-          <Button action={() => router.push(`/pool/remove/${address}`)}>Remove</Button>
+          <Button action={() => router.push(`/series/remove/${address}`)}>Remove</Button>
         </ButtonWrap>
       </Inner>
     </BorderWrap>
