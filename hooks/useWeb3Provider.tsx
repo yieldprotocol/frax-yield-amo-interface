@@ -1,12 +1,6 @@
-import {
-  apiProvider,
-  configureChains,
-  darkTheme,
-  getDefaultWallets,
-  RainbowKitProvider,
-  Theme,
-} from '@rainbow-me/rainbowkit';
-import { Chain, chain, createClient, WagmiProvider } from 'wagmi';
+import { darkTheme, getDefaultWallets, RainbowKitProvider, Theme } from '@rainbow-me/rainbowkit';
+import { chain, configureChains, createClient, WagmiConfig } from 'wagmi';
+import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
 import merge from 'lodash.merge';
 import { useColorTheme } from './useColorTheme';
 import { URLS } from '../config/chains';
@@ -14,12 +8,18 @@ import { URLS } from '../config/chains';
 export default function Web3Provider({ children }) {
   const { theme: colorTheme } = useColorTheme();
   const { chains, provider } = configureChains(
-    [chain.mainnet, chain.goerli],
-    [apiProvider.jsonRpc((_chain: Chain) => ({ rpcUrl: URLS[_chain.id][0] }))]
+    [chain.mainnet],
+    [
+      jsonRpcProvider({
+        rpc: (chain) => {
+          return { http: URLS[chain.id][0] };
+        },
+      }),
+    ]
   );
 
   const { connectors } = getDefaultWallets({
-    appName: 'Yieldspace App',
+    appName: 'Frax AMO',
     chains,
   });
 
@@ -46,10 +46,10 @@ export default function Web3Provider({ children }) {
   } as Theme);
 
   return (
-    <WagmiProvider client={wagmiClient}>
+    <WagmiConfig client={wagmiClient}>
       <RainbowKitProvider chains={chains} theme={theme} showRecentTransactions>
         {children}
       </RainbowKitProvider>
-    </WagmiProvider>
+    </WagmiConfig>
   );
 }
