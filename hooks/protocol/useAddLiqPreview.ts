@@ -7,17 +7,15 @@ import { calcPoolRatios, calculateSlippage, mint, splitLiquidity } from '../../u
 import { useLocalStorage } from '../useLocalStorage';
 
 const useAddLiqPreview = (pool: IPool, input: string) => {
-  const [lpTokenPreview, setLpTokenPreview] = useState<string>('');
+  const [slippageTolerance] = useLocalStorage(SLIPPAGE_KEY, DEFAULT_SLIPPAGE);
 
+  const [lpTokenPreview, setLpTokenPreview] = useState<string>('');
   const [baseNeeded, setBaseNeeded] = useState<BigNumber>(ethers.constants.Zero);
   const [baseNeeded_, setBaseNeeded_] = useState<string>('');
   const [fyTokenNeeded, setFyTokenNeeded] = useState<BigNumber>(ethers.constants.Zero);
   const [fyTokenNeeded_, setFyTokenNeeded_] = useState<string>('');
   const [minRatio, setMinRatio] = useState<BigNumber>();
   const [maxRatio, setMaxRatio] = useState<BigNumber>();
-
-  // settings
-  const [slippageTolerance] = useLocalStorage(SLIPPAGE_KEY, DEFAULT_SLIPPAGE);
 
   useEffect(() => {
     (async () => {

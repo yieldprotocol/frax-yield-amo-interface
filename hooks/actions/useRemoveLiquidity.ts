@@ -1,19 +1,19 @@
 import { ethers } from 'ethers';
 import { RemoveLiquidityActions } from '../../lib/protocol/liquidity/types';
 import { IPool } from '../../lib/protocol/types';
-import { cleanValue } from '../../utils/appUtils';
+import { cleanValue, valueAtDigits } from '../../utils/appUtils';
 import { calcPoolRatios } from '../../utils/yieldMath';
 import useSignature from '../useSignature';
 import useTransaction from '../useTransaction';
-import { useAccount } from 'wagmi';
+import { useAccount, usePrepareContractWrite } from 'wagmi';
 import useAMO from '../protocol/useAMO';
+import useRemoveLiqPreview from '../protocol/useRemoveLiqPreview';
 
-export const useRemoveLiquidity = (pool: IPool, input: string, method: RemoveLiquidityActions, description: string) => {
+export const useRemoveLiquidity = (pool: IPool | undefined, input: string) => {
   const { address: account } = useAccount();
-  const { sign } = useSignature();
+  const { amoContract, amoAddress } = useAMO();
+  const {} = useRemoveLiqPreview(pool!, input);
   const { handleTransact, isTransacting, txSubmitted } = useTransaction();
-  const { ladleContract, batch, transferAction, burnForBaseAction, burnAction, exitETHAction, redeemFYToken } =
-    useAMO();
 
   const removeLiquidity = async () => {
     if (!pool) throw new Error('no pool'); // prohibit trade if there is no pool
@@ -22,59 +22,24 @@ export const useRemoveLiquidity = (pool: IPool, input: string, method: RemoveLiq
     const cleanInput = cleanValue(input, base.decimals);
     const _input = ethers.utils.parseUnits(cleanInput, base.decimals);
 
+    const { config, error } = usePrepareContractWrite({
+      addressOrName: amoAddress,
+      contractInterface: amoContract?.interface!,
+      functionName: AMOActions.Fn.ADD_LIQUIDITY,
+      args: [pool?.seriesId, baseNeeded, fyTokenNeeded, minRatio, maxRatio] as AMOActions.Args.ADD_LIQUIDITY,
+      enabled: !!amoContract?.interface,
+    });
+
+    const { write } = useContractWrite(config);
+
     const [cachedBaseReserves, cachedFyTokenReserves] = await pool.contract.getCache();
     const cachedRealReserves = cachedFyTokenReserves.sub(pool.totalSupply);
 
     const [minRatio, maxRatio] = calcPoolRatios(cachedBaseReserves, cachedRealReserves);
 
+    const description = `Remove ${valueAtDigits(input, 4)} LP tokens`;
     const overrides = {
       gasLimit: 300000,
-    };
-
-    const isETH = base.symbol === 'ETH';
-
-    const _remove = async () => {
-      if (!pool) throw new Error('no pool'); // prohibit trade if there is no pool
-      if (!account) throw new Error('no connected account');
-
-      const alreadyApproved = (await pool.contract.allowance(account, ladleContract?.address!)).gte(_input);
-
-      const permits = await sign([
-        {
-          target: pool,
-          spender: ladleContract?.address!,
-          amount: _input,
-          ignoreIf: alreadyApproved,
-        },
-      ]);
-
-      // handles both burnForBase and burn actions, before and after maturity
-      return batch(
-        [
-          ...permits,
-          { action: transferAction(poolAddress, poolAddress, _input)! },
-          {
-            action: burnForBaseAction(poolContract, account, minRatio, maxRatio)!,
-            ignoreIf: method !== RemoveLiquidityActions.BURN_FOR_BASE || isMature,
-          },
-          {
-            action: burnAction(
-              poolContract,
-              account,
-              isMature ? fyToken.address : account, // after maturity, use the fyToken address as the destination to redeem
-              minRatio,
-              maxRatio
-            )!,
-            ignoreIf: method === RemoveLiquidityActions.BURN_FOR_BASE && !isMature,
-          },
-          {
-            action: redeemFYToken(seriesId, account, '0')!,
-            ignoreIf: !isMature,
-          },
-          { action: exitETHAction(account)!, ignoreIf: !isETH },
-        ],
-        overrides
-      );
     };
 
     handleTransact(_remove, description);

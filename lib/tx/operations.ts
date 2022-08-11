@@ -4,6 +4,8 @@ export namespace AMOActions {
   export enum Fn {
     ADD_LIQUIDITY = 'addLiquidity',
     REMOVE_LIQUIDITY = 'removeLiquidity',
+    INCREASE_RATES = 'increaseRates',
+    DECREASE_RATES = 'decreaseRates',
   }
 
   export namespace Args {

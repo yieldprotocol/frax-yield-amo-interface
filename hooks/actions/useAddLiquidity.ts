@@ -6,19 +6,18 @@ import useAMO from '../protocol/useAMO';
 import { AMOActions } from '../../lib/tx/operations';
 import useAddLiqPreview from '../protocol/useAddLiqPreview';
 
-export const useAddLiquidity = (pool: IPool, input: string) => {
+export const useAddLiquidity = (pool: IPool | undefined, input: string) => {
   const { address: account } = useAccount();
   const { amoContract, amoAddress } = useAMO();
-  const { baseNeeded, fyTokenNeeded, minRatio, maxRatio, baseNeeded_, fyTokenNeeded_ } = useAddLiqPreview(pool, input);
+  const { baseNeeded, fyTokenNeeded, minRatio, maxRatio, baseNeeded_, fyTokenNeeded_ } = useAddLiqPreview(pool!, input);
 
   const { config, error } = usePrepareContractWrite({
     addressOrName: amoAddress,
     contractInterface: amoContract?.interface!,
     functionName: AMOActions.Fn.ADD_LIQUIDITY,
-    args: [pool.seriesId, baseNeeded, fyTokenNeeded, minRatio, maxRatio] as AMOActions.Args.ADD_LIQUIDITY,
+    args: [pool?.seriesId, baseNeeded, fyTokenNeeded, minRatio, maxRatio] as AMOActions.Args.ADD_LIQUIDITY,
+    enabled: !!amoContract?.interface,
   });
-
-  if (error) throw new Error('something went wrong');
 
   const { write } = useContractWrite(config);
   const { handleTransact, isTransacting, txSubmitted } = useTransaction();
@@ -28,8 +27,9 @@ export const useAddLiquidity = (pool: IPool, input: string) => {
      and ${valueAtDigits(fyTokenNeeded_, 4)} ${pool?.fyToken.symbol} as liquidity`;
 
   const addLiquidity = async () => {
-    if (!pool) throw new Error('no pool'); // prohibit trade if there is no pool
+    if (!pool) throw new Error('no pool');
     if (!account) throw new Error('no connected account');
+    if (error) throw new Error('something went wrong');
 
     handleTransact(() => write?.()!, description);
   };

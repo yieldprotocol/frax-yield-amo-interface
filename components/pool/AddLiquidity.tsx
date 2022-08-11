@@ -4,7 +4,6 @@ import tw from 'tailwind-styled-components';
 import BackButton from '../common/BackButton';
 import Button from '../common/Button';
 import InputWrap from './InputWrap';
-import Toggle from '../common/Toggle';
 import usePools from '../../hooks/protocol/usePools';
 import PoolSelect from './PoolSelect';
 import { IPool } from '../../lib/protocol/types';
@@ -12,12 +11,11 @@ import { BorderWrap, Header } from '../styles/common';
 import Modal from '../common/Modal';
 import AddConfirmation from './AddConfirmation';
 import CloseButton from '../common/CloseButton';
-import { AddLiquidityActions } from '../../lib/protocol/liquidity/types';
-import Arrow from '../trade/Arrow';
 import useInputValidation from '../../hooks/useInputValidation';
 import useAddLiqPreview from '../../hooks/protocol/useAddLiqPreview';
-import { useAccount, useBalance, useNetwork } from 'wagmi';
+import { useAccount, useNetwork } from 'wagmi';
 import { useAddLiquidity } from '../../hooks/actions/useAddLiquidity';
+import { AMOActions } from '../../lib/tx/operations';
 
 const Inner = tw.div`m-4 text-center`;
 const HeaderSmall = tw.div`align-middle text-sm font-bold justify-start text-left`;
@@ -29,16 +27,12 @@ export interface IAddLiquidityForm {
   pool: IPool | undefined;
   baseAmount: string;
   fyTokenAmount: string;
-  method: AddLiquidityActions;
-  useFyToken: boolean;
 }
 
 const INITIAL_FORM_STATE: IAddLiquidityForm = {
   pool: undefined,
   baseAmount: '',
   fyTokenAmount: '',
-  method: AddLiquidityActions.MINT_WITH_BASE,
-  useFyToken: false,
 };
 
 const AddLiquidity = () => {
@@ -47,26 +41,18 @@ const AddLiquidity = () => {
   const { chain } = useNetwork();
   const { address: account } = useAccount();
   const { data: pools } = usePools();
-  const { data: balance } = useBalance({ addressOrName: account, chainId: chain?.id });
-  const ethBalance = balance?.formatted;
 
   const [form, setForm] = useState<IAddLiquidityForm>(INITIAL_FORM_STATE);
-  const { pool, baseAmount, fyTokenAmount, method, useFyToken } = form;
+  const { pool, baseAmount, fyTokenAmount } = form;
   const [confirmModalOpen, setConfirmModalOpen] = useState<boolean>(false);
   const [useFyTokenToggle, setUseFyTokenToggle] = useState<boolean>(false);
   const [updatingBaseAmount, setUpdatingBaseAmount] = useState<boolean>(true);
   const [updatingFyTokenAmount, setUpdatingFyTokenAmount] = useState<boolean>(false);
 
-  const { fyTokenNeeded_, baseNeeded_ } = useAddLiqPreview(
-    pool!,
-    baseAmount,
-    method,
-    fyTokenAmount,
-    updatingFyTokenAmount
-  );
-  const { errorMsg } = useInputValidation(baseAmount, pool, [], method!, fyTokenAmount, false);
+  const { fyTokenNeeded_, baseNeeded_ } = useAddLiqPreview(pool!, baseAmount);
+  const { errorMsg } = useInputValidation(baseAmount, pool, [], AMOActions.Fn.ADD_LIQUIDITY);
 
-  const { addLiquidity, isAddingLiquidity, addSubmitted } = useAddLiquidity(pool, baseAmount, fyTokenAmount);
+  const { addLiquidity, isAddingLiquidity, addSubmitted } = useAddLiquidity(pool, baseAmount);
 
   const baseBalanceToUse = pool?.base.balance_;
 
@@ -113,14 +99,6 @@ const AddLiquidity = () => {
   useEffect(() => {
     pools && setForm((f) => ({ ...f, pool: pools![address as string] }));
   }, [pools, address]);
-
-  // set add liquidity method when useFyTokenBalance changes
-  useEffect(() => {
-    setForm((f) => ({
-      ...f,
-      method: useFyToken ? AddLiquidityActions.MINT : AddLiquidityActions.MINT_WITH_BASE,
-    }));
-  }, [useFyToken]);
 
   // close modal when the adding liquidity was successfullly submitted (user took all actions to get tx through)
   useEffect(() => {
@@ -182,26 +160,6 @@ const AddLiquidity = () => {
             unFocused={updatingFyTokenAmount}
             pool={pool}
           />
-          {useFyToken && <Arrow isPlusIcon={true} />}
-          {useFyToken && (
-            <InputWrap
-              name="fyTokenAmount"
-              value={fyTokenAmount}
-              item={pool?.fyToken}
-              balance={pool?.fyToken.balance_!}
-              handleChange={handleInputChange}
-              useMax={handleMaxFyToken}
-              unFocused={updatingBaseAmount}
-              pool={pool}
-            />
-          )}
-          {+pool?.fyToken?.balance_! > 0 && (
-            <Toggle
-              enabled={useFyToken}
-              setEnabled={setUseFyTokenToggle}
-              label={`Use fy${pool?.base.symbol} Balance`}
-            />
-          )}
         </Grid>
         <Button
           action={handleSubmit}
