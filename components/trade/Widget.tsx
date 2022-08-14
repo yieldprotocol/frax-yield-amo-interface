@@ -84,6 +84,10 @@ const Widget = ({ pools: poolsProps }: { pools: IPoolMap }) => {
     }));
   };
 
+  const handleBaseChange = (name: string, value: string) => {
+    setForm((f) => ({ ...f, [name]: value, updatingRate: false }));
+  };
+
   const handleClearAll = () => setForm(INITIAL_FORM_STATE);
   const handleSubmit = () => setConfirmModalOpen(true);
 
@@ -91,7 +95,6 @@ const Widget = ({ pools: poolsProps }: { pools: IPoolMap }) => {
   useEffect(() => {
     setForm((f) => ({ ...f, baseAmount: baseNeeded_ }));
   }, [baseNeeded_]);
-
   // reset form when chainId changes
   useEffect(() => {
     setForm(INITIAL_FORM_STATE);
@@ -133,6 +136,40 @@ const Widget = ({ pools: poolsProps }: { pools: IPoolMap }) => {
           </InputsWrap>
         </Grid>
 
+        <InputsWrap>
+          <div className="flex items-center justify-between mb-1">
+            <div className="whitespace-nowrap text-sm text-left mb-1">
+              {baseNeeded_ && (
+                <CopyWrap value={baseNeededWad} label="copy wad">
+                  <span>{func ? <code>{func}</code> : ''} Input</span>
+                </CopyWrap>
+              )}
+            </div>
+            {!updatingRate && (
+              <Toggle
+                enabled={increasingRate}
+                setEnabled={() => setForm((f) => ({ ...f, increasingRate: !f.increasingRate }))}
+                label={
+                  increasingRate || (!updatingRate && +ratePreview > +pool?.interestRate!)
+                    ? 'Increase Rate'
+                    : 'Decrease Rate'
+                }
+                disabled={updatingRate}
+              />
+            )}
+          </div>
+
+          <InputWrap
+            name="baseAmount"
+            value={baseNeeded_}
+            balance={baseBalance?.formatted!}
+            item={pool?.base}
+            handleChange={handleBaseChange}
+            unFocused={updatingRate && !!pool}
+            useMax={handleMaxBase}
+            pool={pool}
+          />
+        </InputsWrap>
         <Button
           action={handleSubmit}
           disabled={!account || !pool || !desiredRate || isTransacting || !!errorMsg}
