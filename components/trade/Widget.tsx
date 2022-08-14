@@ -20,6 +20,7 @@ import Modal from '../common/Modal';
 import CloseButton from '../common/CloseButton';
 import useInputValidation from '../../hooks/useInputValidation';
 import RateConfirmation from './RateConfirmation';
+import { cleanValue } from '../../utils/appUtils';
 
 const Inner = tw.div`m-4 text-center`;
 const Grid = tw.div`grid my-5 auto-rows-auto gap-2`;
@@ -116,7 +117,7 @@ const Widget = ({ pools: poolsProps }: { pools: IPoolMap }) => {
             <div className="whitespace-nowrap text-sm text-left mb-1">Series Interest Rate</div>
             <InterestRateInput
               label={'Current'}
-              rate={pool?.interestRate! || ''}
+              rate={cleanValue(pool?.interestRate!, 2) || ''}
               disabled={true}
               unfocused={true}
               setRate={() => null}
