@@ -12,7 +12,6 @@ import Modal from '../common/Modal';
 import AddConfirmation from './AddConfirmation';
 import CloseButton from '../common/CloseButton';
 import useInputValidation from '../../hooks/useInputValidation';
-import useAddLiqPreview from '../../hooks/protocol/useAddLiqPreview';
 import { useAccount, useNetwork } from 'wagmi';
 import { useAddLiquidity } from '../../hooks/actions/useAddLiquidity';
 import { AMOActions } from '../../lib/tx/operations';
@@ -25,14 +24,12 @@ const ClearButton = tw.button`text-sm justify-self-end`;
 
 export interface IAddLiquidityForm {
   pool: IPool | undefined;
-  baseAmount: string;
-  fyTokenAmount: string;
+  input: string;
 }
 
 const INITIAL_FORM_STATE: IAddLiquidityForm = {
   pool: undefined,
-  baseAmount: '',
-  fyTokenAmount: '',
+  input: '',
 };
 
 const AddLiquidity = () => {
@@ -43,52 +40,19 @@ const AddLiquidity = () => {
   const { data: pools } = usePools();
 
   const [form, setForm] = useState<IAddLiquidityForm>(INITIAL_FORM_STATE);
-  const { pool, baseAmount, fyTokenAmount } = form;
+  const { pool, input } = form;
   const [confirmModalOpen, setConfirmModalOpen] = useState<boolean>(false);
-  const [useFyTokenToggle, setUseFyTokenToggle] = useState<boolean>(false);
-  const [updatingBaseAmount, setUpdatingBaseAmount] = useState<boolean>(true);
-  const [updatingFyTokenAmount, setUpdatingFyTokenAmount] = useState<boolean>(false);
 
-  const { fyTokenNeeded_, baseNeeded_ } = useAddLiqPreview(pool!, baseAmount);
-  const { errorMsg } = useInputValidation(baseAmount, pool, [], AMOActions.Fn.ADD_LIQUIDITY);
+  const { errorMsg } = useInputValidation(input, pool, [], AMOActions.Fn.ADD_LIQUIDITY);
 
-  const { addLiquidity, isAddingLiquidity, addSubmitted } = useAddLiquidity(pool, baseAmount);
+  const { addLiquidity, isAddingLiquidity, addSubmitted } = useAddLiquidity(pool, input);
 
   const baseBalanceToUse = pool?.base.balance_;
 
-  const handleMaxBase = () => {
-    setUpdatingBaseAmount(true);
-    setUpdatingFyTokenAmount(false);
-    setForm((f) => ({ ...f, baseAmount: baseBalanceToUse! }));
-  };
-
-  const handleMaxFyToken = () => {
-    setUpdatingBaseAmount(false);
-    setUpdatingFyTokenAmount(true);
-    setForm((f) => ({ ...f, fyTokenAmount: pool?.fyToken.balance_! }));
-  };
-
-  const handleClearAll = () => {
-    address ? setForm((f) => ({ ...f, baseAmount: '', fyTokenAmount: '' })) : setForm(INITIAL_FORM_STATE);
-  };
-
-  const handleSubmit = () => {
-    setConfirmModalOpen(true);
-  };
-
-  const handleInputChange = (name: string, value: string) => {
-    setForm((f) => ({ ...f, [name]: value }));
-    if (name === 'baseAmount') {
-      setUpdatingBaseAmount(true);
-      setUpdatingFyTokenAmount(false);
-    } else if (name === 'fyTokenAmount') {
-      setUpdatingBaseAmount(false);
-      setUpdatingFyTokenAmount(true);
-    } else {
-      setUpdatingBaseAmount(false);
-      setUpdatingFyTokenAmount(false);
-    }
-  };
+  const handleMax = () => setForm((f) => ({ ...f, input: baseBalanceToUse! }));
+  const handleClearAll = () => (address ? setForm((f) => ({ ...f, input: '' })) : setForm(INITIAL_FORM_STATE));
+  const handleSubmit = () => setConfirmModalOpen(true);
+  const handleInputChange = (name: string, value: string) => setForm((f) => ({ ...f, [name]: value }));
 
   // reset chosen pool when chainId changes
   useEffect(() => {
@@ -104,14 +68,9 @@ const AddLiquidity = () => {
   useEffect(() => {
     if (addSubmitted) {
       setConfirmModalOpen(false);
-      setForm((f) => ({ ...f, baseAmount: '', fyTokenAmount: '' }));
+      setForm((f) => ({ ...f, input: '' }));
     }
   }, [addSubmitted]);
-
-  // update form when toggling useFyTokenToggle
-  useEffect(() => {
-    setForm((f) => ({ ...f, useFyToken: useFyTokenToggle }));
-  }, [useFyTokenToggle]);
 
   // update the form's pool whenever the pool changes (i.e. when the user interacts and balances change)
   useEffect(() => {
@@ -120,16 +79,6 @@ const AddLiquidity = () => {
       setForm((f) => ({ ...f, pool: _pool }));
     }
   }, [pools, pool]);
-
-  // update the form's base and fyToken amount based on where the user is inputting, and the corresponding alternate asset preview
-  // i.e.: if user is updating fyTokenAmount, then show baseNeeded_ in the base input component
-  useEffect(() => {
-    setForm((f) => ({
-      ...f,
-      baseAmount: updatingFyTokenAmount ? baseNeeded_ : baseAmount,
-      fyTokenAmount: updatingFyTokenAmount ? fyTokenAmount : fyTokenNeeded_,
-    }));
-  }, [baseAmount, baseNeeded_, fyTokenAmount, fyTokenNeeded_, updatingBaseAmount, updatingFyTokenAmount]);
 
   return (
     <BorderWrap>
@@ -151,19 +100,18 @@ const AddLiquidity = () => {
         <Grid>
           <HeaderSmall>Deposit Amounts</HeaderSmall>
           <InputWrap
-            name="baseAmount"
-            value={baseAmount}
+            name="input"
+            value={input}
             item={pool?.base}
             balance={baseBalanceToUse!}
             handleChange={handleInputChange}
-            useMax={handleMaxBase}
-            unFocused={updatingFyTokenAmount}
+            useMax={handleMax}
             pool={pool}
           />
         </Grid>
         <Button
           action={handleSubmit}
-          disabled={!account || !pool || !baseAmount || isAddingLiquidity || !!errorMsg}
+          disabled={!account || !pool || !input || isAddingLiquidity || !!errorMsg}
           loading={isAddingLiquidity}
         >
           {!account
@@ -188,7 +136,7 @@ const AddLiquidity = () => {
             <AddConfirmation
               form={form}
               action={addLiquidity}
-              disabled={!account || !pool || !baseAmount || isAddingLiquidity}
+              disabled={!account || !pool || !input || isAddingLiquidity}
               loading={isAddingLiquidity}
             />
           </Modal>

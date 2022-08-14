@@ -10,7 +10,7 @@ import Arrow from './Arrow';
 import { useBalance } from 'wagmi';
 import useRatePreview from '../../hooks/protocol/useRatePreview';
 import useContracts from '../../hooks/protocol/useContracts';
-import { FRAX_AMO } from '../../constants';
+import { FRAX_ADDRESS, FRAX_AMO } from '../../constants';
 import Toggle from '../common/Toggle';
 import CopyWrap from '../common/CopyWrap';
 
@@ -53,7 +53,7 @@ const Widget = ({ pools: poolsProps }: { pools: IPoolMap }) => {
     increasingRate
   );
 
-  const { data: baseBalance } = useBalance({ addressOrName: fraxAmoAddress });
+  const { data: baseBalance } = useBalance({ addressOrName: fraxAmoAddress, token: FRAX_ADDRESS });
 
   const handleMaxBase = () => {
     setForm((f) => ({

@@ -1,5 +1,7 @@
 import { BigNumber, ethers } from 'ethers';
 
+export const FRAX_ADDRESS = '0x853d955aCEf822Db058eb8505911ED77F175b99e';
+
 // contract names
 export const CAULDRON = 'Cauldron';
 export const LADLE = 'Ladle';

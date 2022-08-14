@@ -19,6 +19,7 @@ import {
   DetailWrap,
   DetailsWrap,
 } from '../styles/confirm';
+import { AMOActions } from '../../lib/tx/operations';
 
 interface IAddConfirmation {
   form: IAddLiquidityForm;
@@ -37,8 +38,8 @@ const ConfirmItem = ({ value, asset, pool }: { value: string; asset: IAsset; poo
 );
 
 const AddConfirmation = ({ form, action, disabled, loading }: IAddConfirmation) => {
-  const { pool, baseAmount, fyTokenAmount, useFyToken, method } = form;
-  const { lpTokenPreview } = useAddLiquidityPreview(pool!, baseAmount, method!);
+  const { pool, input } = form;
+  const { lpTokenPreview } = useAddLiquidityPreview(pool!, input);
   const timeTillMaturity_ = useTimeTillMaturity(pool?.maturity!);
   const maturityDescription = pool?.isMature ? `Mature` : `${timeTillMaturity_} until maturity`;
 
@@ -47,8 +48,8 @@ const AddConfirmation = ({ form, action, disabled, loading }: IAddConfirmation) 
   return (
     <Container>
       <InputsWrap>
-        <ConfirmItem value={valueAtDigits(baseAmount, pool.base.digitFormat)} asset={pool.base} pool={pool!} />
-        {useFyToken && (
+        <ConfirmItem value={valueAtDigits(input, pool.base.digitFormat)} asset={pool.base} pool={pool!} />
+        {/* {useFyToken && (
           <>
             <Arrow isPlusIcon={true} />
             <ConfirmItem
@@ -57,7 +58,7 @@ const AddConfirmation = ({ form, action, disabled, loading }: IAddConfirmation) 
               pool={pool}
             />
           </>
-        )}
+        )} */}
       </InputsWrap>
       <InputStyleContainer>
         <DetailsWrap>
