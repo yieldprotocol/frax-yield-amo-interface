@@ -5,7 +5,7 @@ import Button from '../common/Button';
 import useTimeTillMaturity from '../../hooks/useTimeTillMaturity';
 import InfoIcon from '../common/InfoIcon';
 import { IWidgetForm } from './Widget';
-import { cleanValue, valueAtDigits } from '../../utils/appUtils';
+import { cleanValue } from '../../utils/appUtils';
 import {
   Container,
   InputsWrap,
@@ -21,7 +21,9 @@ import {
   DisclaimerTextWrap,
   AssetSelectWrap,
   Right,
+  Bold,
 } from '../styles/confirm';
+import { ArrowRightIcon, LightningBoltIcon } from '@heroicons/react/solid';
 
 interface IRateConfirmation {
   form: IWidgetForm;
@@ -30,7 +32,7 @@ interface IRateConfirmation {
   loading?: boolean;
 }
 
-const ConfirmItem = ({ value, asset, pool }: { value: string; asset: IAsset; pool: IPool }) => (
+const ConfirmItem = ({ value, asset, pool, label }: { value: string; asset: IAsset; pool: IPool; label?: string }) => (
   <InputStyleContainer>
     <InputStyle>{value}</InputStyle>
     <AssetSelectWrap>
@@ -52,6 +54,9 @@ const RateConfirmation = ({ form, action, disabled, loading }: IRateConfirmation
 
   return (
     <Container>
+      <div className="italic text-gray-50 mt-4 whitespace-nowrap text-sm">
+        Deposit FRAX ==> Mint FYFRAX ==> Swap FYFRAX to FRAX
+      </div>
       <InputsWrap>
         <ConfirmItem value={baseAmount_} asset={pool.base} pool={pool} />
         <Arrow isBolt={true} />
