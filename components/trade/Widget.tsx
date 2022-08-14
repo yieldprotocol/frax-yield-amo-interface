@@ -91,6 +91,11 @@ const Widget = ({ pools: poolsProps }: { pools: IPoolMap }) => {
   const handleClearAll = () => setForm(INITIAL_FORM_STATE);
   const handleSubmit = () => setConfirmModalOpen(true);
 
+  // update baseAmount in form when baseNeeded change from useRatePreview
+  useEffect(() => {
+    setForm((f) => ({ ...f, baseAmount: baseNeeded_ }));
+  }, [baseNeeded_]);
+
   // reset form when chainId changes
   useEffect(() => {
     setForm(INITIAL_FORM_STATE);

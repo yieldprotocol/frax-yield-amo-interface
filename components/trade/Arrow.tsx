@@ -1,5 +1,6 @@
 import tw from 'tailwind-styled-components';
-import { PlusIcon, ArrowDownIcon } from '@heroicons/react/solid';
+import { PlusIcon, ArrowDownIcon, LightningBoltIcon } from '@heroicons/react/solid';
+import { ReactNode } from 'react';
 
 type ArrowProps = {
   $hasToggle: boolean;
@@ -16,15 +17,18 @@ const IconInner = tw.div<ArrowProps>`${(p) =>
 interface IArrow {
   toggleDirection?: () => void;
   isPlusIcon?: boolean;
+  isBolt?: boolean;
 }
 
-const Arrow = ({ toggleDirection, isPlusIcon }: IArrow) => (
+const Arrow = ({ toggleDirection, isPlusIcon, isBolt }: IArrow) => (
   <Container>
     <Outer>
       <IconWrap>
         <IconInner onClick={toggleDirection} $hasToggle={!!toggleDirection && !isPlusIcon}>
           {isPlusIcon ? (
             <PlusIcon className="justify-self-center text-primary-500" height={18} width={18} />
+          ) : isBolt ? (
+            <LightningBoltIcon className="justify-self-center text-primary-500" height={18} width={18} />
           ) : (
             <ArrowDownIcon className="justify-self-center text-primary-500" height={18} width={18} />
           )}

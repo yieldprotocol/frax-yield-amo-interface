@@ -5,7 +5,7 @@ import Button from '../common/Button';
 import useTimeTillMaturity from '../../hooks/useTimeTillMaturity';
 import InfoIcon from '../common/InfoIcon';
 import { IWidgetForm } from './Widget';
-import { valueAtDigits } from '../../utils/appUtils';
+import { cleanValue, valueAtDigits } from '../../utils/appUtils';
 import {
   Container,
   InputsWrap,
@@ -42,11 +42,11 @@ const ConfirmItem = ({ value, asset, pool }: { value: string; asset: IAsset; poo
 const RateConfirmation = ({ form, action, disabled, loading }: IRateConfirmation) => {
   const { pool, increasingRate, baseAmount, desiredRate } = form;
   const timeTillMaturity_ = useTimeTillMaturity(pool?.maturity!);
-  const baseAmount_ = valueAtDigits(baseAmount, pool?.base.digitFormat!);
+  const baseAmount_ = cleanValue(baseAmount, pool?.base.digitFormat!);
 
   const verb = increasingRate ? 'Increase' : 'Decrease';
   const maturityDescription = pool?.isMature ? `Mature` : `${timeTillMaturity_} until maturity`;
-  const minFyFrax = '0';
+  const minFyFrax = baseAmount_;
 
   if (!pool) return null;
 
@@ -54,8 +54,10 @@ const RateConfirmation = ({ form, action, disabled, loading }: IRateConfirmation
     <Container>
       <InputsWrap>
         <ConfirmItem value={baseAmount_} asset={pool.base} pool={pool} />
+        <Arrow isBolt={true} />
+        <ConfirmItem value={baseAmount_} asset={pool.fyToken} pool={pool} />
         <Arrow />
-        <ConfirmItem value={'0'} asset={pool.fyToken} pool={pool} />
+        <ConfirmItem value={baseAmount_} asset={pool.base} pool={pool} />
       </InputsWrap>
       <InputStyleContainer>
         <DetailsWrap>
@@ -71,7 +73,7 @@ const RateConfirmation = ({ form, action, disabled, loading }: IRateConfirmation
           <DetailWrap>
             <Detail>Expected output</Detail>
             <Detail>
-              {'some'} {pool.fyToken.symbol}
+              {baseAmount_} {pool.base.symbol}
             </Detail>
           </DetailWrap>
           <LineBreak />
