@@ -11,7 +11,7 @@ const useRemoveLiqPreview = (pool: IPool | undefined, lpTokens: string) => {
     const getPreviewData = async () => {
       if (!pool) return;
 
-      const { totalSupply, decimals, contract, baseReserves, fyTokenReserves } = pool;
+      const { totalSupply, decimals, baseReserves, fyTokenReserves } = pool;
       const _lpTokens = ethers.utils.parseUnits(lpTokens || '0', decimals);
       const realReserves = fyTokenReserves.sub(totalSupply);
 

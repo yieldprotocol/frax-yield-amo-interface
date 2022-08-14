@@ -34,8 +34,8 @@ const ConfirmItem = ({ value, pool }: { value: string; pool: IPool }) => (
 );
 
 const RemoveConfirmation = ({ form, action, disabled, loading }: IRemoveConfirmation) => {
-  const { pool, lpTokens, method } = form;
-  const { baseReceived, fyTokenReceived } = useRemoveLiqPreview(pool!, lpTokens, method!);
+  const { pool, lpTokens } = form;
+  const { baseReceived, fyTokenReceived } = useRemoveLiqPreview(pool!, lpTokens);
 
   if (!pool) return null;
 
@@ -52,7 +52,7 @@ const RemoveConfirmation = ({ form, action, disabled, loading }: IRemoveConfirma
           </DetailWrap>
           {fyTokenReceived && (
             <DetailWrap>
-              <Detail>Estimated {pool.fyToken.symbol} Received</Detail>
+              <Detail>Estimated {pool.fyToken.symbol} Received and Burned</Detail>
               <Detail>{cleanValue(fyTokenReceived, pool.fyToken.digitFormat)}</Detail>
             </DetailWrap>
           )}

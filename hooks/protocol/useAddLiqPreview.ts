@@ -1,7 +1,7 @@
 import { BigNumber, ethers } from 'ethers';
 import { formatUnits } from 'ethers/lib/utils';
 import { useEffect, useState } from 'react';
-import { DEFAULT_SLIPPAGE, MAX_256, SLIPPAGE_KEY } from '../../constants';
+import { DEFAULT_SLIPPAGE, SLIPPAGE_KEY } from '../../constants';
 import { IPool } from '../../lib/protocol/types';
 import { calcPoolRatios, calculateSlippage, mint, splitLiquidity } from '../../utils/yieldMath';
 import { useLocalStorage } from '../useLocalStorage';
