@@ -7,7 +7,7 @@ const useAMO = () => {
   const contracts = useContracts();
   const { chain } = useNetwork();
   const amoContract = contracts![FRAX_AMO] ?? undefined;
-  const amoAddress = yieldEnv.addresses[chain?.id!];
+  const amoAddress = yieldEnv.addresses[chain?.id!].FraxAMO as string;
 
   return {
     amoContract,

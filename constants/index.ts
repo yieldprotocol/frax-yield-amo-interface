@@ -1,6 +1,6 @@
 import { BigNumber, ethers } from 'ethers';
 
-export const FRAX_ADDRESS = '0x853d955aCEf822Db058eb8505911ED77F175b99e';
+export const FRAX_ADDRESS = '0x853d955acef822db058eb8505911ed77f175b99e';
 
 // contract names
 export const CAULDRON = 'Cauldron';
