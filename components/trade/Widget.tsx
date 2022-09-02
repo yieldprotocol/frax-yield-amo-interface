@@ -46,9 +46,14 @@ const INITIAL_FORM_STATE: IWidgetForm = {
 const Widget = ({ pools: poolsProps }: { pools: IPoolMap }) => {
   const { address: account } = useAccount();
   const { amoAddress } = useAMO();
-  const { data: baseBalance } = useBalance({ addressOrName: amoAddress, token: FRAX_ADDRESS });
   const { chain } = useNetwork();
   const chainId = chain?.id || 1;
+  const { data: baseBalance } = useBalance({
+    addressOrName: amoAddress,
+    token: FRAX_ADDRESS,
+    chainId,
+    enabled: !!amoAddress,
+  });
   const { data: pools } = usePools();
 
   const [form, setForm] = useState<IWidgetForm>(INITIAL_FORM_STATE);

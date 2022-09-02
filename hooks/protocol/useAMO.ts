@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
+import useSWR from 'swr';
 import { useNetwork } from 'wagmi';
 import yieldEnv from '../../config/yieldEnv';
 import { FRAX_AMO } from '../../constants';
 import { AMO } from '../../contracts/types';
+import { showAllocations } from '../../lib/protocol';
 import useContracts from './useContracts';
 
 const useAMO = () => {

@@ -1,8 +1,8 @@
 import { format } from 'date-fns';
 import { BigNumber, ethers } from 'ethers';
-import { CAULDRON, LADLE } from '../../constants';
+import { CAULDRON, FRAX_AMO, LADLE } from '../../constants';
 import { Pool__factory } from '../../contracts/types';
-import { IAsset, IContractMap, IPoolMap, IPoolRoot, Provider } from './types';
+import { IAMOAllocations, IAsset, IContractMap, IPoolMap, IPoolRoot, Provider } from './types';
 import { hexToRgb, cleanValue, formatFyTokenSymbol, getSeason, SeasonType } from '../../utils/appUtils';
 import yieldEnv from '../../config/yieldEnv';
 import { CONTRACTS_TO_FETCH } from '../../hooks/protocol/useContracts';
@@ -12,6 +12,8 @@ import { FYToken__factory } from '../../contracts/types/factories/FYToken__facto
 import { PoolAddedEvent } from '../../contracts/types/Ladle';
 import { SeriesAddedEvent } from '../../contracts/types/Cauldron';
 import { calculateRate, getTimeStretchYears } from '../../utils/yieldMath';
+import { formatUnits } from 'ethers/lib/utils';
+import { bytesToBytes32 } from '@yield-protocol/ui-math';
 
 const { seasonColors } = yieldEnv;
 
@@ -86,6 +88,7 @@ export const getPools = async (
       const getTimeTillMaturity = () => maturity - Math.round(new Date().getTime() / 1000);
       const seriesId = fyTokenToSeries.get(fyToken.address);
       const timeStretchYears = getTimeStretchYears(ts);
+      const amoAddress = yieldEnv.addresses[chainId][FRAX_AMO];
 
       const newPool = {
         address,
@@ -112,15 +115,13 @@ export const getPools = async (
         fyToken,
         interestRate: calculateRate(fyTokenReserves, baseReserves, timeStretchYears).toString(),
         timeStretchYears_: timeStretchYears.toString(),
-        // ...showAllocations(),
+        amoAllocations: await showAllocations(provider, amoAddress, seriesId, decimals),
       } as IPoolRoot;
 
       // only frax
-      if (base.symbol.toLowerCase() === 'frax') {
-        return { ...(await pools), [address]: _chargePool(newPool, chainId) };
-      } else {
-        return { ...(await pools) };
-      }
+      return base.symbol.toLowerCase() === 'frax'
+        ? { ...(await pools), [address]: _chargePool(newPool, chainId) }
+        : { ...(await pools) };
     }, {});
   } catch (e) {
     console.log('error fetching pools', e);
@@ -244,8 +245,11 @@ export const getBalance = (
 
 /**
  * returns the output of showAllocations from the amo
+ * @param provider
+ * @param amoAddress
  * @param seriesId
- * @returns {[ BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber ]}
+ * @param decimals
+ * @returns { BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber }
  *  fraxInContract, // [0] Unallocated Frax
     fraxAsCollateral, // [1] Frax being used as collateral to borrow fyFrax
     fraxInLP, // [2] The Frax our LP tokens can lay claim to
@@ -253,7 +257,40 @@ export const getBalance = (
     fyFraxInLP, // [4] fyFrax our LP can claim
     LPOwned // [5] number of LP tokens
  */
-export const showAllocations = (seriesId: string) => {
-  // const contract = FraxAmo__factory.connect(FRAX_AMO, provider)
-  // return contract.showAllocations()
+export const showAllocations = async (
+  provider: Provider,
+  amoAddress: string,
+  seriesId: string | undefined,
+  decimals: number
+): Promise<IAMOAllocations | undefined> => {
+  if (!seriesId) return undefined;
+
+  const contract = contractTypes.AMO__factory.connect(amoAddress, provider);
+  const seriesIdBytes6 = bytesToBytes32(seriesId, 6);
+
+  let isValidSeries = false;
+  try {
+    isValidSeries = !!(await contract.series(seriesIdBytes6));
+  } catch (e) {
+    console.log('series id not added to amo');
+    return undefined;
+  }
+
+  const [fraxInContract, fraxAsCollateral, fraxInLP, fyFraxInContract, fyFraxInLP, LPOwned] =
+    await contract.showAllocations(seriesId);
+
+  return {
+    fraxInContract,
+    fraxAsCollateral,
+    fraxInLP,
+    fyFraxInContract,
+    fyFraxInLP,
+    LPOwned,
+    fraxInContract_: formatUnits(fyFraxInContract, decimals),
+    fraxAsCollateral_: formatUnits(fraxAsCollateral, decimals),
+    fraxInLP_: formatUnits(fraxInLP, decimals),
+    fyFraxInContract_: formatUnits(fyFraxInContract, decimals),
+    fyFraxInLP_: formatUnits(fyFraxInLP, decimals),
+    LPOwned_: formatUnits(LPOwned, decimals),
+  };
 };
