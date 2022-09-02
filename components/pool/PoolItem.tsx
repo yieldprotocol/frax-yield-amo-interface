@@ -57,6 +57,8 @@ const PoolItem = () => {
 
   if (!pool) return null;
 
+  const { amoAllocations, base } = pool;
+
   return (
     <BorderWrap>
       <Inner>
@@ -68,34 +70,34 @@ const PoolItem = () => {
             }}
           ></Top>
           <Middle>
-            <Logo symbol={pool.base.symbol} />
+            <Logo symbol={base.symbol} />
             <div className="mt-10">
               <CopyWrap value={pool.seriesId} label="copy series id">
                 <Header>{pool.displayName}</Header>
               </CopyWrap>
               <PoolDataWrap>
                 <PoolDataLabel>Frax in contract</PoolDataLabel>
-                <PoolData>{cleanValue(pool.fraxInContract_, 2)}</PoolData>
+                <PoolData>{cleanValue(amoAllocations?.fraxInContract_, 2)}</PoolData>
               </PoolDataWrap>
               <PoolDataWrap>
                 <PoolDataLabel>Frax as collateral</PoolDataLabel>
-                <PoolData>{cleanValue(pool.fraxAsCollateral_, 2)}</PoolData>
+                <PoolData>{cleanValue(amoAllocations?.fraxAsCollateral_, 2)}</PoolData>
               </PoolDataWrap>
               <PoolDataWrap>
                 <PoolDataLabel>Frax in LP</PoolDataLabel>
-                <PoolData>{cleanValue(pool.fraxInLP_, 2)}</PoolData>
+                <PoolData>{cleanValue(amoAllocations?.fraxInLP_, 2)}</PoolData>
               </PoolDataWrap>
               <PoolDataWrap>
                 <PoolDataLabel>fyFrax in contract</PoolDataLabel>
-                <PoolData>{cleanValue(pool.fyFraxInContract_, 2)}</PoolData>
+                <PoolData>{cleanValue(amoAllocations?.fyFraxInContract_, 2)}</PoolData>
               </PoolDataWrap>
               <PoolDataWrap>
                 <PoolDataLabel>fyFrax in LP</PoolDataLabel>
-                <PoolData>{cleanValue(pool.fyFraxInLP_, 2)}</PoolData>
+                <PoolData>{cleanValue(amoAllocations?.fyFraxInLP_, 2)}</PoolData>
               </PoolDataWrap>
               <PoolDataWrap>
                 <PoolDataLabel>LP owned</PoolDataLabel>
-                <PoolData>{cleanValue(pool.LPOwned_, 2)}</PoolData>
+                <PoolData>{cleanValue(amoAllocations?.LPOwned_, 2)}</PoolData>
               </PoolDataWrap>
             </div>
           </Middle>

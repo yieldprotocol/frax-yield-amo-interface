@@ -90,6 +90,11 @@ export const getPools = async (
       const timeStretchYears = getTimeStretchYears(ts);
       const amoAddress = yieldEnv.addresses[chainId][FRAX_AMO];
 
+      // only frax
+      if (base.symbol.toLowerCase() !== 'frax') {
+        return { ...(await pools) };
+      }
+
       const newPool = {
         address,
         name,
@@ -102,11 +107,11 @@ export const getPools = async (
         g2,
         isMature: maturity < (await provider.getBlock('latest')).timestamp,
         lpTokenBalance,
-        lpTokenBalance_: ethers.utils.formatUnits(lpTokenBalance, decimals),
+        lpTokenBalance_: formatUnits(lpTokenBalance, decimals),
         baseReserves,
-        baseReserves_: ethers.utils.formatUnits(baseReserves, decimals),
+        baseReserves_: formatUnits(baseReserves, decimals),
         fyTokenReserves,
-        fyTokenReserves_: ethers.utils.formatUnits(fyTokenReserves, decimals),
+        fyTokenReserves_: formatUnits(fyTokenReserves, decimals),
         getTimeTillMaturity,
         contract: poolContract,
         totalSupply,
@@ -118,10 +123,7 @@ export const getPools = async (
         amoAllocations: await showAllocations(provider, amoAddress, seriesId, decimals),
       } as IPoolRoot;
 
-      // only frax
-      return base.symbol.toLowerCase() === 'frax'
-        ? { ...(await pools), [address]: _chargePool(newPool, chainId) }
-        : { ...(await pools) };
+      return { ...(await pools), [address]: _chargePool(newPool, chainId) };
     }, {});
   } catch (e) {
     console.log('error fetching pools', e);
@@ -180,7 +182,6 @@ export const getContracts = (provider: Provider, chainId: number): IContractMap 
  * @param tokenAddress
  * @param account can be null if there is no account
  * @param isFyToken optional
- * @param isEthBased optional: for getting the eth balance
  * @returns
  */
 export const getAsset = async (
@@ -266,18 +267,20 @@ export const showAllocations = async (
   if (!seriesId) return undefined;
 
   const contract = contractTypes.AMO__factory.connect(amoAddress, provider);
-  const seriesIdBytes6 = bytesToBytes32(seriesId, 6);
 
-  let isValidSeries = false;
+  let fraxInContract: BigNumber;
+  let fraxAsCollateral: BigNumber;
+  let fraxInLP: BigNumber;
+  let fyFraxInContract: BigNumber;
+  let fyFraxInLP: BigNumber;
+  let LPOwned: BigNumber;
+
   try {
-    isValidSeries = !!(await contract.series(seriesIdBytes6));
+    [fraxInContract, fraxAsCollateral, fraxInLP, fyFraxInContract, fyFraxInLP, LPOwned] =
+      await contract.showAllocations(seriesId);
   } catch (e) {
-    console.log('series id not added to amo');
     return undefined;
   }
-
-  const [fraxInContract, fraxAsCollateral, fraxInLP, fyFraxInContract, fyFraxInLP, LPOwned] =
-    await contract.showAllocations(seriesId);
 
   return {
     fraxInContract,

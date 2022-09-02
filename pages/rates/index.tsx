@@ -14,13 +14,13 @@ const Trade = ({ pools }: InferGetStaticPropsType<typeof getStaticProps>) => (
 export default Trade;
 
 export async function getStaticProps() {
-  try {
-    const chainId = 1;
-    const provider = new JsonRpcProvider(URLS[chainId][0], chainId);
-    const contracts = getContracts(provider, chainId);
-    const pools = await getPools(provider, contracts!, chainId, yieldEnv.addresses[chainId][FRAX_AMO]);
-    return { props: { pools: JSON.stringify(pools) } };
-  } catch (error) {
-    return { notFound: true, props: { pools: undefined } };
-  }
+  // try {
+  //   const chainId = 1;
+  //   const provider = new JsonRpcProvider(URLS[chainId][0], chainId);
+  //   const contracts = getContracts(provider, chainId);
+  //   const pools = await getPools(provider, contracts!, chainId, yieldEnv.addresses[chainId][FRAX_AMO]);
+  //   return { props: { pools: JSON.stringify(pools) } };
+  // } catch (error) {
+  //   return { notFound: true, props: { pools: undefined } };
+  // }
 }
