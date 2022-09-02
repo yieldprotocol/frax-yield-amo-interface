@@ -12,7 +12,7 @@ export const useAddLiquidity = (pool: IPool | undefined, input: string) => {
   const { baseNeeded, fyTokenNeeded, minRatio, maxRatio, baseNeeded_, fyTokenNeeded_ } = useAddLiqPreview(pool!, input);
 
   const { config, error } = usePrepareContractWrite({
-    addressOrName: amoAddress,
+    addressOrName: amoAddress!,
     contractInterface: amoContract?.interface!,
     functionName: AMOActions.Fn.ADD_LIQUIDITY,
     args: [pool?.seriesId, baseNeeded, fyTokenNeeded, minRatio, maxRatio] as AMOActions.Args.ADD_LIQUIDITY,
