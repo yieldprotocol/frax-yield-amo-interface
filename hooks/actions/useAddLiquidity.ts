@@ -9,6 +9,7 @@ import useAddLiqPreview from '../protocol/useAddLiqPreview';
 export const useAddLiquidity = (pool: IPool | undefined, input: string) => {
   const { address: account } = useAccount();
   const { amoContract, amoAddress } = useAMO();
+  console.log('🦄 ~ file: useAddLiquidity.ts ~ line 12 ~ useAddLiquidity ~ amoContract', amoContract);
   const { baseNeeded, fyTokenNeeded, minRatio, maxRatio, baseNeeded_, fyTokenNeeded_ } = useAddLiqPreview(pool!, input);
 
   const { config, error } = usePrepareContractWrite({

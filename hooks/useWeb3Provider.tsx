@@ -4,15 +4,18 @@ import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
 import merge from 'lodash.merge';
 import { useColorTheme } from './useColorTheme';
 import { URLS } from '../config/chains';
+import useTenderly from './useTenderly';
 
 export default function Web3Provider({ children }) {
   const { theme: colorTheme } = useColorTheme();
+  const { usingTenderly, tenderlyRpcUrl } = useTenderly();
+
   const { chains, provider } = configureChains(
     [chain.mainnet],
     [
       jsonRpcProvider({
         rpc: (chain) => {
-          return { http: URLS[chain.id][0] };
+          return { http: usingTenderly ? tenderlyRpcUrl : URLS[chain.id][0] };
         },
       }),
     ]

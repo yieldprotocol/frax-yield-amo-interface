@@ -15,7 +15,7 @@ const Button = tw.button<ButtonProps>`${(p) =>
     : 'dark:text-gray-400 text-gray-600'} flex rounded-md items-center w-full px-2 py-2`;
 
 const SettingsDropdown = () => {
-  const { isUsing, setIsUsing } = useTenderly();
+  const { usingTenderly, setUsingTenderly } = useTenderly();
 
   return (
     <div>
@@ -40,7 +40,11 @@ const SettingsDropdown = () => {
                   <Menu.Item disabled>
                     {({ active }) => (
                       <Button onClick={null} $active={active}>
-                        <Toggle label="Tenderly Mode" enabled={isUsing} setEnabled={() => setIsUsing(true)} />
+                        <Toggle
+                          label="Tenderly Mode"
+                          enabled={usingTenderly}
+                          setEnabled={() => setUsingTenderly(true)}
+                        />
                       </Button>
                     )}
                   </Menu.Item>

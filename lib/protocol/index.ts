@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
 import { BigNumber, ethers } from 'ethers';
-import { CAULDRON, FRAX_AMO, LADLE } from '../../constants';
+import { FRAX_AMO } from '../../constants';
 import { Pool__factory } from '../../contracts/types';
 import { IAMOAllocations, IAsset, IContractMap, IPoolMap, IPoolRoot, Provider } from './types';
 import { hexToRgb, cleanValue, formatFyTokenSymbol, getSeason, SeasonType } from '../../utils/appUtils';
@@ -13,36 +13,56 @@ import { PoolAddedEvent } from '../../contracts/types/Ladle';
 import { SeriesAddedEvent } from '../../contracts/types/Cauldron';
 import { calculateRate, getTimeStretchYears } from '../../utils/yieldMath';
 import { formatUnits } from 'ethers/lib/utils';
-import { bytesToBytes32 } from '@yield-protocol/ui-math';
 
 const { seasonColors } = yieldEnv;
 
 const formatMaturity = (maturity: number) => format(new Date(maturity * 1000), 'MMMM dd, yyyy');
 
 /**
+ * Gets all relevant pool addresses from events given a provider
+ *
+ * @param ladle relevant ladle contract
+ * @param fromBlock the starting block for fetching events
+ * @returns  {string[]}
+ */
+export const getPoolAddresses = async (ladle: contractTypes.Ladle, fromBlock?: number): Promise<string[]> => {
+  const poolAddedEvents = await ladle.queryFilter('PoolAdded' as ethers.EventFilter, fromBlock);
+  return poolAddedEvents.map((e: PoolAddedEvent) => e.args.pool) as string[];
+};
+
+/**
+ * Gets all relevant seriesEntities addresses from events given a provider
+ *
+ * @param cauldron relevant cauldron contract
+ * @param fromBlock the starting block for fetching events
+ * @returns  {SeriesAddedEvent[]}
+ */
+export const getSeriesEvents = async (
+  cauldron: contractTypes.Cauldron,
+  fromBlock?: number
+): Promise<SeriesAddedEvent[]> => await cauldron.queryFilter('SeriesAdded' as ethers.EventFilter, fromBlock);
+
+/**
  * Gets all pool data
  *
  * @param provider
- * @param contractMap the contracts to use for events
  * @param chainId currently connected chain id or mainnet as default
  * @param account user's account address if there is a connected account
+ * @param poolAddresses
+ * @param seriesAddedEvents
  * @returns  {IPoolMap}
  */
 export const getPools = async (
   provider: Provider,
-  contractMap: IContractMap,
   chainId: number = 1,
-  account: string | undefined = undefined
+  account: string | undefined = undefined,
+  poolAddresses: string[] | undefined,
+  seriesAddedEvents: SeriesAddedEvent[] | undefined
 ): Promise<IPoolMap | undefined> => {
-  const Ladle = contractMap[LADLE] as contractTypes.Ladle;
-  const Cauldron = contractMap[CAULDRON] as contractTypes.Cauldron;
-  if (!Ladle || !Cauldron) return undefined;
+  if (!poolAddresses || !seriesAddedEvents) return;
 
   console.log('fetching pools');
 
-  const poolAddedEvents = await Ladle.queryFilter('PoolAdded' as ethers.EventFilter);
-  const poolAddresses: string[] = poolAddedEvents.map((e: PoolAddedEvent) => e.args.pool);
-  const seriesAddedEvents = await Cauldron.queryFilter('SeriesAdded' as ethers.EventFilter);
   const fyTokenToSeries: Map<string, string> = seriesAddedEvents.reduce(
     (acc: Map<string, string>, e: SeriesAddedEvent) =>
       acc.has(e.args.fyToken) ? acc : acc.set(e.args.fyToken, e.args.seriesId),

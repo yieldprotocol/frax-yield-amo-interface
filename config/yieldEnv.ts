@@ -3,7 +3,7 @@ const yieldEnv = {
     1: {
       Cauldron: '0xc88191f8cb8e6d4a668b047c1c8503432c3ca867',
       Ladle: '0x6cb18ff2a33e981d1e38a663ca056c0a5265066a',
-      FraxAMO: '0x8971946467a77b798762823434c0f407d20f9df9',
+      AMO: '0x8971946467a77b798762823434c0f407d20f9df9',
     },
   },
   seasonColors: {

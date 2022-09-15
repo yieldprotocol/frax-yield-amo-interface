@@ -3,7 +3,7 @@ import tw from 'tailwind-styled-components';
 import InputWrap from '../pool/InputWrap';
 import usePools from '../../hooks/protocol/usePools';
 import PoolSelect from '../pool/PoolSelect';
-import { IPool, IPoolMap } from '../../lib/protocol/types';
+import { IPool } from '../../lib/protocol/types';
 import InterestRateInput from './InterestRateInput';
 import { BorderWrap, Header, InputsWrap } from '../styles/common';
 import Arrow from './Arrow';
@@ -43,7 +43,7 @@ const INITIAL_FORM_STATE: IWidgetForm = {
   increasingRate: true,
 };
 
-const Widget = ({ pools: poolsProps }: { pools: IPoolMap }) => {
+const Widget = () => {
   const { address: account } = useAccount();
   const { amoAddress } = useAMO();
   const { chain } = useNetwork();
@@ -117,10 +117,10 @@ const Widget = ({ pools: poolsProps }: { pools: IPoolMap }) => {
 
         <Grid>
           <PoolSelect
-            pools={(pools && Object.values(pools)) || (poolsProps && Object.values(poolsProps))}
+            pools={pools && Object.values(pools)}
             pool={pool}
             setPool={(p) => setForm((f) => ({ ...f, pool: p }))}
-            poolsLoading={!pools || !poolsProps}
+            poolsLoading={!pools}
           />
           <InputsWrap>
             <div className="whitespace-nowrap text-sm text-left mb-1">Series Interest Rate</div>
