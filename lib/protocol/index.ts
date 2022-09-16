@@ -59,7 +59,7 @@ export const getPools = async (
   poolAddresses: string[] | undefined,
   seriesAddedEvents: SeriesAddedEvent[] | undefined
 ): Promise<IPoolMap | undefined> => {
-  if (!poolAddresses || !seriesAddedEvents) return;
+  if (!poolAddresses || !seriesAddedEvents) throw new Error('no pool addresses or series events detected');
 
   console.log('fetching pools');
 
@@ -176,8 +176,6 @@ const _chargePool = (_pool: IPoolRoot, _chainId: number) => {
 };
 
 export const getContracts = (provider: Provider, chainId: number): IContractMap | undefined => {
-  if (!chainId || !provider) return undefined;
-
   const { addresses } = yieldEnv;
   const chainAddrs = addresses[chainId];
 

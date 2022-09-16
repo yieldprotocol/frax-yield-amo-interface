@@ -5,11 +5,12 @@ import { useAccount, useContractWrite, usePrepareContractWrite } from 'wagmi';
 import useAMO from '../protocol/useAMO';
 import { AMOActions } from '../../lib/tx/operations';
 import useAddLiqPreview from '../protocol/useAddLiqPreview';
+import useTenderly from '../useTenderly';
 
 export const useAddLiquidity = (pool: IPool | undefined, input: string) => {
   const { address: account } = useAccount();
-  const { amoContract, amoAddress } = useAMO();
-  console.log('🦄 ~ file: useAddLiquidity.ts ~ line 12 ~ useAddLiquidity ~ amoContract', amoContract);
+  const { amoContract, amoAddress, timelockAddress } = useAMO();
+  const { usingTenderly } = useTenderly();
   const { baseNeeded, fyTokenNeeded, minRatio, maxRatio, baseNeeded_, fyTokenNeeded_ } = useAddLiqPreview(pool!, input);
 
   const { config, error } = usePrepareContractWrite({
@@ -17,8 +18,10 @@ export const useAddLiquidity = (pool: IPool | undefined, input: string) => {
     contractInterface: amoContract?.interface!,
     functionName: AMOActions.Fn.ADD_LIQUIDITY,
     args: [pool?.seriesId, baseNeeded, fyTokenNeeded, minRatio, maxRatio] as AMOActions.Args.ADD_LIQUIDITY,
-    enabled: !!amoContract?.interface,
+    enabled: !!(amoContract?.interface && amoAddress),
+    overrides: { from: usingTenderly ? timelockAddress : account, gasLimit: usingTenderly ? 20_000_000 : undefined },
   });
+  console.log('🦄 ~ file: useAddLiquidity.ts ~ line 24 ~ useAddLiquidity ~ config', config);
 
   const { write } = useContractWrite(config);
   const { handleTransact, isTransacting, txSubmitted } = useTransaction();

@@ -1,4 +1,4 @@
-import { StaticJsonRpcProvider } from '@ethersproject/providers';
+import { JsonRpcProvider } from '@ethersproject/providers';
 import { useMemo } from 'react';
 import { useNetwork } from 'wagmi';
 import { URLS } from '../config/chains';
@@ -8,8 +8,11 @@ const useDefaultProvider = () => {
   const chainId = chain?.id || 1;
 
   return useMemo(() => {
-    if (!chainId) return undefined;
-    return new StaticJsonRpcProvider(URLS[chainId][0], chainId);
+    try {
+      return new JsonRpcProvider(URLS[chainId][0], chainId);
+    } catch (e) {
+      throw new Error('no provider detected');
+    }
   }, [chainId]);
 };
 

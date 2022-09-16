@@ -54,7 +54,7 @@ const Widget = () => {
     chainId,
     enabled: !!amoAddress,
   });
-  const { data: pools } = usePools();
+  const { data: pools, error } = usePools();
 
   const [form, setForm] = useState<IWidgetForm>(INITIAL_FORM_STATE);
   const [confirmModalOpen, setConfirmModalOpen] = useState<boolean>(false);

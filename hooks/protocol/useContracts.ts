@@ -8,7 +8,8 @@ export const CONTRACTS_TO_FETCH = [CAULDRON, LADLE, FRAX_AMO];
 
 const useContracts = (provider: Provider) => {
   const { chain } = useNetwork();
-  return useMemo(() => getContracts(provider, chain?.id!), [provider, chain?.id]);
+  const chainId = chain?.id! || 1;
+  return useMemo(() => getContracts(provider, chainId), [provider, chainId]);
 };
 
 export default useContracts;

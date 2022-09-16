@@ -1,5 +1,6 @@
 import { darkTheme, getDefaultWallets, RainbowKitProvider, Theme } from '@rainbow-me/rainbowkit';
 import { chain, configureChains, createClient, WagmiConfig } from 'wagmi';
+import { MetaMaskConnector } from 'wagmi/connectors/metaMask';
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
 import merge from 'lodash.merge';
 import { useColorTheme } from './useColorTheme';
@@ -21,11 +22,7 @@ export default function Web3Provider({ children }) {
     ]
   );
 
-  const { connectors } = getDefaultWallets({
-    appName: 'Frax AMO',
-    chains,
-  });
-
+  const { connectors } = getDefaultWallets({ appName: 'Frax AMO', chains });
   const wagmiClient = createClient({
     autoConnect: true,
     connectors,

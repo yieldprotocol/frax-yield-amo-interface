@@ -9,7 +9,7 @@ type ButtonProps = {
   $active: boolean;
 };
 
-const Button = tw.button<ButtonProps>`${(p) =>
+const ItemWrap = tw.div<ButtonProps>`${(p) =>
   p.$active
     ? 'dark:text-gray-50 text-gray-800'
     : 'dark:text-gray-400 text-gray-600'} flex rounded-md items-center w-full px-2 py-2`;
@@ -39,13 +39,13 @@ const SettingsDropdown = () => {
                 <div className="px-1 py-1">
                   <Menu.Item disabled>
                     {({ active }) => (
-                      <Button onClick={null} $active={active}>
+                      <ItemWrap $active={active}>
                         <Toggle
                           label="Tenderly Mode"
                           enabled={usingTenderly}
-                          setEnabled={() => setUsingTenderly(true)}
+                          setEnabled={() => setUsingTenderly(!usingTenderly)}
                         />
-                      </Button>
+                      </ItemWrap>
                     )}
                   </Menu.Item>
                 </div>

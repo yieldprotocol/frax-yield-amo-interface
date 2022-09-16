@@ -13,65 +13,73 @@ import useContracts from './useContracts';
 
 const usePools = () => {
   const { chain } = useNetwork();
+  const chainId = chain?.id! || 1;
   const { amoAddress } = useAMO();
   const provider = useDefaultProvider();
-  const contractMap = useContracts(provider!);
+  const contractMap = useContracts(provider);
+
   const { usingTenderly, tenderlyProvider, tenderlyStartBlock } = useTenderly();
   const tenderlyContractMap = useContracts(tenderlyProvider);
 
-  const [poolAddresses, setPoolAddresses] = useState<string[]>();
-  const [seriesAddedEvents, setSeriesAddedEvents] = useState<SeriesAddedEvent[]>();
+  const _getAllPoolAddresses = async () => {
+    let addresses: Set<string>;
 
-  useEffect(() => {
-    async function getAllPoolAddresses() {
-      let addresses: Set<string>;
+    if (!contractMap) return;
 
-      // get the pool addies from fallback provider events
-      const ladle = contractMap![LADLE] as Ladle;
-      if (!ladle) return;
-      const currPoolAddresses = await getPoolAddresses(ladle);
-      addresses = new Set(currPoolAddresses);
+    // get the pool addies from fallback provider events
+    const ladle = contractMap[LADLE] as Ladle;
+    if (!ladle) return;
+    const currPoolAddresses = await getPoolAddresses(ladle);
+    addresses = new Set(currPoolAddresses);
 
-      if (usingTenderly && tenderlyContractMap && tenderlyStartBlock) {
-        const tenderlyLadle = tenderlyContractMap[LADLE] as Ladle;
-        // get the pool addies from tenderly provider events
-        const tenderlyPoolAddresses = await getPoolAddresses(tenderlyLadle, tenderlyStartBlock);
-        addresses = new Set([...currPoolAddresses, ...tenderlyPoolAddresses]);
-      }
-
-      setPoolAddresses(Array.from(addresses.values()));
+    if (usingTenderly && tenderlyContractMap && tenderlyStartBlock) {
+      const tenderlyLadle = tenderlyContractMap[LADLE] as Ladle;
+      // get the pool addies from tenderly provider events
+      const tenderlyPoolAddresses = await getPoolAddresses(tenderlyLadle, tenderlyStartBlock);
+      addresses = new Set([...currPoolAddresses, ...tenderlyPoolAddresses]);
     }
+    return Array.from(addresses.values());
+  };
 
-    async function getAllSeriesAddedEvents() {
-      let events: Set<SeriesAddedEvent>;
+  // get pool addresses
+  const { data: poolAddresses } = useSWR(`/poolAddresses/${chainId}`, _getAllPoolAddresses, {
+    revalidateOnFocus: false,
+    revalidateOnMount: false,
+  });
 
-      // get the series added events from fallback provider events
-      const cauldron = contractMap![CAULDRON] as Cauldron;
-      if (!cauldron) return;
-      const currEvents = await getSeriesEvents(cauldron);
-      events = new Set(currEvents);
+  const _getAllSeriesAddedEvents = async () => {
+    let events: Set<SeriesAddedEvent>;
 
-      if (usingTenderly && tenderlyContractMap && tenderlyStartBlock) {
-        const tenderlyCauldron = tenderlyContractMap[CAULDRON] as Cauldron;
-        // get the pool addies from tenderly provider events
-        const tenderlyEvents = await getSeriesEvents(tenderlyCauldron, tenderlyStartBlock);
-        events = new Set([...currEvents, ...tenderlyEvents]);
-      }
+    if (!contractMap) return;
 
-      setSeriesAddedEvents(Array.from(events.values()));
+    // get the series added events from fallback provider events
+    const cauldron = contractMap[CAULDRON] as Cauldron;
+    if (!cauldron) return;
+
+    const currEvents = await getSeriesEvents(cauldron);
+    events = new Set(currEvents);
+
+    if (usingTenderly && tenderlyContractMap && tenderlyStartBlock) {
+      const tenderlyCauldron = tenderlyContractMap[CAULDRON] as Cauldron;
+      // get the pool addies from tenderly provider events
+      const tenderlyEvents = await getSeriesEvents(tenderlyCauldron, tenderlyStartBlock);
+      events = new Set([...currEvents, ...tenderlyEvents]);
     }
+    return Array.from(events.values());
+  };
 
-    getAllPoolAddresses();
-    getAllSeriesAddedEvents();
-  }, [contractMap, tenderlyContractMap, tenderlyStartBlock, usingTenderly]);
+  // get series added events
+  const { data: seriesAddedEvents } = useSWR(`/seriesAddedEvents/${chainId}`, _getAllSeriesAddedEvents, {
+    revalidateOnFocus: false,
+    revalidateOnMount: false,
+  });
 
   const { data, error } = useSWR(
-    provider && chain?.id && amoAddress && poolAddresses && seriesAddedEvents
-      ? `/pools/${chain?.id}/${amoAddress}`
-      : null,
-    () => getPools(provider!, chain?.id, amoAddress, poolAddresses, seriesAddedEvents),
+    `/pools/${chainId}`,
+    () => getPools(usingTenderly ? tenderlyProvider : provider, chainId, amoAddress, poolAddresses, seriesAddedEvents),
     {
       revalidateOnFocus: false,
+      revalidateOnMount: false,
     }
   );
 

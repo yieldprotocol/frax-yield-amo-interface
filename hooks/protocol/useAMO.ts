@@ -10,27 +10,43 @@ import useContracts from './useContracts';
 const useAMO = () => {
   const { usingTenderly, tenderlyProvider } = useTenderly();
   const provider = useDefaultProvider();
-  const contracts = useContracts(provider!);
+  const contracts = useContracts(provider);
   const tenderlyContracts = useContracts(tenderlyProvider);
   const { chain } = useNetwork();
+  const chainId = chain?.id! || 1;
   const [amoContract, setAmoContract] = useState<AMO>();
   const [amoAddress, setAmoAddress] = useState<string>();
+  const [timelockAddress, setTimelockAddress] = useState<string>();
 
-  console.log('🦄 ~ file: useAMO.ts ~ line 17 ~ useAMO ~ amoContract', amoContract);
+  // set the amo contract
   useEffect(() => {
-    console.log('🦄 ~ file: useAMO.ts ~ line 15 ~ useAMO ~ tenderlyContracts', tenderlyContracts);
-    setAmoContract((usingTenderly ? tenderlyContracts : contracts)![FRAX_AMO] as AMO);
+    if (usingTenderly && tenderlyContracts) {
+      return setAmoContract(tenderlyContracts[FRAX_AMO] as AMO);
+    } else if (contracts) {
+      setAmoContract(contracts[FRAX_AMO] as AMO);
+    }
   }, [contracts, tenderlyContracts, usingTenderly]);
 
+  // set the amo address
   useEffect(() => {
-    if (!chain?.id) return;
-    const amoAddress = yieldEnv.addresses[chain.id][FRAX_AMO] as string;
+    if (!chainId) return;
+    const amoAddress = yieldEnv.addresses[chainId][FRAX_AMO] as string;
     if (amoAddress) setAmoAddress(amoAddress);
-  }, [chain?.id]);
+  }, [chainId]);
+
+  // set the amo's timelock address
+  useEffect(() => {
+    (async () => {
+      if (amoContract) {
+        setTimelockAddress(await amoContract.timelockAddress());
+      }
+    })();
+  }, [amoContract]);
 
   return {
     amoContract,
     amoAddress,
+    timelockAddress,
   };
 };
 
