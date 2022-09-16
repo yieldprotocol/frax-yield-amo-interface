@@ -3,7 +3,7 @@ import { BigNumberish, BytesLike } from 'ethers';
 export namespace AMOActions {
   export enum Fn {
     ADD_LIQUIDITY = 'addLiquidityToAMM',
-    REMOVE_LIQUIDITY = 'removeLiquidity',
+    REMOVE_LIQUIDITY = 'removeLiquidityFromAMM',
     INCREASE_RATES = 'increaseRates',
     DECREASE_RATES = 'decreaseRates',
   }

@@ -6,6 +6,7 @@ import useAMO from '../protocol/useAMO';
 import { AMOActions } from '../../lib/tx/operations';
 import useRatePreview from '../protocol/useRatePreview';
 import { ethers } from 'ethers';
+import useTenderly from '../useTenderly';
 /**
  * Increase or decrease rates based on the desired rate (input) using an estimated amount of frax
  * Increasing rates entails minting fyFrax from frax and selling into the pool
@@ -20,8 +21,10 @@ export const useChangeRate = (
   method: AMOActions.Fn.INCREASE_RATES | AMOActions.Fn.DECREASE_RATES
 ) => {
   const { address: account } = useAccount();
-  const { amoContract, amoAddress } = useAMO();
+  const { amoContract, amoAddress, timelockAddress } = useAMO();
+  const { usingTenderly } = useTenderly();
   const { baseNeeded, baseNeeded_ } = useRatePreview(pool!, input);
+
   const increaseRates = method === AMOActions.Fn.INCREASE_RATES;
   // incRates === minFraxReceived, decRates === minFyFraxReceived
   // minFraxReceived from sellFYToken
@@ -31,11 +34,12 @@ export const useChangeRate = (
   const minReceived = increaseRates ? minFraxReceived : minFyFraxReceived;
 
   const { config, error } = usePrepareContractWrite({
-    addressOrName: amoAddress,
+    addressOrName: amoAddress!,
     contractInterface: amoContract?.interface!,
     functionName: method,
     args: [pool?.seriesId, baseNeeded, minReceived] as AMOActions.Args.INCREASE_RATES | AMOActions.Args.DECREASE_RATES,
-    enabled: !!amoContract?.interface,
+    enabled: !!(amoContract?.interface && amoAddress),
+    overrides: { gasLimit: usingTenderly ? 20_000_000 : undefined },
   });
 
   const { write } = useContractWrite(config);
@@ -47,9 +51,11 @@ export const useChangeRate = (
   } using ${valueAtDigits(baseNeeded_, 4)} ${pool?.base.symbol}`;
 
   const changeRate = async () => {
-    if (!pool) throw new Error('no pool');
     if (!account) throw new Error('no connected account');
-    if (error) throw new Error('something went wrong');
+    if (!pool) throw new Error('no pool');
+    if (error) {
+      console.log('🦄 ~ file: useChangeRate.ts ~ line 56 ~ changeRate ~ error', error);
+    }
 
     handleTransact(() => write?.()!, description);
   };

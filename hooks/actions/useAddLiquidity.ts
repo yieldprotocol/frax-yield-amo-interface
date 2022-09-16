@@ -19,20 +19,22 @@ export const useAddLiquidity = (pool: IPool | undefined, input: string) => {
     functionName: AMOActions.Fn.ADD_LIQUIDITY,
     args: [pool?.seriesId, baseNeeded, fyTokenNeeded, minRatio, maxRatio] as AMOActions.Args.ADD_LIQUIDITY,
     enabled: !!(amoContract?.interface && amoAddress),
-    overrides: { from: timelockAddress, gasLimit: usingTenderly ? 20_000_000 : undefined },
+    overrides: { gasLimit: usingTenderly ? 20_000_000 : undefined },
   });
 
   const { write } = useContractWrite(config);
   const { handleTransact, isTransacting, txSubmitted } = useTransaction();
 
-  // description to use in toast
-  const description = `Add ${valueAtDigits(baseNeeded_, 4)} ${pool?.base.symbol}
-     and ${valueAtDigits(fyTokenNeeded_, 4)} ${pool?.fyToken.symbol} as liquidity`;
-
   const addLiquidity = async () => {
-    if (!pool) throw new Error('no pool');
     if (!account) throw new Error('no connected account');
-    if (error) throw new Error(error.message);
+    if (!pool) throw new Error('no pool');
+    if (error) {
+      console.log('🦄 ~ file: useAddLiquidity.ts ~ line 36 ~ addLiquidity ~ error', error);
+    }
+
+    // description to use in toast
+    const description = `Add ${valueAtDigits(baseNeeded_, 4)} ${pool.base.symbol}
+     and ${valueAtDigits(fyTokenNeeded_, 4)} ${pool.fyToken.symbol} as liquidity`;
 
     handleTransact(() => write?.()!, description);
   };

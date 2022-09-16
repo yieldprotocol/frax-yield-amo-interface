@@ -1,11 +1,17 @@
-import { ethers } from 'ethers';
+import { calcPoolRatios } from '@yield-protocol/ui-math';
+import { BigNumber, ethers } from 'ethers';
 import { useEffect, useState } from 'react';
+import { DEFAULT_SLIPPAGE, SLIPPAGE_KEY } from '../../constants';
 import { IPool } from '../../lib/protocol/types';
 import { burn, newPoolState } from '../../utils/yieldMath';
+import { useLocalStorage } from '../useLocalStorage';
 
 const useRemoveLiqPreview = (pool: IPool | undefined, lpTokens: string) => {
+  const [slippageTolerance] = useLocalStorage(SLIPPAGE_KEY, DEFAULT_SLIPPAGE);
   const [baseReceived, setBaseReceived] = useState<string>();
   const [fyTokenReceived, setFyTokenReceived] = useState<string>();
+  const [minRatio, setMinRatio] = useState<BigNumber>();
+  const [maxRatio, setMaxRatio] = useState<BigNumber>();
 
   useEffect(() => {
     const getPreviewData = async () => {
@@ -19,12 +25,17 @@ const useRemoveLiqPreview = (pool: IPool | undefined, lpTokens: string) => {
 
       setBaseReceived(ethers.utils.formatUnits(baseReceived, decimals));
       setFyTokenReceived(ethers.utils.formatUnits(fyTokenReceived, decimals));
+
+      // calculate min and max ratios
+      const [minRatio, maxRatio] = calcPoolRatios(baseReserves, fyTokenReserves, +slippageTolerance);
+      setMinRatio(minRatio);
+      setMaxRatio(maxRatio);
     };
 
     getPreviewData();
-  }, [lpTokens, pool]);
+  }, [lpTokens, pool, slippageTolerance]);
 
-  return { baseReceived, fyTokenReceived };
+  return { baseReceived, fyTokenReceived, minRatio, maxRatio };
 };
 
 export default useRemoveLiqPreview;

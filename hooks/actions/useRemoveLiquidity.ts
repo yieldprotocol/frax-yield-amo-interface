@@ -1,48 +1,43 @@
 import { ethers } from 'ethers';
-import { RemoveLiquidityActions } from '../../lib/protocol/liquidity/types';
 import { IPool } from '../../lib/protocol/types';
 import { cleanValue, valueAtDigits } from '../../utils/appUtils';
 import { calcPoolRatios } from '../../utils/yieldMath';
-import useSignature from '../useSignature';
 import useTransaction from '../useTransaction';
-import { useAccount, usePrepareContractWrite } from 'wagmi';
+import { useAccount, useContractWrite, usePrepareContractWrite } from 'wagmi';
 import useAMO from '../protocol/useAMO';
 import useRemoveLiqPreview from '../protocol/useRemoveLiqPreview';
+import { AMOActions } from '../../lib/tx/operations';
+import useTenderly from '../useTenderly';
 
-export const useRemoveLiquidity = (pool: IPool | undefined, input: string) => {
+export const useRemoveLiquidity = (pool: IPool, input: string) => {
   const { address: account } = useAccount();
-  const { amoContract, amoAddress } = useAMO();
-  const {} = useRemoveLiqPreview(pool!, input);
+  const { amoContract, amoAddress, timelockAddress } = useAMO();
+  const { usingTenderly } = useTenderly();
+  const { minRatio, maxRatio } = useRemoveLiqPreview(pool!, input);
   const { handleTransact, isTransacting, txSubmitted } = useTransaction();
+  const { base, address: poolAddress, contract: poolContract, isMature, seriesId, fyToken } = pool;
+
+  const cleanInput = cleanValue(input, base.decimals);
+  const _input = ethers.utils.parseUnits(cleanInput, base.decimals);
+
+  const { config, error } = usePrepareContractWrite({
+    addressOrName: amoAddress!,
+    contractInterface: amoContract?.interface!,
+    functionName: AMOActions.Fn.REMOVE_LIQUIDITY,
+    args: [pool?.seriesId, _input, minRatio, maxRatio] as AMOActions.Args.REMOVE_LIQUIDITY,
+    enabled: !!(amoContract?.interface && amoAddress),
+    overrides: { gasLimit: usingTenderly ? 20_000_000 : undefined },
+  });
+
+  const { write } = useContractWrite(config);
+
+  const description = `Remove ${valueAtDigits(input, 4)} LP tokens`;
 
   const removeLiquidity = async () => {
-    if (!pool) throw new Error('no pool'); // prohibit trade if there is no pool
-
-    const { base, address: poolAddress, contract: poolContract, isMature, seriesId, fyToken } = pool;
-    const cleanInput = cleanValue(input, base.decimals);
-    const _input = ethers.utils.parseUnits(cleanInput, base.decimals);
-
-    const { config, error } = usePrepareContractWrite({
-      addressOrName: amoAddress,
-      contractInterface: amoContract?.interface!,
-      functionName: AMOActions.Fn.ADD_LIQUIDITY,
-      args: [pool?.seriesId, baseNeeded, fyTokenNeeded, minRatio, maxRatio] as AMOActions.Args.ADD_LIQUIDITY,
-      enabled: !!amoContract?.interface,
-    });
-
-    const { write } = useContractWrite(config);
-
-    const [cachedBaseReserves, cachedFyTokenReserves] = await pool.contract.getCache();
-    const cachedRealReserves = cachedFyTokenReserves.sub(pool.totalSupply);
-
-    const [minRatio, maxRatio] = calcPoolRatios(cachedBaseReserves, cachedRealReserves);
-
-    const description = `Remove ${valueAtDigits(input, 4)} LP tokens`;
-    const overrides = {
-      gasLimit: 300000,
-    };
-
-    handleTransact(_remove, description);
+    if (error) {
+      console.log('🦄 ~ file: useRemoveLiquidity.ts ~ line 36 ~ removeLiquidity ~ error', error);
+    }
+    handleTransact(() => write?.()!, description);
   };
 
   return { removeLiquidity, isRemovingLiq: isTransacting, removeSubmitted: txSubmitted };
