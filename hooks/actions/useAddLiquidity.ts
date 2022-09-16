@@ -19,9 +19,8 @@ export const useAddLiquidity = (pool: IPool | undefined, input: string) => {
     functionName: AMOActions.Fn.ADD_LIQUIDITY,
     args: [pool?.seriesId, baseNeeded, fyTokenNeeded, minRatio, maxRatio] as AMOActions.Args.ADD_LIQUIDITY,
     enabled: !!(amoContract?.interface && amoAddress),
-    overrides: { from: usingTenderly ? timelockAddress : account, gasLimit: usingTenderly ? 20_000_000 : undefined },
+    overrides: { from: timelockAddress, gasLimit: usingTenderly ? 20_000_000 : undefined },
   });
-  console.log('🦄 ~ file: useAddLiquidity.ts ~ line 24 ~ useAddLiquidity ~ config', config);
 
   const { write } = useContractWrite(config);
   const { handleTransact, isTransacting, txSubmitted } = useTransaction();
@@ -33,7 +32,7 @@ export const useAddLiquidity = (pool: IPool | undefined, input: string) => {
   const addLiquidity = async () => {
     if (!pool) throw new Error('no pool');
     if (!account) throw new Error('no connected account');
-    if (error) throw new Error('something went wrong');
+    if (error) throw new Error(error.message);
 
     handleTransact(() => write?.()!, description);
   };

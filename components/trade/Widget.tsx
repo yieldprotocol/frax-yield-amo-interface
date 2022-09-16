@@ -45,6 +45,7 @@ const INITIAL_FORM_STATE: IWidgetForm = {
 
 const Widget = () => {
   const { address: account } = useAccount();
+
   const { amoAddress } = useAMO();
   const { chain } = useNetwork();
   const chainId = chain?.id || 1;
@@ -54,7 +55,7 @@ const Widget = () => {
     chainId,
     enabled: !!amoAddress,
   });
-  const { data: pools, error } = usePools();
+  const { data: pools } = usePools();
 
   const [form, setForm] = useState<IWidgetForm>(INITIAL_FORM_STATE);
   const [confirmModalOpen, setConfirmModalOpen] = useState<boolean>(false);

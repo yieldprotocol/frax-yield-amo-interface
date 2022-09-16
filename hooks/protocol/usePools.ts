@@ -42,10 +42,14 @@ const usePools = () => {
   };
 
   // get pool addresses
-  const { data: poolAddresses } = useSWR(`/poolAddresses/${chainId}`, _getAllPoolAddresses, {
-    revalidateOnFocus: false,
-    revalidateOnMount: false,
-  });
+  const { data: poolAddresses, isValidating } = useSWR(
+    `/poolAddresses?chainId=${chainId}&usingTenderly=${usingTenderly}`,
+    _getAllPoolAddresses,
+    {
+      revalidateOnFocus: false,
+      revalidateOnMount: false,
+    }
+  );
 
   const _getAllSeriesAddedEvents = async () => {
     let events: Set<SeriesAddedEvent>;
@@ -69,13 +73,17 @@ const usePools = () => {
   };
 
   // get series added events
-  const { data: seriesAddedEvents } = useSWR(`/seriesAddedEvents/${chainId}`, _getAllSeriesAddedEvents, {
-    revalidateOnFocus: false,
-    revalidateOnMount: false,
-  });
+  const { data: seriesAddedEvents, isValidating: isValidatingSeries } = useSWR(
+    `/seriesAddedEvents?chainId=${chainId}&usingTenderly=${usingTenderly}`,
+    _getAllSeriesAddedEvents,
+    {
+      revalidateOnFocus: false,
+      revalidateOnMount: false,
+    }
+  );
 
   const { data, error } = useSWR(
-    `/pools/${chainId}`,
+    `/pools?chainId=${chainId}&usingTenderly=${usingTenderly}`,
     () => getPools(usingTenderly ? tenderlyProvider : provider, chainId, amoAddress, poolAddresses, seriesAddedEvents),
     {
       revalidateOnFocus: false,

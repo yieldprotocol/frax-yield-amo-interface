@@ -4,18 +4,20 @@ import { useState } from 'react';
 import { toast } from 'react-toastify';
 import { useSWRConfig } from 'swr';
 import { useAccount, useBalance, useNetwork } from 'wagmi';
+import useTenderly from './useTenderly';
 import useToasty from './useToasty';
 
 const useTransaction = () => {
-  const { data: account } = useAccount();
-  const { activeChain } = useNetwork();
-  const { refetch } = useBalance({ addressOrName: account?.address, chainId: activeChain?.id });
+  const { address: account } = useAccount();
+  const { chain } = useNetwork();
+  const { refetch } = useBalance({ addressOrName: account, chainId: chain?.id });
   const { mutate } = useSWRConfig();
   const { toasty } = useToasty();
+  const { usingTenderly } = useTenderly();
   const addRecentTransaction = useAddRecentTransaction();
 
-  const chainId = activeChain?.id;
-  const explorer = activeChain?.blockExplorers?.default.url;
+  const chainId = chain?.id || 1;
+  const explorer = chain?.blockExplorers?.default.url;
 
   const [isTransacting, setIsTransacting] = useState<boolean>(false);
   const [txSubmitted, setTxSubmitted] = useState<boolean>(false);
@@ -41,7 +43,7 @@ const useTransaction = () => {
             toasty(
               async () => {
                 await res?.wait();
-                mutate(`/pools/${chainId}/${account?.address!}`);
+                mutate(`/pools?chainId=${chainId}&usingTenderly=${usingTenderly}`);
                 refetch(); // refetch ETH balance
               },
               description,
