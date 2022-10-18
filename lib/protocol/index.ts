@@ -30,7 +30,7 @@ const formatMaturity = (maturity: number) => format(new Date(maturity * 1000), '
 export const getPoolAddresses = async (ladle: contractTypes.Ladle, fromBlock?: number): Promise<string[]> => {
   const poolAddedEvents = await ladle.queryFilter('PoolAdded' as ethers.EventFilter, fromBlock);
   const pools = poolAddedEvents.map((e: PoolAddedEvent) => e.args.pool);
-  const filtered = pools.filter((p) => invalidPools.includes(p)) as string[];
+  const filtered = pools.filter((p) => !invalidPools.includes(p)) as string[];
   return filtered;
 };
 

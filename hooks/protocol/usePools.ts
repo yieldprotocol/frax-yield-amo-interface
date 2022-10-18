@@ -4,7 +4,7 @@ import { CAULDRON, LADLE } from '../../constants';
 import { Ladle, Cauldron } from '../../contracts/types';
 import { SeriesAddedEvent } from '../../contracts/types/Cauldron';
 import { getPoolAddresses, getPools, getSeriesEvents } from '../../lib/protocol';
-import { IPoolMap } from '../../lib/protocol/types';
+import { IContractMap, IPoolMap } from '../../lib/protocol/types';
 import useDefaultProvider from '../useDefaultProvider';
 import useTenderly from '../useTenderly';
 import useAMO from './useAMO';
@@ -20,10 +20,8 @@ const usePools = () => {
   const { usingTenderly, tenderlyProvider, tenderlyStartBlock } = useTenderly();
   const tenderlyContractMap = useContracts(tenderlyProvider);
 
-  const _getAllPoolAddresses = async () => {
+  const _getAllPoolAddresses = async (contractMap: IContractMap) => {
     let addresses: Set<string>;
-
-    if (!contractMap) return;
 
     // get the pool addies from fallback provider events
     const ladle = contractMap[LADLE] as Ladle;
@@ -31,18 +29,17 @@ const usePools = () => {
     const currPoolAddresses = await getPoolAddresses(ladle);
     addresses = new Set(currPoolAddresses);
 
-    if (usingTenderly && tenderlyContractMap && tenderlyStartBlock) {
-      const tenderlyLadle = tenderlyContractMap[LADLE] as Ladle;
+    if (usingTenderly && tenderlyStartBlock) {
       // get the pool addies from tenderly provider events
-      const tenderlyPoolAddresses = await getPoolAddresses(tenderlyLadle, tenderlyStartBlock);
+      const tenderlyPoolAddresses = await getPoolAddresses(ladle, tenderlyStartBlock);
       addresses = new Set([...currPoolAddresses, ...tenderlyPoolAddresses]);
     }
     return Array.from(addresses.values());
   };
 
   // get pool addresses
-  const { data: poolAddresses, isValidating } = useSWR(
-    `/poolAddresses?chainId=${chainId}&usingTenderly=${usingTenderly}`,
+  const { data: poolAddresses } = useSWR(
+    [usingTenderly ? tenderlyContractMap : contractMap, '/poolAddresses'],
     _getAllPoolAddresses,
     {
       revalidateOnFocus: false,
@@ -50,7 +47,7 @@ const usePools = () => {
     }
   );
 
-  const _getAllSeriesAddedEvents = async () => {
+  const _getAllSeriesAddedEvents = async (contractMap: IContractMap) => {
     let events: Set<SeriesAddedEvent>;
 
     if (!contractMap) return;
@@ -62,18 +59,17 @@ const usePools = () => {
     const currEvents = await getSeriesEvents(cauldron);
     events = new Set(currEvents);
 
-    if (usingTenderly && tenderlyContractMap && tenderlyStartBlock) {
-      const tenderlyCauldron = tenderlyContractMap[CAULDRON] as Cauldron;
+    if (usingTenderly && tenderlyStartBlock) {
       // get the pool addies from tenderly provider events
-      const tenderlyEvents = await getSeriesEvents(tenderlyCauldron, tenderlyStartBlock);
+      const tenderlyEvents = await getSeriesEvents(cauldron, tenderlyStartBlock);
       events = new Set([...currEvents, ...tenderlyEvents]);
     }
     return Array.from(events.values());
   };
 
   // get series added events
-  const { data: seriesAddedEvents, isValidating: isValidatingSeries } = useSWR(
-    `/seriesAddedEvents?chainId=${chainId}&usingTenderly=${usingTenderly}`,
+  const { data: seriesAddedEvents } = useSWR(
+    [usingTenderly ? tenderlyContractMap : contractMap, '/seriesAddedEvents'],
     _getAllSeriesAddedEvents,
     {
       revalidateOnFocus: false,
@@ -82,13 +78,16 @@ const usePools = () => {
   );
 
   const { data, error } = useSWR(
-    `/pools?chainId=${chainId}&usingTenderly=${usingTenderly}`,
+    poolAddresses?.length && seriesAddedEvents?.length
+      ? `/pools?chainId=${chainId}&usingTenderly=${usingTenderly}`
+      : null,
     () => getPools(usingTenderly ? tenderlyProvider : provider, chainId, amoAddress, poolAddresses, seriesAddedEvents),
     {
       revalidateOnFocus: false,
       revalidateOnMount: false,
     }
   );
+  console.log('🦄 ~ file: usePools.ts ~ line 85 ~ usePools ~ data', data);
 
   return {
     data: data as IPoolMap | undefined,

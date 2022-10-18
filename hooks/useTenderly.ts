@@ -24,7 +24,7 @@ const useTenderly = () => {
   const { data: startBlock } = useSWR(JSON.parse(isUsing) ? '/tenderlyStartBlock' : null, getStartBlock);
 
   return {
-    usingTenderly: JSON.parse(isUsing),
+    usingTenderly: JSON.parse(isUsing) as boolean,
     setUsingTenderly: (isUsing: boolean) => setIsUsing(isUsing.toString()),
     tenderlyProvider,
     tenderlySigner,
