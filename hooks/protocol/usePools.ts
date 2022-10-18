@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import useSWR from 'swr';
 import { useNetwork } from 'wagmi';
 import { CAULDRON, LADLE } from '../../constants';

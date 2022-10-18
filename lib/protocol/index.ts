@@ -13,8 +13,10 @@ import { PoolAddedEvent } from '../../contracts/types/Ladle';
 import { SeriesAddedEvent } from '../../contracts/types/Cauldron';
 import { calculateRate, getTimeStretchYears } from '../../utils/yieldMath';
 import { formatUnits } from 'ethers/lib/utils';
+import { JsonRpcSigner } from '@ethersproject/providers';
 
 const { seasonColors } = yieldEnv;
+const invalidPools = ['0x57002Dd4609fd79f65e2e2a4bE9aa6e901Af9D9C'];
 
 const formatMaturity = (maturity: number) => format(new Date(maturity * 1000), 'MMMM dd, yyyy');
 
@@ -27,7 +29,7 @@ const formatMaturity = (maturity: number) => format(new Date(maturity * 1000), '
  */
 export const getPoolAddresses = async (ladle: contractTypes.Ladle, fromBlock?: number): Promise<string[]> => {
   const poolAddedEvents = await ladle.queryFilter('PoolAdded' as ethers.EventFilter, fromBlock);
-  return poolAddedEvents.map((e: PoolAddedEvent) => e.args.pool) as string[];
+  return poolAddedEvents.map((e: PoolAddedEvent) => e.args.pool).filter((p) => !invalidPools.includes(p)) as string[];
 };
 
 /**
@@ -175,7 +177,7 @@ const _chargePool = (_pool: IPoolRoot, _chainId: number) => {
   };
 };
 
-export const getContracts = (provider: Provider, chainId: number): IContractMap | undefined => {
+export const getContracts = (providerOrSigner: Provider | JsonRpcSigner, chainId: number): IContractMap | undefined => {
   const { addresses } = yieldEnv;
   const chainAddrs = addresses[chainId];
 
@@ -184,7 +186,7 @@ export const getContracts = (provider: Provider, chainId: number): IContractMap 
   return Object.keys(chainAddrs).reduce((contracts: IContractMap, name: string) => {
     if (CONTRACTS_TO_FETCH.includes(name)) {
       try {
-        const contract: ethers.Contract = contractTypes[`${name}__factory`].connect(chainAddrs[name], provider);
+        const contract: ethers.Contract = contractTypes[`${name}__factory`].connect(chainAddrs[name], providerOrSigner);
         return { ...contracts, [name]: contract || null };
       } catch (e) {
         console.log(`could not connect directly to contract ${name}`);
