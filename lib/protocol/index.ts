@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
-import { BigNumber, ethers } from 'ethers';
-import { FRAX_AMO } from '../../constants';
+import { BigNumber, Contract, ethers } from 'ethers';
+import { CAULDRON, FRAX_AMO, LADLE } from '../../constants';
 import { Pool__factory } from '../../contracts/types';
 import { IAMOAllocations, IAsset, IContractMap, IPoolMap, IPoolRoot, Provider } from './types';
 import { hexToRgb, cleanValue, formatFyTokenSymbol, getSeason, SeasonType } from '../../utils/appUtils';
@@ -50,22 +50,46 @@ export const getSeriesEvents = async (
  * Gets all pool data
  *
  * @param provider
+ * @param contractMap
+ * @param account amo account address
  * @param chainId currently connected chain id or mainnet as default
- * @param account user's account address if there is a connected account
- * @param poolAddresses
- * @param seriesAddedEvents
+ * @param usingTenderly if using tenderly testing environment
+ * @param tenderlyContractMap if using tenderly testing environment, contract map
+ * @param tenderlyStartBlock if using tenderly testing environment, start block
+ *
  * @returns  {IPoolMap}
  */
 export const getPools = async (
   provider: Provider,
+  contractMap: IContractMap,
   chainId: number = 1,
-  account: string | undefined = undefined,
-  poolAddresses: string[] | undefined,
-  seriesAddedEvents: SeriesAddedEvent[] | undefined
+  usingTenderly = false,
+  tenderlyContractMap?: IContractMap,
+  tenderlyStartBlock?: number
 ): Promise<IPoolMap | undefined> => {
-  if (!poolAddresses || !seriesAddedEvents) throw new Error('no pool addresses or series events detected');
-
   console.log('fetching pools');
+
+  const account = (yieldEnv.addresses as any)[chainId][FRAX_AMO];
+  const ladle = contractMap[LADLE] as contractTypes.Ladle;
+  const cauldron = contractMap[CAULDRON] as contractTypes.Cauldron;
+
+  // get all pool addresses from current chain and tenderly (if using)
+  let poolAddresses: string[];
+  let seriesAddedEvents: SeriesAddedEvent[];
+
+  poolAddresses = await getPoolAddresses(ladle);
+  console.log('🦄 ~ file: index.ts ~ line 81 ~ poolAddresses', poolAddresses);
+  seriesAddedEvents = await getSeriesEvents(cauldron);
+
+  if (usingTenderly && tenderlyContractMap && tenderlyStartBlock) {
+    const tenderlyLadle = tenderlyContractMap[LADLE] as contractTypes.Ladle;
+    const tenderlyCauldron = tenderlyContractMap[CAULDRON] as contractTypes.Cauldron;
+
+    const poolSet = new Set([...poolAddresses, ...(await getPoolAddresses(tenderlyLadle, tenderlyStartBlock))]);
+    const seriesSet = new Set([...seriesAddedEvents, ...(await getSeriesEvents(tenderlyCauldron, tenderlyStartBlock))]);
+    poolAddresses = Array.from(poolSet.values());
+    seriesAddedEvents = Array.from(seriesSet.values());
+  }
 
   const fyTokenToSeries: Map<string, string> = seriesAddedEvents.reduce(
     (acc: Map<string, string>, e: SeriesAddedEvent) =>
@@ -181,21 +205,17 @@ const _chargePool = (_pool: IPoolRoot, _chainId: number) => {
 
 export const getContracts = (providerOrSigner: Provider | JsonRpcSigner, chainId: number): IContractMap | undefined => {
   const { addresses } = yieldEnv;
-  const chainAddrs = addresses[chainId];
-
-  if (!chainAddrs) return undefined;
+  const chainAddrs = (addresses as any)[chainId];
 
   return Object.keys(chainAddrs).reduce((contracts: IContractMap, name: string) => {
     if (CONTRACTS_TO_FETCH.includes(name)) {
-      try {
-        const contract: ethers.Contract = contractTypes[`${name}__factory`].connect(chainAddrs[name], providerOrSigner);
-        return { ...contracts, [name]: contract || null };
-      } catch (e) {
-        console.log(`could not connect directly to contract ${name}`);
-        return contracts;
-      }
+      const contract = (contractTypes as any)[`${name}__factory`].connect(
+        chainAddrs[name],
+        providerOrSigner
+      ) as Contract;
+      return { ...contracts, [name]: contract };
     }
-    return undefined;
+    return contracts;
   }, {});
 };
 

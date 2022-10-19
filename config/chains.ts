@@ -141,4 +141,4 @@ export const URLS: { [chainId: number]: string[] } = Object.keys(CHAINS).reduce(
   return accumulator;
 }, {});
 
-export const SUPPORTED_CHAIN_IDS = [1, 4, 5];
+export const SUPPORTED_CHAIN_IDS = [1];

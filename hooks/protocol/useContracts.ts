@@ -9,7 +9,7 @@ export const CONTRACTS_TO_FETCH = [CAULDRON, LADLE, FRAX_AMO];
 
 const useContracts = (providerOrSigner: Provider | JsonRpcSigner) => {
   const { chain } = useNetwork();
-  const chainId = chain?.id! || 1;
+  const chainId = useMemo(() => chain?.id! ?? 1, [chain?.id]);
   return useMemo(() => getContracts(providerOrSigner, chainId), [providerOrSigner, chainId]);
 };
 export default useContracts;
