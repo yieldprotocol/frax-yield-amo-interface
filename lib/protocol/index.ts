@@ -1,6 +1,6 @@
 import { format } from 'date-fns';
 import { BigNumber, Contract, ethers } from 'ethers';
-import { CAULDRON, FRAX_AMO, LADLE } from '../../constants';
+import { CAULDRON, FRAX_ADDRESS, FRAX_AMO, LADLE } from '../../constants';
 import { Pool__factory } from '../../contracts/types';
 import { IAMOAllocations, IAsset, IContractMap, IPoolMap, IPoolRoot, Provider } from './types';
 import { hexToRgb, cleanValue, formatFyTokenSymbol, getSeason, SeasonType } from '../../utils/appUtils';
@@ -78,7 +78,6 @@ export const getPools = async (
   let seriesAddedEvents: SeriesAddedEvent[];
 
   poolAddresses = await getPoolAddresses(ladle);
-  console.log('🦄 ~ file: index.ts ~ line 81 ~ poolAddresses', poolAddresses);
   seriesAddedEvents = await getSeriesEvents(cauldron);
 
   if (usingTenderly && tenderlyContractMap && tenderlyStartBlock) {
@@ -97,10 +96,14 @@ export const getPools = async (
     new Map()
   );
 
-  try {
-    return poolAddresses.reduce(async (pools: any, x) => {
-      const address = x;
-      const poolContract = Pool__factory.connect(address, provider);
+  return poolAddresses.reduce(async (pools: any, x) => {
+    const address = x;
+    const poolContract = Pool__factory.connect(address, provider);
+    try {
+      // only frax
+      const baseAddr = await poolContract.base();
+      if (baseAddr.toLowerCase() !== FRAX_ADDRESS) return await pools;
+
       const [
         name,
         version,
@@ -136,12 +139,7 @@ export const getPools = async (
       const getTimeTillMaturity = () => maturity - Math.round(new Date().getTime() / 1000);
       const seriesId = fyTokenToSeries.get(fyToken.address);
       const timeStretchYears = getTimeStretchYears(ts);
-      const amoAddress = yieldEnv.addresses[chainId][FRAX_AMO];
-
-      // only frax
-      if (base.symbol.toLowerCase() !== 'frax') {
-        return { ...(await pools) };
-      }
+      const amoAddress = (yieldEnv.addresses as any)[chainId][FRAX_AMO];
 
       const newPool = {
         address,
@@ -172,18 +170,18 @@ export const getPools = async (
       } as IPoolRoot;
 
       return { ...(await pools), [address]: _chargePool(newPool, chainId) };
-    }, {});
-  } catch (e) {
-    console.log('error fetching pools', e);
-  }
+    } catch (e) {
+      console.log('error fetching pool', e);
+    }
+  }, {});
 };
 
 /* add on extra/calculated ASYNC series info and contract instances */
 const _chargePool = (_pool: IPoolRoot, _chainId: number) => {
   const season = getSeason(_pool.maturity);
   const oppSeason = (_season: SeasonType) => getSeason(_pool.maturity + 23670000);
-  const [startColor, endColor, textColor]: string[] = seasonColors[_chainId][season];
-  const [oppStartColor, oppEndColor, oppTextColor]: string[] = seasonColors[_chainId][oppSeason(season)];
+  const [startColor, endColor, textColor]: string[] = (seasonColors as any)[_chainId][season];
+  const [oppStartColor, oppEndColor, oppTextColor]: string[] = (seasonColors as any)[_chainId][oppSeason(season)];
 
   return {
     ..._pool,
