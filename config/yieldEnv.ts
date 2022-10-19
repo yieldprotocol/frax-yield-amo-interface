@@ -5,7 +5,7 @@ const yieldEnv = {
       Ladle: '0x6cb18ff2a33e981d1e38a663ca056c0a5265066a',
       AMO: '0x8971946467a77b798762823434c0f407d20f9df9',
       FRAX: '0x853d955acef822db058eb8505911ed77f175b99e',
-      // timelock: '0x8412ebf45bac1b340bbe8f318b928c466c4e39ca'
+      Timelock: '0x8412ebf45bac1b340bbe8f318b928c466c4e39ca',
     },
   },
   seasonColors: {

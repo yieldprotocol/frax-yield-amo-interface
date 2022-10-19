@@ -6,6 +6,7 @@ export const FRAX_ADDRESS = '0x853d955acef822db058eb8505911ed77f175b99e';
 export const CAULDRON = 'Cauldron';
 export const LADLE = 'Ladle';
 export const FRAX_AMO = 'AMO';
+export const TIMELOCK = 'Timelock';
 
 /* util constants */
 export const MAX_256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';

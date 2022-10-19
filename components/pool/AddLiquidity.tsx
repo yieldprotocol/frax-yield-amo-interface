@@ -12,9 +12,11 @@ import Modal from '../common/Modal';
 import AddConfirmation from './AddConfirmation';
 import CloseButton from '../common/CloseButton';
 import useInputValidation from '../../hooks/useInputValidation';
-import { useAccount, useNetwork } from 'wagmi';
+import { useAccount, useBalance, useNetwork } from 'wagmi';
 import { useAddLiquidity } from '../../hooks/actions/useAddLiquidity';
 import { AMOActions } from '../../lib/tx/operations';
+import useAMO from '../../hooks/protocol/useAMO';
+import { FRAX_ADDRESS } from '../../constants';
 
 const Inner = tw.div`m-4 text-center`;
 const HeaderSmall = tw.div`align-middle text-sm font-bold justify-start text-left`;
@@ -35,9 +37,16 @@ const INITIAL_FORM_STATE: IAddLiquidityForm = {
 const AddLiquidity = () => {
   const router = useRouter();
   const { address } = router.query;
+  const { amoAddress } = useAMO();
   const { chain } = useNetwork();
   const { address: account } = useAccount();
   const { data: pools } = usePools();
+  const { data: balance } = useBalance({
+    addressOrName: amoAddress,
+    token: FRAX_ADDRESS,
+    chainId: chain?.id,
+    enabled: !!(amoAddress && chain),
+  });
 
   const [form, setForm] = useState<IAddLiquidityForm>(INITIAL_FORM_STATE);
   const { pool, input } = form;
@@ -47,9 +56,7 @@ const AddLiquidity = () => {
 
   const { addLiquidity, isAddingLiquidity, addSubmitted } = useAddLiquidity(pool, input);
 
-  const baseBalanceToUse = pool?.base.balance_;
-
-  const handleMax = () => setForm((f) => ({ ...f, input: baseBalanceToUse! }));
+  const handleMax = () => setForm((f) => ({ ...f, input: balance?.formatted! }));
   const handleClearAll = () => (address ? setForm((f) => ({ ...f, input: '' })) : setForm(INITIAL_FORM_STATE));
   const handleSubmit = () => setConfirmModalOpen(true);
   const handleInputChange = (name: string, value: string) => setForm((f) => ({ ...f, [name]: value }));
@@ -103,7 +110,7 @@ const AddLiquidity = () => {
             name="input"
             value={input}
             item={pool?.base}
-            balance={baseBalanceToUse!}
+            balance={balance?.formatted!}
             handleChange={handleInputChange}
             useMax={handleMax}
             pool={pool}

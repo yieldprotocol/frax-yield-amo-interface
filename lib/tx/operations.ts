@@ -6,6 +6,7 @@ export namespace AMOActions {
     REMOVE_LIQUIDITY = 'removeLiquidityFromAMM',
     INCREASE_RATES = 'increaseRates',
     DECREASE_RATES = 'decreaseRates',
+    ADD_SERIES = 'addSeries',
   }
 
   export namespace Args {
@@ -32,14 +33,6 @@ export namespace AMOActions {
       minFyFraxReceived: BigNumberish
     ];
 
-    // export type FORWARD_PERMIT = [
-    //   token: string,
-    //   spender: string,
-    //   amount: BigNumberish,
-    //   deadline: BigNumberish,
-    //   v: BigNumberish,
-    //   r: Buffer,
-    //   s: Buffer
-    // ];
+    export type ADD_SERIES = [seriesId_bytes6: BytesLike, fyToken: string, pool: string];
   }
 }

@@ -5,7 +5,7 @@ import { USE_TENDERLY_KEY } from '../constants';
 import { useLocalStorage } from './useLocalStorage';
 
 const useTenderly = () => {
-  const TENDERLY_FORK_RPC_URL = 'https://rpc.tenderly.co/fork/72a95c1a-3d85-4dd4-b9c4-56269aa125dc';
+  const TENDERLY_FORK_RPC_URL = 'https://rpc.tenderly.co/fork/48aa91dc-c833-4124-a108-d61354bdbc01';
   const [isUsing, setIsUsing] = useLocalStorage(USE_TENDERLY_KEY, JSON.stringify(false));
   const usingTenderly = useMemo(() => JSON.parse(isUsing) as boolean, [isUsing]);
 

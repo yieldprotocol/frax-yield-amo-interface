@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useAccount, useBalance, useNetwork } from 'wagmi';
+import { FRAX_ADDRESS } from '../constants';
 import { IPool } from '../lib/protocol/types';
 import { AMOActions } from '../lib/tx/operations';
 import useAddLiqPreview from './protocol/useAddLiqPreview';
+import useAMO from './protocol/useAMO';
 
 const useInputValidation = (
   input: string | undefined,
@@ -11,8 +13,14 @@ const useInputValidation = (
   action: AMOActions.Fn
 ) => {
   const { address: account } = useAccount();
+  const { amoAddress } = useAMO();
   const { chain } = useNetwork();
-  const { data: balance } = useBalance({ addressOrName: account, chainId: chain?.id });
+  const { data: balance } = useBalance({
+    addressOrName: amoAddress,
+    token: FRAX_ADDRESS,
+    chainId: chain?.id,
+    enabled: !!(amoAddress && chain),
+  });
   const ethBalance = balance?.formatted;
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -43,14 +51,13 @@ const useInputValidation = (
 
     setErrorMsg(null); // reset
 
-    const { base, fyToken, isMature } = pool;
-    const baseBalance = parseFloat(pool.base.balance_);
+    const { base, isMature } = pool;
     const lpTokenBalance = parseFloat(pool.lpTokenBalance_);
 
     /* Action specific validation */
     switch (action) {
       case AMOActions.Fn.ADD_LIQUIDITY:
-        baseBalance < _input && setErrorMsg(`Insufficient ${base.symbol} balance`);
+        +balance?.formatted! < _input && setErrorMsg(`Insufficient ${base.symbol} balance`);
         isMature && setErrorMsg(`Pool matured: can only remove liquidity`);
         break;
       case AMOActions.Fn.REMOVE_LIQUIDITY:
@@ -60,7 +67,7 @@ const useInputValidation = (
         setErrorMsg(null);
         break;
     }
-  }, [_input, account, action, input, pool]);
+  }, [_input, account, action, balance?.formatted, input, pool]);
 
   return { errorMsg };
 };
