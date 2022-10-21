@@ -5,7 +5,7 @@ import { URLS } from '../config/chains';
 
 const useDefaultProvider = () => {
   const { chain } = useNetwork();
-  const chainId = chain?.id || 1;
+  const chainId = useMemo(() => (chain ? chain.id : 1), [chain]);
 
   return useMemo(() => {
     try {
