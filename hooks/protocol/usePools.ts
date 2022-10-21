@@ -17,7 +17,6 @@ const usePools = () => {
   const tenderlyContractMap = useContracts(tenderlyProvider!);
 
   const key = `/pools?chainId=${chainId}&usingTenderly=${usingTenderly}`;
-  console.log('🦄 ~ file: usePools.ts ~ line 23 ~ usePools ~ key', key);
 
   const { data, error } = useSWR(
     key,

@@ -52,6 +52,7 @@ const SettingsDropdown = () => {
                           setEnabled={() => {
                             dispatch({ type: Settings.USING_TENDERLY, payload: !usingTenderly });
                             setUseTenderly(!usingTenderly);
+                            location.reload();
                           }}
                         />
                       </ItemWrap>
