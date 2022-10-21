@@ -1,15 +1,15 @@
 import { JsonRpcProvider } from '@ethersproject/providers';
-import { useMemo } from 'react';
+import { useContext, useMemo } from 'react';
 import useSWR from 'swr/immutable';
-import { USE_TENDERLY_KEY } from '../constants';
-import { useLocalStorage } from './useLocalStorage';
+import { SettingsContext } from '../contexts/SettingsContext';
 
 const useTenderly = () => {
   const TENDERLY_FORK_RPC_URL = 'https://rpc.tenderly.co/fork/48aa91dc-c833-4124-a108-d61354bdbc01';
-  const [isUsing, setIsUsing] = useLocalStorage(USE_TENDERLY_KEY, JSON.stringify(false));
-  const usingTenderly = useMemo(() => JSON.parse(isUsing) as boolean, [isUsing]);
+  const {
+    state: { useTenderly },
+  } = useContext(SettingsContext);
 
-  const tenderlyProvider = useMemo(() => (usingTenderly ? new JsonRpcProvider(TENDERLY_FORK_RPC_URL) : undefined), []);
+  const tenderlyProvider = useMemo(() => new JsonRpcProvider(TENDERLY_FORK_RPC_URL), []);
 
   const getStartBlock = async () => {
     if (tenderlyProvider) {
@@ -25,11 +25,11 @@ const useTenderly = () => {
 
   const { data: startBlock } = useSWR('/tenderlyStartBlock', getStartBlock, {
     shouldRetryOnError: false,
+    dedupingInterval: 3_600_000, // dont duplicate a request w/ same key for 1hr
   });
 
   return {
-    usingTenderly,
-    setUsingTenderly: (isUsing: boolean) => setIsUsing(isUsing.toString()),
+    useTenderly,
     tenderlyProvider,
     tenderlyStartBlock: startBlock,
     tenderlyRpcUrl: TENDERLY_FORK_RPC_URL,

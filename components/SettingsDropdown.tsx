@@ -1,9 +1,11 @@
-import { Fragment } from 'react';
+import { Fragment, useContext } from 'react';
 import tw from 'tailwind-styled-components';
 import { Menu, Transition } from '@headlessui/react';
 import { DotsVerticalIcon } from '@heroicons/react/solid';
 import Toggle from './common/Toggle';
-import useTenderly from '../hooks/useTenderly';
+import { Settings, SettingsContext } from '../contexts/SettingsContext';
+import { useLocalStorage } from '../hooks/useLocalStorage';
+import { USE_TENDERLY_KEY } from '../constants';
 
 type ButtonProps = {
   $active: boolean;
@@ -15,7 +17,11 @@ const ItemWrap = tw.div<ButtonProps>`${(p) =>
     : 'dark:text-gray-400 text-gray-600'} flex rounded-md items-center w-full px-2 py-2`;
 
 const SettingsDropdown = () => {
-  const { usingTenderly, setUsingTenderly } = useTenderly();
+  const {
+    state: { useTenderly },
+    dispatch,
+  } = useContext(SettingsContext);
+  const [, setUseTenderly] = useLocalStorage(USE_TENDERLY_KEY, JSON.stringify(false));
 
   return (
     <div>
@@ -42,8 +48,11 @@ const SettingsDropdown = () => {
                       <ItemWrap $active={active}>
                         <Toggle
                           label="Tenderly Mode"
-                          enabled={usingTenderly}
-                          setEnabled={() => setUsingTenderly(!usingTenderly)}
+                          enabled={useTenderly}
+                          setEnabled={() => {
+                            dispatch({ type: Settings.USE_TENDERLY, payload: !useTenderly });
+                            setUseTenderly(!useTenderly);
+                          }}
                         />
                       </ItemWrap>
                     )}

@@ -14,7 +14,6 @@ import { SeriesAddedEvent } from '../../contracts/types/Cauldron';
 import { calculateRate, getTimeStretchYears } from '../../utils/yieldMath';
 import { formatUnits } from 'ethers/lib/utils';
 import { JsonRpcSigner } from '@ethersproject/providers';
-import { bytesToBytes32 } from '@yield-protocol/ui-math';
 
 const { seasonColors } = yieldEnv;
 const invalidPools = ['0x57002Dd4609fd79f65e2e2a4bE9aa6e901Af9D9C'];

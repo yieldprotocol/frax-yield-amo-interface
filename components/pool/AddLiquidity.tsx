@@ -47,6 +47,7 @@ const AddLiquidity = () => {
     chainId: chain?.id,
     enabled: !!(amoAddress && chain),
   });
+  console.log('🦄 ~ file: AddLiquidity.tsx ~ line 50 ~ AddLiquidity ~ balance', balance);
 
   const [form, setForm] = useState<IAddLiquidityForm>(INITIAL_FORM_STATE);
   const { pool, input } = form;
