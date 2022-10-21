@@ -12,7 +12,7 @@ import Modal from '../common/Modal';
 import AddConfirmation from './AddConfirmation';
 import CloseButton from '../common/CloseButton';
 import useInputValidation from '../../hooks/useInputValidation';
-import { useAccount, useBalance, useNetwork } from 'wagmi';
+import { useAccount, useBalance, useNetwork, useProvider } from 'wagmi';
 import { useAddLiquidity } from '../../hooks/actions/useAddLiquidity';
 import { AMOActions } from '../../lib/tx/operations';
 import useAMO from '../../hooks/protocol/useAMO';
@@ -41,6 +41,8 @@ const AddLiquidity = () => {
   const { chain } = useNetwork();
   const { address: account } = useAccount();
   const { data: pools } = usePools();
+  const providery = useProvider();
+  console.log('🦄 ~ file: AddLiquidity.tsx ~ line 45 ~ AddLiquidity ~ providery', providery);
   const { data: balance } = useBalance({
     addressOrName: amoAddress,
     token: FRAX_ADDRESS,

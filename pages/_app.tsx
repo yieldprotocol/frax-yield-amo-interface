@@ -9,14 +9,14 @@ const DynamicWeb3Provider = dynamic(() => import('../hooks/useWeb3Provider'), { 
 const DynamicSettings = dynamic(() => import('../contexts/SettingsContext'), { ssr: false });
 
 const MyApp = ({ Component, pageProps }: AppProps) => (
-  <DynamicWeb3Provider>
-    <DynamicSettings>
+  <DynamicSettings>
+    <DynamicWeb3Provider>
       <DynamicLayout>
         <Toasty />
         <Component {...pageProps} />
       </DynamicLayout>
-    </DynamicSettings>
-  </DynamicWeb3Provider>
+    </DynamicWeb3Provider>
+  </DynamicSettings>
 );
 
 export default MyApp;
