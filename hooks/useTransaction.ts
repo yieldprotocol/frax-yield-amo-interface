@@ -3,14 +3,16 @@ import { ContractTransaction } from 'ethers';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 import { useSWRConfig } from 'swr';
-import { useAccount, useBalance, useNetwork } from 'wagmi';
+import { useBalance, useNetwork } from 'wagmi';
+import { FRAX_ADDRESS } from '../constants';
+import useAMO from './protocol/useAMO';
 import useTenderly from './useTenderly';
 import useToasty from './useToasty';
 
 const useTransaction = () => {
-  const { address: account } = useAccount();
   const { chain } = useNetwork();
-  const { refetch } = useBalance({ addressOrName: account, chainId: chain?.id });
+  const { amoAddress } = useAMO();
+  const { refetch } = useBalance({ addressOrName: amoAddress, token: FRAX_ADDRESS, chainId: chain?.id });
   const { mutate } = useSWRConfig();
   const { toasty } = useToasty();
   const { usingTenderly } = useTenderly();

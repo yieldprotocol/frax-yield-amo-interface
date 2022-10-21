@@ -41,15 +41,12 @@ const AddLiquidity = () => {
   const { chain } = useNetwork();
   const { address: account } = useAccount();
   const { data: pools } = usePools();
-  const providery = useProvider();
-  console.log('🦄 ~ file: AddLiquidity.tsx ~ line 45 ~ AddLiquidity ~ providery', providery);
   const { data: balance } = useBalance({
     addressOrName: amoAddress,
     token: FRAX_ADDRESS,
     chainId: chain?.id,
     enabled: !!(amoAddress && chain),
   });
-  console.log('🦄 ~ file: AddLiquidity.tsx ~ line 50 ~ AddLiquidity ~ balance', balance);
 
   const [form, setForm] = useState<IAddLiquidityForm>(INITIAL_FORM_STATE);
   const { pool, input } = form;
