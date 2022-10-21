@@ -6,7 +6,7 @@ import { SettingsContext } from '../contexts/SettingsContext';
 const useTenderly = () => {
   const TENDERLY_FORK_RPC_URL = 'https://rpc.tenderly.co/fork/48aa91dc-c833-4124-a108-d61354bdbc01';
   const {
-    state: { useTenderly },
+    state: { usingTenderly },
   } = useContext(SettingsContext);
 
   const tenderlyProvider = useMemo(() => new JsonRpcProvider(TENDERLY_FORK_RPC_URL), []);
@@ -29,7 +29,7 @@ const useTenderly = () => {
   });
 
   return {
-    useTenderly,
+    usingTenderly,
     tenderlyProvider,
     tenderlyStartBlock: startBlock,
     tenderlyRpcUrl: TENDERLY_FORK_RPC_URL,

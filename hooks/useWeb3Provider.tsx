@@ -1,13 +1,13 @@
 import { darkTheme, getDefaultWallets, RainbowKitProvider, Theme } from '@rainbow-me/rainbowkit';
 import { chain, configureChains, createClient, WagmiConfig } from 'wagmi';
-import { MetaMaskConnector } from 'wagmi/connectors/metaMask';
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
 import merge from 'lodash.merge';
 import { useColorTheme } from './useColorTheme';
 import { URLS } from '../config/chains';
 import useTenderly from './useTenderly';
+import { ReactNode } from 'react';
 
-export default function Web3Provider({ children }) {
+export default function Web3Provider({ children }: { children: ReactNode }) {
   const { theme: colorTheme } = useColorTheme();
   const { usingTenderly, tenderlyRpcUrl } = useTenderly();
 

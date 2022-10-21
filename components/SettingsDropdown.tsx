@@ -18,7 +18,7 @@ const ItemWrap = tw.div<ButtonProps>`${(p) =>
 
 const SettingsDropdown = () => {
   const {
-    state: { useTenderly },
+    state: { usingTenderly },
     dispatch,
   } = useContext(SettingsContext);
   const [, setUseTenderly] = useLocalStorage(USE_TENDERLY_KEY, JSON.stringify(false));
@@ -48,10 +48,10 @@ const SettingsDropdown = () => {
                       <ItemWrap $active={active}>
                         <Toggle
                           label="Tenderly Mode"
-                          enabled={useTenderly}
+                          enabled={usingTenderly}
                           setEnabled={() => {
-                            dispatch({ type: Settings.USE_TENDERLY, payload: !useTenderly });
-                            setUseTenderly(!useTenderly);
+                            dispatch({ type: Settings.USING_TENDERLY, payload: !usingTenderly });
+                            setUseTenderly(!usingTenderly);
                           }}
                         />
                       </ItemWrap>

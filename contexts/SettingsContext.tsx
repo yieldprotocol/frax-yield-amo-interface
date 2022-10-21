@@ -3,22 +3,22 @@ import { USE_TENDERLY_KEY } from '../constants';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 
 interface ISettingsContextState {
-  useTenderly: boolean;
+  usingTenderly: boolean;
 }
 
 type SettingsContextAction = UseTenderlyAction;
 
 export type UseTenderlyAction = {
-  type: Settings.USE_TENDERLY;
+  type: Settings.USING_TENDERLY;
   payload: boolean;
 };
 
 export enum Settings {
-  USE_TENDERLY = 'useTenderly',
+  USING_TENDERLY = 'usingTenderly',
 }
 
 const initState: ISettingsContextState = {
-  useTenderly: false,
+  usingTenderly: false,
 };
 
 const SettingsContext = createContext<{ state: ISettingsContextState; dispatch: Dispatch<SettingsContextAction> }>({
@@ -33,12 +33,12 @@ const reducer = (state: ISettingsContextState, action: SettingsContextAction): I
 
 const SettingsProvider = ({ children }: { children: ReactNode }) => {
   const [state, dispatch] = useReducer(reducer, initState);
-  const [useTenderly] = useLocalStorage(USE_TENDERLY_KEY, JSON.stringify(false));
+  const [usingTenderly] = useLocalStorage(USE_TENDERLY_KEY, JSON.stringify(false));
 
   /* Update all settings in state based on localStorage */
   useEffect(() => {
-    dispatch({ type: Settings.USE_TENDERLY, payload: useTenderly as boolean });
-  }, [useTenderly]);
+    dispatch({ type: Settings.USING_TENDERLY, payload: usingTenderly as boolean });
+  }, [usingTenderly]);
 
   return <SettingsContext.Provider value={{ state, dispatch }}>{children}</SettingsContext.Provider>;
 };
