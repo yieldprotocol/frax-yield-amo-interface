@@ -40,7 +40,7 @@ const PoolListItem = ({ pool }: IPoolListItem) => {
           }}
         >
           <ItemInner>
-            <div className="z-0 relative items-center flex">
+            <div className="z-0 relative items-center flex ml-3">
               <FyTokenLogo pool={pool} height={20} width={20} />
             </div>
             <div className="z-1 -ml-5 items-center flex">
