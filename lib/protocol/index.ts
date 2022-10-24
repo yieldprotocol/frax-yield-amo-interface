@@ -2,7 +2,7 @@ import { format } from 'date-fns';
 import { BigNumber, Contract, ethers } from 'ethers';
 import { CAULDRON, FRAX_ADDRESS, FRAX_AMO, LADLE } from '../../constants';
 import { Pool__factory } from '../../contracts/types';
-import { IAMOAllocations, IAsset, IContractMap, IPoolMap, IPoolRoot, Provider } from './types';
+import { IAsset, IContractMap, IPoolMap, IPoolRoot, Provider } from './types';
 import { hexToRgb, cleanValue, formatFyTokenSymbol, getSeason, SeasonType } from '../../utils/appUtils';
 import yieldEnv from '../../config/yieldEnv';
 import { CONTRACTS_TO_FETCH } from '../../hooks/protocol/useContracts';
@@ -51,7 +51,6 @@ export const getSeriesEvents = async (
  *
  * @param provider
  * @param contractMap
- * @param account amo account address
  * @param chainId currently connected chain id or mainnet as default
  * @param usingTenderly if using tenderly testing environment
  * @param tenderlyContractMap if using tenderly testing environment, contract map
@@ -100,6 +99,7 @@ export const getPools = async (
   return poolAddresses.reduce(async (pools: any, x) => {
     const address = x;
     const poolContract = Pool__factory.connect(address, usingTenderly ? tenderlyProvider! : provider);
+
     try {
       // only frax
       const baseAddr = await poolContract.base();
