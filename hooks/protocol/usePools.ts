@@ -20,7 +20,16 @@ const usePools = () => {
 
   const { data, error } = useSWR(
     key,
-    () => getPools(provider, contractMap!, chainId, usingTenderly, tenderlyContractMap, tenderlyStartBlock),
+    () =>
+      getPools(
+        provider,
+        contractMap!,
+        chainId,
+        usingTenderly,
+        tenderlyContractMap,
+        tenderlyStartBlock,
+        tenderlyProvider
+      ),
     {
       revalidateOnFocus: false,
       dedupingInterval: 3_600_000, // dont duplicate a request w/ same key for 1hr

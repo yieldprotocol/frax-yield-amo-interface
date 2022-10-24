@@ -27,8 +27,6 @@ export interface IPoolRoot {
   isMature: boolean;
   getTimeTillMaturity: () => number;
 
-  lpTokenBalance: BigNumber;
-  lpTokenBalance_: string;
   baseReserves: BigNumber;
   baseReserves_: string;
   fyTokenReserves: BigNumber;
@@ -44,7 +42,6 @@ export interface IPoolRoot {
   interestRate: string; // market interest rate
 
   timeStretchYears_: string; // time stretch associated years
-  amoAllocations?: IAMOAllocations;
 }
 
 export interface IPool extends IPoolRoot {
@@ -74,19 +71,4 @@ export interface IAsset extends ISignable {
 
   contract: ERC20Permit | FYToken;
   getAllowance: (account: string, spender: string) => Promise<BigNumber>;
-}
-
-export interface IAMOAllocations {
-  fraxInContract: BigNumber; // [0] Unallocated Frax
-  fraxInContract_: string;
-  fraxAsCollateral: BigNumber; // [1] Frax being used as collateral to borrow fyFrax
-  fraxAsCollateral_: string;
-  fraxInLP: BigNumber; // [2] The Frax our LP tokens can lay claim to
-  fraxInLP_: string;
-  fyFraxInContract: BigNumber; // [3] fyFrax sitting in AMO, should be 0
-  fyFraxInContract_: string;
-  fyFraxInLP: BigNumber; // [4] fyFrax our LP can claim
-  fyFraxInLP_: string;
-  LPOwned: BigNumber; // [5] number of LP tokens
-  LPOwned_: string;
 }

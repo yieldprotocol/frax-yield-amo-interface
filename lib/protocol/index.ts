@@ -13,7 +13,7 @@ import { PoolAddedEvent } from '../../contracts/types/Ladle';
 import { SeriesAddedEvent } from '../../contracts/types/Cauldron';
 import { calculateRate, getTimeStretchYears } from '../../utils/yieldMath';
 import { formatUnits } from 'ethers/lib/utils';
-import { JsonRpcSigner } from '@ethersproject/providers';
+import { JsonRpcProvider, JsonRpcSigner } from '@ethersproject/providers';
 
 const { seasonColors } = yieldEnv;
 const invalidPools = ['0x57002Dd4609fd79f65e2e2a4bE9aa6e901Af9D9C'];
@@ -65,7 +65,8 @@ export const getPools = async (
   chainId: number = 1,
   usingTenderly = false,
   tenderlyContractMap?: IContractMap,
-  tenderlyStartBlock?: number
+  tenderlyStartBlock?: number,
+  tenderlyProvider?: JsonRpcProvider
 ): Promise<IPoolMap | undefined> => {
   console.log('fetching pools');
 
@@ -98,7 +99,7 @@ export const getPools = async (
 
   return poolAddresses.reduce(async (pools: any, x) => {
     const address = x;
-    const poolContract = Pool__factory.connect(address, provider);
+    const poolContract = Pool__factory.connect(address, usingTenderly ? tenderlyProvider! : provider);
     try {
       // only frax
       const baseAddr = await poolContract.base();
@@ -166,7 +167,6 @@ export const getPools = async (
         fyToken,
         interestRate: calculateRate(fyTokenReserves, baseReserves, timeStretchYears).toString(),
         timeStretchYears_: timeStretchYears.toString(),
-        amoAllocations: await showAllocations(provider, amoAddress, seriesId, decimals),
       } as IPoolRoot;
 
       return { ...(await pools), [address]: _chargePool(newPool, chainId) };
@@ -293,58 +293,4 @@ export const getBalance = (
     console.log('error getting balance for', tokenAddress);
     return ethers.constants.Zero;
   }
-};
-
-/**
- * returns the output of showAllocations from the amo
- * @param provider
- * @param amoAddress
- * @param seriesId
- * @param decimals
- * @returns { BigNumber, BigNumber, BigNumber, BigNumber, BigNumber, BigNumber }
- *  fraxInContract, // [0] Unallocated Frax
-    fraxAsCollateral, // [1] Frax being used as collateral to borrow fyFrax
-    fraxInLP, // [2] The Frax our LP tokens can lay claim to
-    fyFraxInContract, // [3] fyFrax sitting in AMO, should be 0
-    fyFraxInLP, // [4] fyFrax our LP can claim
-    LPOwned // [5] number of LP tokens
- */
-export const showAllocations = async (
-  provider: Provider,
-  amoAddress: string,
-  seriesId: string | undefined,
-  decimals: number
-): Promise<IAMOAllocations | undefined> => {
-  if (!seriesId) return undefined;
-
-  const contract = contractTypes.AMO__factory.connect(amoAddress, provider);
-
-  let fraxInContract: BigNumber;
-  let fraxAsCollateral: BigNumber;
-  let fraxInLP: BigNumber;
-  let fyFraxInContract: BigNumber;
-  let fyFraxInLP: BigNumber;
-  let LPOwned: BigNumber;
-
-  try {
-    [fraxInContract, fraxAsCollateral, fraxInLP, fyFraxInContract, fyFraxInLP, LPOwned] =
-      await contract.showAllocations(seriesId);
-  } catch (e) {
-    return undefined;
-  }
-
-  return {
-    fraxInContract,
-    fraxAsCollateral,
-    fraxInLP,
-    fyFraxInContract,
-    fyFraxInLP,
-    LPOwned,
-    fraxInContract_: formatUnits(fyFraxInContract, decimals),
-    fraxAsCollateral_: formatUnits(fraxAsCollateral, decimals),
-    fraxInLP_: formatUnits(fraxInLP, decimals),
-    fyFraxInContract_: formatUnits(fyFraxInContract, decimals),
-    fyFraxInLP_: formatUnits(fyFraxInLP, decimals),
-    LPOwned_: formatUnits(LPOwned, decimals),
-  };
 };
