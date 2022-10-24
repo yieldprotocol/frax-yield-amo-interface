@@ -52,7 +52,9 @@ const RemoveConfirmation = ({ form, action, disabled, loading }: IRemoveConfirma
           </DetailWrap>
           {fyTokenReceived && (
             <DetailWrap>
-              <Detail>Estimated {pool.fyToken.symbol} Received and Burned</Detail>
+              <Detail>
+                Estimated {pool.fyToken.symbol} Received and Burned for {pool.base.symbol}
+              </Detail>
               <Detail>{cleanValue(fyTokenReceived, pool.fyToken.digitFormat)}</Detail>
             </DetailWrap>
           )}

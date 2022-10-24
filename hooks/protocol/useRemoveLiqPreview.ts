@@ -3,7 +3,7 @@ import { BigNumber, ethers } from 'ethers';
 import { useEffect, useState } from 'react';
 import { DEFAULT_SLIPPAGE, SLIPPAGE_KEY } from '../../constants';
 import { IPool } from '../../lib/protocol/types';
-import { burn, newPoolState } from '../../utils/yieldMath';
+import { burn } from '../../utils/yieldMath';
 import { useLocalStorage } from '../useLocalStorage';
 
 const useRemoveLiqPreview = (pool: IPool | undefined, lpTokens: string) => {
@@ -27,7 +27,7 @@ const useRemoveLiqPreview = (pool: IPool | undefined, lpTokens: string) => {
       setFyTokenReceived(ethers.utils.formatUnits(fyTokenReceived, decimals));
 
       // calculate min and max ratios
-      const [minRatio, maxRatio] = calcPoolRatios(baseReserves, fyTokenReserves, +slippageTolerance);
+      const [minRatio, maxRatio] = calcPoolRatios(baseReserves, realReserves, +slippageTolerance);
       setMinRatio(minRatio);
       setMaxRatio(maxRatio);
     };

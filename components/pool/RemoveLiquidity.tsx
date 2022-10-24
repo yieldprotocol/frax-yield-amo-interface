@@ -43,7 +43,10 @@ const RemoveLiquidity = () => {
 
   const [form, setForm] = useState<IRemoveLiquidityForm>(INITIAL_FORM_STATE);
   const { pool, lpTokens } = form;
-  const { data: lpTokenBal } = useBalance({ addressOrName: amoAddress, token: pool?.address, enabled: !!pool });
+  const { data: lpTokenBal } = useBalance({
+    addressOrName: amoAddress,
+    token: pool?.address!,
+  });
 
   const [confirmModalOpen, setConfirmModalOpen] = useState<boolean>(false);
 

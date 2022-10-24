@@ -134,8 +134,8 @@ export const getPools = async (
         poolContract.totalSupply(),
       ]);
 
-      const base = await getAsset(provider, baseAddress, account);
-      const fyToken = await getAsset(provider, fyTokenAddress, account, true);
+      const base = await getAsset(provider, baseAddress, account, false, chainId);
+      const fyToken = await getAsset(provider, fyTokenAddress, account, true, chainId);
       const getTimeTillMaturity = () => maturity - Math.round(new Date().getTime() / 1000);
       const seriesId = fyTokenToSeries.get(fyToken.address);
       const timeStretchYears = getTimeStretchYears(ts);
@@ -228,7 +228,8 @@ export const getAsset = async (
   provider: Provider,
   tokenAddress: string,
   account: string | null = null,
-  isFyToken: boolean = false
+  isFyToken: boolean = false,
+  chainId: number
 ): Promise<IAsset> => {
   const ERC20 = ERC20Permit__factory.connect(tokenAddress, provider);
   const FYTOKEN = FYToken__factory.connect(tokenAddress, provider);
@@ -239,6 +240,15 @@ export const getAsset = async (
     isFyToken ? FYTOKEN.name() : ERC20.name(),
   ]);
 
+  let version: string;
+
+  try {
+    version = isFyToken ? await FYTOKEN.version() : await ERC20.version();
+  } catch (error) {
+    version = '1';
+    console.log('🦄 ~ file: index.ts ~ line 251 ~ error', error);
+  }
+
   const balance = account ? await getBalance(provider, tokenAddress, account, isFyToken) : ethers.constants.Zero;
 
   const contract = isFyToken ? FYTOKEN : ERC20;
@@ -248,6 +258,7 @@ export const getAsset = async (
 
   return {
     address: tokenAddress,
+    domain: { name, version, chainId, verifyingContract: contract.address },
     version: symbol === 'USDC' ? '2' : '1',
     name,
     symbol: isFyToken ? formatFyTokenSymbol(symbol) : symbol_,

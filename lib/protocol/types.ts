@@ -1,7 +1,7 @@
 import { BaseProvider, Web3Provider } from '@ethersproject/providers';
 import { BigNumber, Contract, ethers } from 'ethers';
 import { ERC20Permit, FYToken, Pool } from '../../contracts/types';
-import { ISignable } from '../tx/types';
+import { IDomain, ISignable } from '../tx/types';
 
 export type Provider = Web3Provider | ethers.providers.InfuraProvider | ethers.providers.JsonRpcProvider | BaseProvider;
 
@@ -70,6 +70,7 @@ export interface IAsset extends ISignable {
   balance: BigNumber;
   balance_: string;
   digitFormat: number;
+  domain: IDomain;
 
   contract: ERC20Permit | FYToken;
   getAllowance: (account: string, spender: string) => Promise<BigNumber>;

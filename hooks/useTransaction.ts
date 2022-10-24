@@ -17,7 +17,6 @@ const useTransaction = (pool?: IPool) => {
   const { refetch: refetchFraxBal } = useBalance({
     addressOrName: address,
     token: FRAX_ADDRESS,
-    chainId: chain?.id,
   });
   const { refetch: refetchAllocations } = useContractRead({
     addressOrName: address!,
@@ -25,6 +24,10 @@ const useTransaction = (pool?: IPool) => {
     functionName: AMOActions.Fn.SHOW_ALLOCATIONS,
     args: [pool?.seriesId] as AMOActions.Args.SHOW_ALLOCATIONS,
     enabled: !!pool,
+  });
+  const { refetch: refetchLpBal } = useBalance({
+    addressOrName: address,
+    token: pool?.address,
   });
 
   const { mutate } = useSWRConfig();
@@ -58,10 +61,11 @@ const useTransaction = (pool?: IPool) => {
           res &&
             toasty(
               async () => {
-                await res?.wait();
-                mutate(`/pools?chainId=${chainId}&usingTenderly=${usingTenderly}`);
+                await res.wait();
                 refetchFraxBal(); // refetch FRAX balance
                 refetchAllocations(); // refetch AMO allocations
+                refetchLpBal();
+                mutate(`/pools?chainId=${chainId}&usingTenderly=${usingTenderly}`);
               },
               description,
               explorer && `${explorer}/tx/${res.hash}`
