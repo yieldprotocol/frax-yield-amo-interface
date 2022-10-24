@@ -59,7 +59,7 @@ const useTransaction = (pool?: IPool) => {
             toasty(
               async () => {
                 await res?.wait();
-                !pool && mutate(`/pools?chainId=${chainId}&usingTenderly=${usingTenderly}`);
+                mutate(`/pools?chainId=${chainId}&usingTenderly=${usingTenderly}`);
                 refetchFraxBal(); // refetch FRAX balance
                 refetchAllocations(); // refetch AMO allocations
               },

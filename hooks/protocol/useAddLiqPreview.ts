@@ -32,7 +32,7 @@ const useAddLiqPreview = (pool: IPool, input: string) => {
         const fyTokenToBorrowWithSlippage = BigNumber.from(calculateSlippage(fyTokenToBorrow, undefined, true));
 
         // estimate lp tokens minted based on reserves
-        const [minted] = mint(baseReserves, fyTokenReserves, totalSupply, _input, false);
+        const [minted] = mint(baseReserves, realReserves, totalSupply, baseToPool, true);
 
         setBaseNeeded(baseToPool);
         setBaseNeeded_(formatUnits(baseToPool, decimals));
