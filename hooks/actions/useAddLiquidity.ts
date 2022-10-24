@@ -24,8 +24,7 @@ export const useAddLiquidity = (pool: IPool | undefined, input: string) => {
     contractInterface,
     functionName: AMOActions.Fn.ADD_LIQUIDITY,
     args,
-    enabled: !!(amoContract?.interface && amoAddress && !usingTenderly),
-    overrides: { gasLimit: 20_000_000 },
+    enabled: !!(contractInterface && amoAddress && !usingTenderly),
   });
 
   const { write } = useContractWrite(config);

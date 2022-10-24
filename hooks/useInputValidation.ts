@@ -3,7 +3,6 @@ import { useAccount, useBalance, useNetwork } from 'wagmi';
 import { FRAX_ADDRESS } from '../constants';
 import { IPool } from '../lib/protocol/types';
 import { AMOActions } from '../lib/tx/operations';
-import useAddLiqPreview from './protocol/useAddLiqPreview';
 import useAMO from './protocol/useAMO';
 
 const useInputValidation = (
@@ -13,24 +12,22 @@ const useInputValidation = (
   action: AMOActions.Fn
 ) => {
   const { address: account } = useAccount();
-  const { amoAddress } = useAMO();
+  const { address: amoAddress } = useAMO();
   const { chain } = useNetwork();
-  const { data: balance } = useBalance({
+  const { data: fraxBal } = useBalance({
     addressOrName: amoAddress,
     token: FRAX_ADDRESS,
     chainId: chain?.id,
     enabled: !!(amoAddress && chain),
   });
-  const ethBalance = balance?.formatted;
+  const { data: lpTokenBal } = useBalance({ addressOrName: amoAddress, token: pool?.address, enabled: !!pool });
+
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  const _input = parseFloat(input!);
+  const _input = +input!;
 
   const aboveMax = !!limits[1] && _input > parseFloat(limits[1].toString());
   const belowMin = !!limits[0] && _input < parseFloat(limits[0].toString());
-
-  // calculate the fyTokenNeeded for minting with both base and fyToken; only used with MINT
-  const { fyTokenNeeded, baseNeeded } = useAddLiqPreview(pool!, input!);
 
   useEffect(() => {
     if (!account) {
@@ -52,22 +49,21 @@ const useInputValidation = (
     setErrorMsg(null); // reset
 
     const { base, isMature } = pool;
-    const lpTokenBalance = parseFloat(pool.lpTokenBalance_);
 
     /* Action specific validation */
     switch (action) {
       case AMOActions.Fn.ADD_LIQUIDITY:
-        +balance?.formatted! < _input && setErrorMsg(`Insufficient ${base.symbol} balance`);
+        +fraxBal?.formatted! < _input && setErrorMsg(`Insufficient ${fraxBal?.symbol} balance`);
         isMature && setErrorMsg(`Pool matured: can only remove liquidity`);
         break;
       case AMOActions.Fn.REMOVE_LIQUIDITY:
-        lpTokenBalance < _input && setErrorMsg(`Insufficient LP token balance`);
+        +lpTokenBal?.formatted! < _input && setErrorMsg(`Insufficient LP token balance`);
         break;
       default:
         setErrorMsg(null);
         break;
     }
-  }, [_input, account, action, balance?.formatted, input, pool]);
+  }, [_input, account, action, fraxBal?.formatted, fraxBal?.symbol, input, lpTokenBal?.formatted, pool]);
 
   return { errorMsg };
 };

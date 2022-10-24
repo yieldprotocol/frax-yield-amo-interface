@@ -8,14 +8,14 @@ import usePools from '../../hooks/protocol/usePools';
 import PoolSelect from './PoolSelect';
 import { IPool } from '../../lib/protocol/types';
 import { BorderWrap, Header } from '../styles/common';
-import Toggle from '../common/Toggle';
 import Modal from '../common/Modal';
 import CloseButton from '../common/CloseButton';
 import RemoveConfirmation from './RemoveConfirmation';
 import useInputValidation from '../../hooks/useInputValidation';
-import { useAccount, useNetwork } from 'wagmi';
+import { useAccount, useBalance, useNetwork } from 'wagmi';
 import { useRemoveLiquidity } from '../../hooks/actions/useRemoveLiquidity';
 import { AMOActions } from '../../lib/tx/operations';
+import useAMO from '../../hooks/protocol/useAMO';
 
 const Inner = tw.div`m-4 text-center`;
 const HeaderSmall = tw.div`align-middle text-sm font-bold justify-start text-left`;
@@ -39,18 +39,19 @@ const RemoveLiquidity = () => {
   const { chain } = useNetwork();
   const { address: account } = useAccount();
   const { data: pools } = usePools();
+  const { address: amoAddress } = useAMO();
 
   const [form, setForm] = useState<IRemoveLiquidityForm>(INITIAL_FORM_STATE);
   const { pool, lpTokens } = form;
+  const { data: lpTokenBal } = useBalance({ addressOrName: amoAddress, token: pool?.address, enabled: !!pool });
 
-  const [burnForBase, setBurnForBase] = useState<boolean>(true);
   const [confirmModalOpen, setConfirmModalOpen] = useState<boolean>(false);
 
   const { errorMsg } = useInputValidation(lpTokens, pool, [0, lpTokens], AMOActions.Fn.REMOVE_LIQUIDITY);
   const { removeLiquidity, isRemovingLiq, removeSubmitted } = useRemoveLiquidity(pool!, lpTokens);
 
   const handleMaxLpTokens = () => {
-    setForm((f) => ({ ...f, lpTokens: pool?.lpTokenBalance_! }));
+    setForm((f) => ({ ...f, lpTokens: lpTokenBal?.formatted! }));
   };
 
   const handleClearAll = () => {
@@ -110,7 +111,7 @@ const RemoveLiquidity = () => {
             name="lpTokens"
             value={lpTokens}
             item={pool}
-            balance={pool?.lpTokenBalance_!}
+            balance={lpTokenBal?.formatted!}
             handleChange={handleInputChange}
             useMax={handleMaxLpTokens}
             pool={pool!}
