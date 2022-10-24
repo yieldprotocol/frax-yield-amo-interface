@@ -16,8 +16,6 @@ const useRatePreview = (
   const [baseNeeded, setBaseNeeded] = useState<BigNumber>(ethers.constants.Zero);
   const [baseNeeded_, setBaseNeeded_] = useState<string>('');
 
-  const [func, setFunc] = useState<string>();
-
   useEffect(() => {
     if (pool) {
       const {
@@ -40,7 +38,7 @@ const useRatePreview = (
         setBaseNeeded(_baseNeeded);
         setBaseNeeded_(cleanValue(ethers.utils.formatUnits(_baseNeeded, decimals), 2));
 
-        setFunc(+interestRate / 100 > desiredRate! ? 'decreaseRates' : 'increaseRates');
+        setRatePreview((desiredRate! * 100).toString());
       } else {
         // if changing base amount input, estimate the change in base and fyToken reserves based on rate change direction
         setBaseNeeded_(baseAmount!);
@@ -89,13 +87,10 @@ const useRatePreview = (
 
         const newRate = calculateRate(newFyTokenReserves, newBaseReserves, new Decimal(timeStretchYears_));
         setRatePreview(cleanValue((newRate.gt(ZERO_DEC) ? newRate : ZERO_DEC).mul(100).toString(), 2));
-
-        setFunc(+newRate > +interestRate! ? 'increaseRates' : 'decreaseRates');
       }
     } else {
       setBaseNeeded(ethers.constants.Zero);
       setBaseNeeded_('');
-      setFunc(undefined);
     }
   }, [baseAmount, desiredRate, increaseRates, pool, updatingRate]);
 
@@ -104,7 +99,6 @@ const useRatePreview = (
     baseNeeded,
     baseNeeded_,
     baseNeededWad: baseNeeded.toString(),
-    func,
   };
 };
 

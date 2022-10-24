@@ -46,7 +46,7 @@ const INITIAL_FORM_STATE: IWidgetForm = {
 const Widget = () => {
   const { address: account } = useAccount();
 
-  const { amoAddress } = useAMO();
+  const { address: amoAddress } = useAMO();
   const { chain } = useNetwork();
   const chainId = chain?.id || 1;
   const { data: baseBalance } = useBalance({
@@ -60,7 +60,9 @@ const Widget = () => {
   const [form, setForm] = useState<IWidgetForm>(INITIAL_FORM_STATE);
   const [confirmModalOpen, setConfirmModalOpen] = useState<boolean>(false);
   const { pool, desiredRate, baseAmount, updatingRate, increasingRate } = form;
-  const { baseNeededWad, baseNeeded_, func, ratePreview } = useRatePreview(
+  console.log('🦄 ~ file: Widget.tsx ~ line 63 ~ Widget ~ increasingRate', increasingRate);
+  const interestRate = +pool?.interestRate! * 100; // formatted to %
+  const { baseNeededWad, baseNeeded_, ratePreview } = useRatePreview(
     pool!,
     +desiredRate / 100,
     baseAmount,
@@ -68,7 +70,7 @@ const Widget = () => {
     increasingRate
   );
 
-  const { changeRate, isTransacting, txSubmitted } = useChangeRate(
+  const { changeRate, isTransacting } = useChangeRate(
     pool,
     +desiredRate / 100,
     increasingRate ? AMOActions.Fn.INCREASE_RATES : AMOActions.Fn.DECREASE_RATES
@@ -86,7 +88,6 @@ const Widget = () => {
       ...f,
       baseAmount: baseBalance?.formatted ?? '0',
       updatingRate: false,
-      increasingRate: !updatingRate && +ratePreview > +pool?.interestRate!,
     }));
   };
 
@@ -101,6 +102,12 @@ const Widget = () => {
   useEffect(() => {
     setForm((f) => ({ ...f, baseAmount: baseNeeded_ }));
   }, [baseNeeded_]);
+
+  // handle direction
+  useEffect(() => {
+    setForm((f) => ({ ...f, increasingRate: +ratePreview > interestRate }));
+  }, [interestRate, ratePreview]);
+
   // reset form when chainId changes
   useEffect(() => {
     setForm(INITIAL_FORM_STATE);
@@ -127,7 +134,7 @@ const Widget = () => {
             <div className="whitespace-nowrap text-sm text-left mb-1">Series Interest Rate</div>
             <InterestRateInput
               label={'Current'}
-              rate={cleanValue(pool?.interestRate!, 2) || ''}
+              rate={cleanValue(interestRate.toString(), 2) || ''}
               disabled={true}
               unfocused={true}
               setRate={() => null}
@@ -147,7 +154,9 @@ const Widget = () => {
             <div className="whitespace-nowrap text-sm text-left mb-1">
               {baseNeeded_ && (
                 <CopyWrap value={baseNeededWad} label="copy wad">
-                  <span>{func ? <code>{func}</code> : ''} Input</span>
+                  <span>
+                    <code>{increasingRate ? AMOActions.Fn.INCREASE_RATES : AMOActions.Fn.DECREASE_RATES}</code> Input
+                  </span>
                 </CopyWrap>
               )}
             </div>
@@ -155,11 +164,7 @@ const Widget = () => {
               <Toggle
                 enabled={increasingRate}
                 setEnabled={() => setForm((f) => ({ ...f, increasingRate: !f.increasingRate }))}
-                label={
-                  increasingRate || (!updatingRate && +ratePreview > +pool?.interestRate!)
-                    ? 'Increase Rate'
-                    : 'Decrease Rate'
-                }
+                label={increasingRate ? 'Increase Rate' : 'Decrease Rate'}
                 disabled={updatingRate}
               />
             )}

@@ -1216,9 +1216,7 @@ export const changeRate = (
 ) => {
   // format series data
   const _baseReserves = new Decimal(baseReserves.toString());
-  console.log('🦄 ~ file: yieldMath.ts ~ line 1219 ~  _baseReserves ', _baseReserves.div(10 ** 18).toString());
   const _fyTokenReserves = new Decimal(fyTokenReserves.toString());
-  console.log('🦄 ~ file: yieldMath.ts ~ line 1221 ~  _fyTokenReserves', _fyTokenReserves.div(10 ** 18).toString());
 
   const u = getTimeStretchYears(ts);
 
