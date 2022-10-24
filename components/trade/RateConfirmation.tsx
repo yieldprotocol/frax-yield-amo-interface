@@ -21,7 +21,6 @@ import {
   DisclaimerTextWrap,
   AssetSelectWrap,
   Right,
-  Bold,
 } from '../styles/confirm';
 import { ArrowRightIcon, LightningBoltIcon } from '@heroicons/react/solid';
 

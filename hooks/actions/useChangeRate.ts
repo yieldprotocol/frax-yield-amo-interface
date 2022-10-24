@@ -7,6 +7,8 @@ import { AMOActions } from '../../lib/tx/operations';
 import useRatePreview from '../protocol/useRatePreview';
 import { ethers } from 'ethers';
 import useTenderly from '../useTenderly';
+import { sellFYToken } from '@yield-protocol/ui-math';
+import useAddSeries from './useAddSeries';
 /**
  * Increase or decrease rates based on the desired rate (input) using an estimated amount of frax
  * Increasing rates entails minting fyFrax from frax and selling into the pool
@@ -21,9 +23,10 @@ export const useChangeRate = (
   method: AMOActions.Fn.INCREASE_RATES | AMOActions.Fn.DECREASE_RATES
 ) => {
   const { address: account } = useAccount();
-  const { amoContract, amoAddress, timelockAddress } = useAMO();
+  const { contract: amoContract, address: amoAddress, contractInterface } = useAMO();
   const { usingTenderly } = useTenderly();
   const { baseNeeded, baseNeeded_ } = useRatePreview(pool!, input);
+  const { seriesAdded, addSeries } = useAddSeries(pool!);
 
   const increaseRates = method === AMOActions.Fn.INCREASE_RATES;
   // incRates === minFraxReceived, decRates === minFyFraxReceived
@@ -32,21 +35,21 @@ export const useChangeRate = (
   // minFyFraxReceived from sellBase
   const minFyFraxReceived = ethers.constants.Zero;
   const minReceived = increaseRates ? minFraxReceived : minFyFraxReceived;
+  const args = [pool?.seriesId, baseNeeded, minReceived];
 
   const { config, error } = usePrepareContractWrite({
     addressOrName: amoAddress!,
-    contractInterface: amoContract?.interface!,
+    contractInterface,
     functionName: method,
-    args: [pool?.seriesId, baseNeeded, minReceived] as AMOActions.Args.INCREASE_RATES | AMOActions.Args.DECREASE_RATES,
-    enabled: !!(amoContract?.interface && amoAddress),
-    overrides: { gasLimit: usingTenderly ? 20_000_000 : undefined },
+    args,
+    enabled: !!(contractInterface && amoAddress && !usingTenderly),
   });
 
   const { write } = useContractWrite(config);
   const { handleTransact, isTransacting, txSubmitted } = useTransaction();
 
   // description to use in toast
-  const description = `${method === AMOActions.Fn.INCREASE_RATES ? 'Increase' : 'Decrease'} rates ${input}% ${
+  const description = `${increaseRates ? 'Increase' : 'Decrease'} rates ${input}% ${
     pool?.base.symbol
   } using ${valueAtDigits(baseNeeded_, 4)} ${pool?.base.symbol}`;
 
@@ -57,7 +60,19 @@ export const useChangeRate = (
       console.log('🦄 ~ file: useChangeRate.ts ~ line 56 ~ changeRate ~ error', error);
     }
 
-    handleTransact(() => write?.()!, description);
+    const _changeRate = async () => {
+      !seriesAdded && addSeries();
+
+      if (usingTenderly) {
+        return increaseRates
+          ? await amoContract.increaseRates(...(args as AMOActions.Args.INCREASE_RATES), { gasLimit: 20_000_000 })
+          : await amoContract.decreaseRates(...(args as AMOActions.Args.DECREASE_RATES), { gasLimit: 20_000_000 });
+      }
+
+      return await write?.()!;
+    };
+
+    handleTransact(() => _changeRate(), description);
   };
 
   return { changeRate, isTransacting, txSubmitted };

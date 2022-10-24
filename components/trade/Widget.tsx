@@ -60,7 +60,6 @@ const Widget = () => {
   const [form, setForm] = useState<IWidgetForm>(INITIAL_FORM_STATE);
   const [confirmModalOpen, setConfirmModalOpen] = useState<boolean>(false);
   const { pool, desiredRate, baseAmount, updatingRate, increasingRate } = form;
-  console.log('🦄 ~ file: Widget.tsx ~ line 63 ~ Widget ~ increasingRate', increasingRate);
   const interestRate = +pool?.interestRate! * 100; // formatted to %
   const { baseNeededWad, baseNeeded_, ratePreview } = useRatePreview(
     pool!,
@@ -70,7 +69,7 @@ const Widget = () => {
     increasingRate
   );
 
-  const { changeRate, isTransacting } = useChangeRate(
+  const { changeRate, isTransacting, txSubmitted } = useChangeRate(
     pool,
     +desiredRate / 100,
     increasingRate ? AMOActions.Fn.INCREASE_RATES : AMOActions.Fn.DECREASE_RATES
@@ -107,6 +106,14 @@ const Widget = () => {
   useEffect(() => {
     setForm((f) => ({ ...f, increasingRate: +ratePreview > interestRate }));
   }, [interestRate, ratePreview]);
+
+  // close modal when the tx was successfullly submitted (user took all actions to get tx through)
+  useEffect(() => {
+    if (txSubmitted) {
+      setConfirmModalOpen(false);
+      setForm((f) => ({ ...f, desiredRate: '', baseAmount: '' }));
+    }
+  }, [txSubmitted]);
 
   // reset form when chainId changes
   useEffect(() => {
