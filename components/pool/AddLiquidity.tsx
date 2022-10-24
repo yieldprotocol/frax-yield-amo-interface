@@ -37,7 +37,7 @@ const INITIAL_FORM_STATE: IAddLiquidityForm = {
 const AddLiquidity = () => {
   const router = useRouter();
   const { address } = router.query;
-  const { amoAddress } = useAMO();
+  const { address: amoAddress } = useAMO();
   const { chain } = useNetwork();
   const { address: account } = useAccount();
   const { data: pools } = usePools();

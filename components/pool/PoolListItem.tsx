@@ -28,8 +28,8 @@ interface IPoolListItem {
 }
 
 const PoolListItem = ({ pool }: IPoolListItem) => {
-  const { amoAddress } = useAMO();
-  const { data: balance } = useBalance({ addressOrName: amoAddress, token: pool.address });
+  const { address } = useAMO();
+  const { data: balance } = useBalance({ addressOrName: address, token: pool.address });
 
   return (
     <Link href={`/series/${pool.address}`} passHref>

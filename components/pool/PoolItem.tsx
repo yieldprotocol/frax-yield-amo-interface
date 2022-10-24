@@ -1,7 +1,5 @@
-import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import tw from 'tailwind-styled-components';
-import { IAMOAllocations, IPool } from '../../lib/protocol/types';
 import { BorderWrap, Header } from '../styles/common';
 import usePools from '../../hooks/protocol/usePools';
 import BackButton from '../common/BackButton';
@@ -9,11 +7,12 @@ import { cleanValue, hexToRgb } from '../../utils/appUtils';
 import { marks } from '../../config/marks';
 import CopyWrap from '../common/CopyWrap';
 import Button from '../common/Button';
-import { useContractRead, useNetwork } from 'wagmi';
+import { useContractRead } from 'wagmi';
 import { AMOActions } from '../../lib/tx/operations';
 import useAMO from '../../hooks/protocol/useAMO';
-import { formatUnits } from 'ethers/lib/utils';
+import { formatUnits, Interface } from 'ethers/lib/utils';
 import SkeletonWrap from '../common/SkeletonWrap';
+import abi from '../../contracts/abis/AMO.json';
 
 const Inner = tw.div`m-4 text-center`;
 const ButtonWrap = tw.div`flex justify-between gap-10`;
@@ -49,11 +48,10 @@ export const Logo = ({ symbol }: { symbol: string }) => {
 const PoolItem = () => {
   const router = useRouter();
   const { data: pools } = usePools();
-  const { amoAddress, amoContract } = useAMO();
-  const { chain } = useNetwork();
+  const { address: amoAddress, contractInterface } = useAMO();
   const { address } = router.query;
 
-  const pool = pools![address as string];
+  const pool = pools ? pools![address as string] : undefined;
 
   const {
     data: allocations,
@@ -61,9 +59,10 @@ const PoolItem = () => {
     isLoading,
   } = useContractRead({
     addressOrName: amoAddress!,
-    contractInterface: amoContract.interface,
-    functionName: 'showAllocations',
-    args: [pool.seriesId] as AMOActions.Args.SHOW_ALLOCATIONS,
+    contractInterface: contractInterface,
+    functionName: AMOActions.Fn.SHOW_ALLOCATIONS,
+    args: [pool?.seriesId] as AMOActions.Args.SHOW_ALLOCATIONS,
+    enabled: !!pool,
   });
 
   if (!pool) return null;

@@ -6,18 +6,16 @@ import useAMO from '../protocol/useAMO';
 import { AMOActions } from '../../lib/tx/operations';
 import useAddLiqPreview from '../protocol/useAddLiqPreview';
 import useTenderly from '../useTenderly';
-import { useEffect, useState } from 'react';
-import { bytesToBytes32 } from '@yield-protocol/ui-math';
 import useAddSeries from './useAddSeries';
 import { ethers } from 'ethers';
 
 export const useAddLiquidity = (pool: IPool | undefined, input: string) => {
   const { address: account } = useAccount();
-  const { amoContract, amoAddress } = useAMO();
+  const { contract: amoContract, address: amoAddress } = useAMO();
   const { usingTenderly } = useTenderly();
   const { baseNeeded, fyTokenNeeded, minRatio, maxRatio, baseNeeded_, fyTokenNeeded_ } = useAddLiqPreview(pool!, input);
   const { seriesAdded, addSeries } = useAddSeries(pool!);
-  const { handleTransact, isTransacting, txSubmitted } = useTransaction();
+  const { handleTransact, isTransacting, txSubmitted } = useTransaction(pool);
 
   // const args = [pool?.seriesId, baseNeeded, fyTokenNeeded, minRatio, maxRatio] as AMOActions.Args.ADD_LIQUIDITY;
   const args = [

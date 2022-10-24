@@ -3,16 +3,30 @@ import { ContractTransaction } from 'ethers';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 import { useSWRConfig } from 'swr';
-import { useBalance, useNetwork } from 'wagmi';
+import { useBalance, useContractRead, useNetwork } from 'wagmi';
 import { FRAX_ADDRESS } from '../constants';
+import { IPool } from '../lib/protocol/types';
+import { AMOActions } from '../lib/tx/operations';
 import useAMO from './protocol/useAMO';
 import useTenderly from './useTenderly';
 import useToasty from './useToasty';
 
-const useTransaction = () => {
+const useTransaction = (pool?: IPool) => {
   const { chain } = useNetwork();
-  const { amoAddress } = useAMO();
-  const { refetch } = useBalance({ addressOrName: amoAddress, token: FRAX_ADDRESS, chainId: chain?.id });
+  const { address, contractInterface } = useAMO();
+  const { refetch: refetchFraxBal } = useBalance({
+    addressOrName: address,
+    token: FRAX_ADDRESS,
+    chainId: chain?.id,
+  });
+  const { refetch: refetchAllocations } = useContractRead({
+    addressOrName: address!,
+    contractInterface,
+    functionName: AMOActions.Fn.SHOW_ALLOCATIONS,
+    args: [pool?.seriesId] as AMOActions.Args.SHOW_ALLOCATIONS,
+    enabled: !!pool,
+  });
+
   const { mutate } = useSWRConfig();
   const { toasty } = useToasty();
   const { usingTenderly } = useTenderly();
@@ -45,8 +59,9 @@ const useTransaction = () => {
             toasty(
               async () => {
                 await res?.wait();
-                mutate(`/pools?chainId=${chainId}&usingTenderly=${usingTenderly}`);
-                refetch(); // refetch ETH balance
+                !pool && mutate(`/pools?chainId=${chainId}&usingTenderly=${usingTenderly}`);
+                refetchFraxBal(); // refetch FRAX balance
+                refetchAllocations(); // refetch AMO allocations
               },
               description,
               explorer && `${explorer}/tx/${res.hash}`
