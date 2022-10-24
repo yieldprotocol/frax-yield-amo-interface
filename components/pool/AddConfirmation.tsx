@@ -3,7 +3,6 @@ import { IAsset, IPool } from '../../lib/protocol/types';
 import Button from '../common/Button';
 import useTimeTillMaturity from '../../hooks/useTimeTillMaturity';
 import { IAddLiquidityForm } from './AddLiquidity';
-import Arrow from '../trade/Arrow';
 import useAddLiquidityPreview from '../../hooks/protocol/useAddLiqPreview';
 import { valueAtDigits } from '../../utils/appUtils';
 import {
@@ -19,7 +18,6 @@ import {
   DetailWrap,
   DetailsWrap,
 } from '../styles/confirm';
-import { AMOActions } from '../../lib/tx/operations';
 
 interface IAddConfirmation {
   form: IAddLiquidityForm;
@@ -49,16 +47,6 @@ const AddConfirmation = ({ form, action, disabled, loading }: IAddConfirmation) 
     <Container>
       <InputsWrap>
         <ConfirmItem value={valueAtDigits(input, pool.base.digitFormat)} asset={pool.base} pool={pool!} />
-        {/* {useFyToken && (
-          <>
-            <Arrow isPlusIcon={true} />
-            <ConfirmItem
-              value={valueAtDigits(fyTokenAmount, pool.fyToken.digitFormat)}
-              asset={pool.fyToken}
-              pool={pool}
-            />
-          </>
-        )} */}
       </InputsWrap>
       <InputStyleContainer>
         <DetailsWrap>

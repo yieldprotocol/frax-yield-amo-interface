@@ -7,29 +7,21 @@ import { AMOActions } from '../../lib/tx/operations';
 import useAddLiqPreview from '../protocol/useAddLiqPreview';
 import useTenderly from '../useTenderly';
 import useAddSeries from './useAddSeries';
-import { ethers } from 'ethers';
 
 export const useAddLiquidity = (pool: IPool | undefined, input: string) => {
   const { address: account } = useAccount();
-  const { contract: amoContract, address: amoAddress } = useAMO();
+  const { contract: amoContract, address: amoAddress, contractInterface } = useAMO();
   const { usingTenderly } = useTenderly();
   const { baseNeeded, fyTokenNeeded, minRatio, maxRatio, baseNeeded_, fyTokenNeeded_ } = useAddLiqPreview(pool!, input);
   const { seriesAdded, addSeries } = useAddSeries(pool!);
   const { handleTransact, isTransacting, txSubmitted } = useTransaction(pool);
 
-  // const args = [pool?.seriesId, baseNeeded, fyTokenNeeded, minRatio, maxRatio] as AMOActions.Args.ADD_LIQUIDITY;
-  const args = [
-    pool?.seriesId,
-    baseNeeded,
-    fyTokenNeeded,
-    ethers.constants.Zero,
-    ethers.constants.MaxUint256,
-  ] as AMOActions.Args.ADD_LIQUIDITY;
+  const args = [pool?.seriesId, baseNeeded, fyTokenNeeded, minRatio, maxRatio] as AMOActions.Args.ADD_LIQUIDITY;
 
   // wagmi
   const { config, error } = usePrepareContractWrite({
     addressOrName: amoAddress!,
-    contractInterface: amoContract?.interface!,
+    contractInterface,
     functionName: AMOActions.Fn.ADD_LIQUIDITY,
     args,
     enabled: !!(amoContract?.interface && amoAddress && !usingTenderly),

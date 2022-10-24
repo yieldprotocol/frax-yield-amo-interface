@@ -1,9 +1,10 @@
+import { calcPoolRatios, mint } from '@yield-protocol/ui-math';
 import { BigNumber, ethers } from 'ethers';
 import { formatUnits } from 'ethers/lib/utils';
 import { useEffect, useState } from 'react';
 import { DEFAULT_SLIPPAGE, SLIPPAGE_KEY } from '../../constants';
 import { IPool } from '../../lib/protocol/types';
-import { calcPoolRatios, calculateSlippage, mint, splitLiquidity } from '../../utils/yieldMath';
+import { calculateSlippage, splitLiquidity } from '../../utils/yieldMath';
 import { useLocalStorage } from '../useLocalStorage';
 
 const useAddLiqPreview = (pool: IPool, input: string) => {
@@ -31,7 +32,7 @@ const useAddLiqPreview = (pool: IPool, input: string) => {
         const fyTokenToBorrowWithSlippage = BigNumber.from(calculateSlippage(fyTokenToBorrow, undefined, true));
 
         // estimate lp tokens minted based on reserves
-        const [minted] = mint(baseReserves, realReserves, totalSupply, _input, true);
+        const [minted] = mint(baseReserves, fyTokenReserves, totalSupply, _input, false);
 
         setBaseNeeded(baseToPool);
         setBaseNeeded_(formatUnits(baseToPool, decimals));
@@ -40,7 +41,7 @@ const useAddLiqPreview = (pool: IPool, input: string) => {
         setLpTokenPreview(formatUnits(minted, decimals));
 
         // calculate min and max ratios
-        const [minRatio, maxRatio] = calcPoolRatios(baseReserves, fyTokenReserves, +slippageTolerance);
+        const [minRatio, maxRatio] = calcPoolRatios(baseReserves, realReserves, +slippageTolerance);
         setMinRatio(minRatio);
         setMaxRatio(maxRatio);
       }
