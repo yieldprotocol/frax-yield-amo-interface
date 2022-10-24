@@ -54,14 +54,28 @@ const RateConfirmation = ({ form, action, disabled, loading }: IRateConfirmation
   return (
     <Container>
       <div className="italic text-gray-50 mt-4 whitespace-nowrap text-sm">
-        Deposit FRAX ==> Mint FYFRAX ==> Swap FYFRAX to FRAX
+        {increasingRate
+          ? 'Deposit FRAX ==> Mint FYFRAX ==> Swap FYFRAX to FRAX'
+          : 'Swap FRAX to FYFRAX ==> Burn FYFRAX'}
       </div>
       <InputsWrap>
-        <ConfirmItem value={baseAmount_} asset={pool.base} pool={pool} />
-        <Arrow isBolt={true} />
-        <ConfirmItem value={baseAmount_} asset={pool.fyToken} pool={pool} />
-        <Arrow />
-        <ConfirmItem value={baseAmount_} asset={pool.base} pool={pool} />
+        {increasingRate ? (
+          <>
+            <ConfirmItem value={baseAmount_} asset={pool.base} pool={pool} />
+            <Arrow isBolt={true} />
+            <ConfirmItem value={baseAmount_} asset={pool.fyToken} pool={pool} />
+            <Arrow />
+            <ConfirmItem value={baseAmount_} asset={pool.base} pool={pool} />
+          </>
+        ) : (
+          <>
+            <ConfirmItem value={baseAmount_} asset={pool.base} pool={pool} />
+            <Arrow />
+            <ConfirmItem value={baseAmount_} asset={pool.fyToken} pool={pool} />
+            <Arrow isBolt={true} />
+            <ConfirmItem value={baseAmount_} asset={pool.fyToken} pool={pool} />
+          </>
+        )}
       </InputsWrap>
       <InputStyleContainer>
         <DetailsWrap>
