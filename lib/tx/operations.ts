@@ -1,4 +1,4 @@
-import { BigNumberish, BytesLike } from 'ethers';
+import { BigNumber, BigNumberish, BytesLike } from 'ethers';
 
 export namespace AMOActions {
   export enum Fn {
@@ -7,6 +7,7 @@ export namespace AMOActions {
     INCREASE_RATES = 'increaseRates',
     DECREASE_RATES = 'decreaseRates',
     ADD_SERIES = 'addSeries',
+    SHOW_ALLOCATIONS = 'showAllocations',
   }
 
   export namespace Args {
@@ -34,5 +35,18 @@ export namespace AMOActions {
     ];
 
     export type ADD_SERIES = [seriesId_bytes6: BytesLike, fyToken: string, pool: string];
+
+    export type SHOW_ALLOCATIONS = [seriesId_bytes6: BytesLike];
+  }
+
+  export namespace Res {
+    export type SHOW_ALLOCATIONS = [
+      fraxInContract: BigNumber,
+      fraxAsCollateral: BigNumber,
+      fraxInLP: BigNumber,
+      fyFraxInContract: BigNumber,
+      fyFraxInLP: BigNumber,
+      LPOwned: BigNumber
+    ];
   }
 }

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import tw from 'tailwind-styled-components';
-import { IPool } from '../../lib/protocol/types';
+import { IAMOAllocations, IPool } from '../../lib/protocol/types';
 import { BorderWrap, Header } from '../styles/common';
 import usePools from '../../hooks/protocol/usePools';
 import BackButton from '../common/BackButton';
@@ -9,6 +9,11 @@ import { cleanValue, hexToRgb } from '../../utils/appUtils';
 import { marks } from '../../config/marks';
 import CopyWrap from '../common/CopyWrap';
 import Button from '../common/Button';
+import { useContractRead, useNetwork } from 'wagmi';
+import { AMOActions } from '../../lib/tx/operations';
+import useAMO from '../../hooks/protocol/useAMO';
+import { formatUnits } from 'ethers/lib/utils';
+import SkeletonWrap from '../common/SkeletonWrap';
 
 const Inner = tw.div`m-4 text-center`;
 const ButtonWrap = tw.div`flex justify-between gap-10`;
@@ -24,7 +29,7 @@ const Top = tw.div`h-[120px] rounded-t-lg`;
 const Middle = tw.div`grid gap-3 justify-start px-5 text-left`;
 
 export const Logo = ({ symbol }: { symbol: string }) => {
-  const mark = marks[symbol];
+  const mark = (marks as any)[symbol];
   return (
     <div className="absolute">
       <div className="flex align-middle justify-center items-center h-[56px] w-[56px] dark:bg-gray-800 bg-gray-200 rounded-full border-[2px] dark:border-gray-800 border-gray-200 relative -mt-[28px]">
@@ -44,20 +49,37 @@ export const Logo = ({ symbol }: { symbol: string }) => {
 const PoolItem = () => {
   const router = useRouter();
   const { data: pools } = usePools();
+  const { amoAddress, amoContract } = useAMO();
+  const { chain } = useNetwork();
   const { address } = router.query;
 
-  const [pool, setPool] = useState<IPool | undefined>();
+  const pool = pools![address as string];
 
-  useEffect(() => {
-    if (pools) {
-      const _pool = pools[address as string];
-      _pool && setPool(_pool);
-    }
-  }, [pools, address]);
+  const {
+    data: allocations,
+    error,
+    isLoading,
+  } = useContractRead({
+    addressOrName: amoAddress!,
+    contractInterface: amoContract.interface,
+    functionName: 'showAllocations',
+    args: [pool.seriesId] as AMOActions.Args.SHOW_ALLOCATIONS,
+  });
 
   if (!pool) return null;
 
-  const { amoAllocations, base } = pool;
+  const { base } = pool;
+
+  if (error && !allocations && !isLoading) {
+    return (
+      <BorderWrap>
+        <Inner>
+          <BackButton onClick={() => router.back()} />
+          No allocations found
+        </Inner>
+      </BorderWrap>
+    );
+  }
 
   return (
     <BorderWrap>
@@ -77,27 +99,39 @@ const PoolItem = () => {
               </CopyWrap>
               <PoolDataWrap>
                 <PoolDataLabel>Frax in contract</PoolDataLabel>
-                <PoolData>{cleanValue(amoAllocations?.fraxInContract_, 2)}</PoolData>
+                <PoolData>
+                  {isLoading ? <SkeletonWrap /> : cleanValue(formatUnits(allocations![0], base.decimals), 2)}
+                </PoolData>
               </PoolDataWrap>
               <PoolDataWrap>
                 <PoolDataLabel>Frax as collateral</PoolDataLabel>
-                <PoolData>{cleanValue(amoAllocations?.fraxAsCollateral_, 2)}</PoolData>
+                <PoolData>
+                  {isLoading ? <SkeletonWrap /> : cleanValue(formatUnits(allocations![1], base.decimals), 2)}
+                </PoolData>
               </PoolDataWrap>
               <PoolDataWrap>
                 <PoolDataLabel>Frax in LP</PoolDataLabel>
-                <PoolData>{cleanValue(amoAllocations?.fraxInLP_, 2)}</PoolData>
+                <PoolData>
+                  {isLoading ? <SkeletonWrap /> : cleanValue(formatUnits(allocations![2], base.decimals), 2)}
+                </PoolData>
               </PoolDataWrap>
               <PoolDataWrap>
                 <PoolDataLabel>fyFrax in contract</PoolDataLabel>
-                <PoolData>{cleanValue(amoAllocations?.fyFraxInContract_, 2)}</PoolData>
+                <PoolData>
+                  {isLoading ? <SkeletonWrap /> : cleanValue(formatUnits(allocations![3], base.decimals), 2)}
+                </PoolData>
               </PoolDataWrap>
               <PoolDataWrap>
                 <PoolDataLabel>fyFrax in LP</PoolDataLabel>
-                <PoolData>{cleanValue(amoAllocations?.fyFraxInLP_, 2)}</PoolData>
+                <PoolData>
+                  {isLoading ? <SkeletonWrap /> : cleanValue(formatUnits(allocations![4], base.decimals), 2)}
+                </PoolData>
               </PoolDataWrap>
               <PoolDataWrap>
                 <PoolDataLabel>LP owned</PoolDataLabel>
-                <PoolData>{cleanValue(amoAllocations?.LPOwned_, 2)}</PoolData>
+                <PoolData>
+                  {isLoading ? <SkeletonWrap /> : cleanValue(formatUnits(allocations![5], base.decimals), 2)}
+                </PoolData>
               </PoolDataWrap>
             </div>
           </Middle>
