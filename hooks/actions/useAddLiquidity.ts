@@ -7,7 +7,6 @@ import { AMOActions } from '../../lib/tx/operations';
 import useAddLiqPreview from '../protocol/useAddLiqPreview';
 import useTenderly from '../useTenderly';
 import useAddSeries from './useAddSeries';
-import usePool from '../protocol/usePool';
 
 export const useAddLiquidity = (pool: IPool | undefined, input: string) => {
   const { address: account } = useAccount();
