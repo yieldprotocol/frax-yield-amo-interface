@@ -19,7 +19,6 @@ const useRatePreview = (
 
   useEffect(() => {
     if (data) {
-      console.log('🦄 ~ file: useRatePreview.ts ~ line 26 ~ useEffect ~ data', data);
       const { baseReserves, fyTokenReserves, timeTillMaturity, ts, g1, g2, decimals } = data;
 
       const _baseNeeded = changeRate(baseReserves, fyTokenReserves, timeTillMaturity!, ts, g1, g2, desiredRate || 0);
