@@ -118,10 +118,6 @@ const usePool = (poolAddress: string | undefined) => {
       : undefined;
   }, [data, interestRate, isMature, timeStretchYears, timeTillMaturity]);
 
-  useEffect(() => {
-    console.log('🦄 ~ file: usePool.ts ~ line 80 ~ usePool ~ isRefetching', isRefetching);
-  }, [isRefetching]);
-
   return {
     data: _data,
     isError,
