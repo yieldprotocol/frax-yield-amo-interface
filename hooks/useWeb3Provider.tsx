@@ -1,4 +1,4 @@
-import { darkTheme, getDefaultWallets, RainbowKitProvider, Theme } from '@rainbow-me/rainbowkit';
+import { darkTheme, getDefaultWallets, RainbowKitProvider, Theme, AvatarComponent } from '@rainbow-me/rainbowkit';
 import { chain, configureChains, createClient, WagmiConfig } from 'wagmi';
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
 import merge from 'lodash.merge';
@@ -6,6 +6,7 @@ import { useColorTheme } from './useColorTheme';
 import { URLS } from '../config/chains';
 import useTenderly from './useTenderly';
 import { ReactNode } from 'react';
+import FRAXMark from '../components/common/logos/FRAXMark';
 
 export default function Web3Provider({ children }: { children: ReactNode }) {
   const { theme: colorTheme } = useColorTheme();
@@ -44,9 +45,13 @@ export default function Web3Provider({ children }: { children: ReactNode }) {
     },
   } as Theme);
 
+  const CustomAvatar: AvatarComponent = () => {
+    return <FRAXMark />;
+  };
+
   return (
     <WagmiConfig client={wagmiClient}>
-      <RainbowKitProvider chains={chains} theme={theme} showRecentTransactions>
+      <RainbowKitProvider chains={chains} theme={theme} showRecentTransactions avatar={CustomAvatar}>
         {children}
       </RainbowKitProvider>
     </WagmiConfig>
