@@ -30,7 +30,7 @@ export const useChangeRate = (
   const { usingTenderly, tenderlyProvider } = useTenderly();
   const increaseRates = method === AMOActions.Fn.INCREASE_RATES;
   const { baseNeeded, baseNeeded_, ratePreview, fyTokenBought } = useRatePreview(
-    pool!,
+    pool?.address!,
     input,
     undefined,
     false,
