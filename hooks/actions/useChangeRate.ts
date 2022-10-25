@@ -57,7 +57,7 @@ export const useChangeRate = (
   });
 
   const { write } = useContractWrite(config);
-  const { handleTransact, isTransacting, txSubmitted } = useTransaction();
+  const { handleTransact, isTransacting, txSubmitted } = useTransaction(pool);
 
   // description to use in toast
   const description = `${increaseRates ? 'Increase' : 'Decrease'} rates to ${ratePreview}% using ${valueAtDigits(

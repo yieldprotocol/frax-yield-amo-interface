@@ -20,7 +20,7 @@ export const useRemoveLiquidity = (pool: IPool | undefined, input: string) => {
   const { usingTenderly, tenderlyProvider } = useTenderly();
   const contracts = useContracts(usingTenderly ? tenderlyProvider : provider);
   const { minRatio, maxRatio, fyTokenReceived } = useRemoveLiqPreview(pool!, input);
-  const { handleTransact, isTransacting, txSubmitted } = useTransaction();
+  const { handleTransact, isTransacting, txSubmitted } = useTransaction(pool);
 
   const cleanInput = cleanValue(input || '0', pool?.decimals);
   const _input = ethers.utils.parseUnits(cleanInput, pool?.decimals);

@@ -1,5 +1,5 @@
 import { JsonRpcProvider } from '@ethersproject/providers';
-import { useContext, useMemo } from 'react';
+import { useCallback, useContext, useMemo } from 'react';
 import useSWR from 'swr/immutable';
 import { SettingsContext } from '../contexts/SettingsContext';
 
@@ -11,7 +11,7 @@ const useTenderly = () => {
 
   const tenderlyProvider = useMemo(() => new JsonRpcProvider(TENDERLY_FORK_RPC_URL), []);
 
-  const getStartBlock = async () => {
+  const getStartBlock = useCallback(async () => {
     if (tenderlyProvider) {
       try {
         return +(await tenderlyProvider.send('tenderly_getForkBlockNumber', []));
@@ -21,7 +21,7 @@ const useTenderly = () => {
       }
     }
     return undefined;
-  };
+  }, []);
 
   const { data: startBlock } = useSWR('/tenderlyStartBlock', getStartBlock, {
     shouldRetryOnError: false,

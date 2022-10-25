@@ -52,7 +52,6 @@ const Widget = () => {
   const { data: baseBalance } = useBalance({
     addressOrName: amoAddress,
     token: FRAX_ADDRESS,
-    chainId,
     enabled: !!amoAddress,
   });
   const { data: pools } = usePools();

@@ -103,10 +103,11 @@ export const getPools = async (
       const baseAddress = await poolContract.base();
       if (baseAddress.toLowerCase() !== FRAX_ADDRESS) return await pools;
 
-      const [name, maturity, fyTokenAddress] = await Promise.all([
+      const [name, maturity, fyTokenAddress, symbol] = await Promise.all([
         poolContract.name(),
         poolContract.maturity(),
         poolContract.fyToken(),
+        poolContract.symbol(),
       ]);
 
       const base = await getAsset(provider, baseAddress, account, false, chainId);
@@ -117,6 +118,7 @@ export const getPools = async (
         address,
         name,
         maturity,
+        symbol,
         seriesId,
         fyTokenAddress,
         baseAddress,

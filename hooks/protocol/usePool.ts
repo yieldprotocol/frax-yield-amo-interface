@@ -1,6 +1,6 @@
 import Decimal from 'decimal.js';
 import { BigNumber } from 'ethers';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useContractReads } from 'wagmi';
 import { Pool__factory } from '../../contracts/types';
 import { calculateRate, getTimeStretchYears } from '../../utils/yieldMath';
@@ -31,7 +31,8 @@ const usePool = (poolAddress: string | undefined) => {
     [poolAddress, provider, tenderlyProvider, usingTenderly]
   );
 
-  const { data, isError, isLoading } = useContractReads({
+  const { data, isError, isLoading, refetch, isRefetching } = useContractReads({
+    allowFailure: true,
     contracts: [
       {
         addressOrName: poolAddress!,
@@ -75,6 +76,7 @@ const usePool = (poolAddress: string | undefined) => {
       },
     ],
     enabled: !!(poolAddress && contract),
+    keepPreviousData: true,
   });
 
   const timeTillMaturity = useMemo(
@@ -84,18 +86,21 @@ const usePool = (poolAddress: string | undefined) => {
 
   const isMature = +timeTillMaturity! > 0;
 
-  const timeStretchYears = useMemo(() => (data ? getTimeStretchYears(BigNumber.from(data[3])) : undefined), [data]);
+  const timeStretchYears = useMemo(
+    () => (data && data[3] ? getTimeStretchYears(BigNumber.from(data[3])) : undefined),
+    [data]
+  );
 
   const interestRate = useMemo(
     () =>
-      data && timeStretchYears
+      data && timeStretchYears && data[1] && data[0]
         ? calculateRate(BigNumber.from(data[1]), BigNumber.from(data[0]), timeStretchYears!).toString()
         : undefined,
     [data, timeStretchYears]
   );
 
   const _data = useMemo(() => {
-    return data
+    return data && data[0] && data[1] && data[2] && data[3] && data[4] && data[5] && data[6] && data[7]
       ? ({
           baseReserves: BigNumber.from(data[0]),
           fyTokenReserves: BigNumber.from(data[1]),
@@ -113,10 +118,15 @@ const usePool = (poolAddress: string | undefined) => {
       : undefined;
   }, [data, interestRate, isMature, timeStretchYears, timeTillMaturity]);
 
+  useEffect(() => {
+    console.log('🦄 ~ file: usePool.ts ~ line 80 ~ usePool ~ isRefetching', isRefetching);
+  }, [isRefetching]);
+
   return {
     data: _data,
     isError,
     isLoading,
+    refetch,
   };
 };
 

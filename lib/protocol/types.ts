@@ -16,6 +16,7 @@ export interface IPoolMap {
 export interface IPoolRoot {
   address: string;
   name: string;
+  symbol: string;
   maturity: number;
   seriesId: string;
   fyTokenAddress: string;
