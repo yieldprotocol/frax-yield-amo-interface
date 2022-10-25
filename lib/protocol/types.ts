@@ -1,6 +1,6 @@
 import { BaseProvider, Web3Provider } from '@ethersproject/providers';
 import { BigNumber, Contract, ethers } from 'ethers';
-import { ERC20Permit, FYToken, Pool } from '../../contracts/types';
+import { ERC20Permit, FYToken } from '../../contracts/types';
 import { IDomain, ISignable } from '../tx/types';
 
 export type Provider = Web3Provider | ethers.providers.InfuraProvider | ethers.providers.JsonRpcProvider | BaseProvider;
@@ -16,32 +16,15 @@ export interface IPoolMap {
 export interface IPoolRoot {
   address: string;
   name: string;
-  symbol: string;
-  version: string;
-  decimals: number;
   maturity: number;
-  ts: BigNumber;
-  g1: BigNumber;
-  g2: BigNumber;
-
-  isMature: boolean;
-  getTimeTillMaturity: () => number;
-
-  baseReserves: BigNumber;
-  baseReserves_: string;
-  fyTokenReserves: BigNumber;
-  fyTokenReserves_: string;
-  totalSupply: BigNumber;
   seriesId: string;
+  fyTokenAddress: string;
+  baseAddress: string;
 
   base: IAsset;
   fyToken: IAsset;
 
-  contract: Pool;
-
-  interestRate: string; // market interest rate
-
-  timeStretchYears_: string; // time stretch associated years
+  isMature: boolean;
 }
 
 export interface IPool extends IPoolRoot {

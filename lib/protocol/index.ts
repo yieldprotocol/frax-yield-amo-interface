@@ -11,8 +11,6 @@ import { ERC20Permit__factory } from '../../contracts/types/factories/ERC20Permi
 import { FYToken__factory } from '../../contracts/types/factories/FYToken__factory';
 import { PoolAddedEvent } from '../../contracts/types/Ladle';
 import { SeriesAddedEvent } from '../../contracts/types/Cauldron';
-import { calculateRate, getTimeStretchYears } from '../../utils/yieldMath';
-import { formatUnits } from 'ethers/lib/utils';
 import { JsonRpcProvider, JsonRpcSigner } from '@ethersproject/providers';
 
 const { seasonColors } = yieldEnv;
@@ -102,71 +100,29 @@ export const getPools = async (
 
     try {
       // only frax
-      const baseAddr = await poolContract.base();
-      if (baseAddr.toLowerCase() !== FRAX_ADDRESS) return await pools;
+      const baseAddress = await poolContract.base();
+      if (baseAddress.toLowerCase() !== FRAX_ADDRESS) return await pools;
 
-      const [
-        name,
-        version,
-        decimals,
-        maturity,
-        ts,
-        g1,
-        g2,
-        fyTokenAddress,
-        baseAddress,
-        lpTokenBalance,
-        baseReserves,
-        fyTokenReserves,
-        totalSupply,
-      ] = await Promise.all([
+      const [name, maturity, fyTokenAddress] = await Promise.all([
         poolContract.name(),
-        poolContract.version(),
-        poolContract.decimals(),
         poolContract.maturity(),
-        poolContract.ts(),
-        poolContract.g1(),
-        poolContract.g2(),
         poolContract.fyToken(),
-        poolContract.base(),
-        account ? poolContract.balanceOf(account) : ethers.constants.Zero,
-        poolContract.getBaseBalance(),
-        poolContract.getFYTokenBalance(),
-        poolContract.totalSupply(),
       ]);
 
       const base = await getAsset(provider, baseAddress, account, false, chainId);
       const fyToken = await getAsset(provider, fyTokenAddress, account, true, chainId);
-      const getTimeTillMaturity = () => maturity - Math.round(new Date().getTime() / 1000);
-      const seriesId = fyTokenToSeries.get(fyToken.address);
-      const timeStretchYears = getTimeStretchYears(ts);
-      const amoAddress = (yieldEnv.addresses as any)[chainId][FRAX_AMO];
+      const seriesId = fyTokenToSeries.get(fyTokenAddress);
 
       const newPool = {
         address,
         name,
-        symbol: `FY${base.symbol} ${format(new Date(maturity * 1000), 'MMM yyyy')}`,
-        version,
-        decimals,
         maturity,
-        ts,
-        g1,
-        g2,
-        isMature: maturity < (await provider.getBlock('latest')).timestamp,
-        lpTokenBalance,
-        lpTokenBalance_: formatUnits(lpTokenBalance, decimals),
-        baseReserves,
-        baseReserves_: formatUnits(baseReserves, decimals),
-        fyTokenReserves,
-        fyTokenReserves_: formatUnits(fyTokenReserves, decimals),
-        getTimeTillMaturity,
-        contract: poolContract,
-        totalSupply,
         seriesId,
+        fyTokenAddress,
+        baseAddress,
         base,
         fyToken,
-        interestRate: calculateRate(fyTokenReserves, baseReserves, timeStretchYears).toString(),
-        timeStretchYears_: timeStretchYears.toString(),
+        isMature: maturity < (await provider.getBlock('latest')).timestamp,
       } as IPoolRoot;
 
       return { ...(await pools), [address]: _chargePool(newPool, chainId) };
