@@ -3,11 +3,13 @@ import { BigNumber, ethers } from 'ethers';
 import { formatUnits } from 'ethers/lib/utils';
 import { useEffect, useState } from 'react';
 import { DEFAULT_SLIPPAGE, SLIPPAGE_KEY } from '../../constants';
-import { IPool } from '../../lib/protocol/types';
 import { calculateSlippage, splitLiquidity } from '../../utils/yieldMath';
 import { useLocalStorage } from '../useLocalStorage';
+import usePool from './usePool';
 
-const useAddLiqPreview = (pool: IPool, input: string) => {
+const useAddLiqPreview = (poolAddress: string, input: string) => {
+  const { data } = usePool(poolAddress);
+
   const [slippageTolerance] = useLocalStorage(SLIPPAGE_KEY, DEFAULT_SLIPPAGE);
 
   const [lpTokenPreview, setLpTokenPreview] = useState<string>('');
@@ -20,8 +22,8 @@ const useAddLiqPreview = (pool: IPool, input: string) => {
 
   useEffect(() => {
     (async () => {
-      if (pool) {
-        const { totalSupply, decimals, baseReserves, fyTokenReserves } = pool;
+      if (data) {
+        const { totalSupply, decimals, baseReserves, fyTokenReserves } = data;
         const _input = ethers.utils.parseUnits(input || '0', decimals);
         const realReserves = fyTokenReserves.sub(totalSupply);
 
@@ -46,7 +48,7 @@ const useAddLiqPreview = (pool: IPool, input: string) => {
         setMaxRatio(maxRatio);
       }
     })();
-  }, [input, pool, slippageTolerance]);
+  }, [data, input, slippageTolerance]);
 
   return { lpTokenPreview, fyTokenNeeded, fyTokenNeeded_, baseNeeded, baseNeeded_, minRatio, maxRatio };
 };

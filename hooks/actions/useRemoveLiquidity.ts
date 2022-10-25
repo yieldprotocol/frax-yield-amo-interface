@@ -2,7 +2,7 @@ import { ethers } from 'ethers';
 import { IPool } from '../../lib/protocol/types';
 import { cleanValue, valueAtDigits } from '../../utils/appUtils';
 import useTransaction from '../useTransaction';
-import { useAccount, useBalance, useContractWrite, usePrepareContractWrite } from 'wagmi';
+import { useAccount, useContractWrite, usePrepareContractWrite } from 'wagmi';
 import useAMO from '../protocol/useAMO';
 import useRemoveLiqPreview from '../protocol/useRemoveLiqPreview';
 import { AMOActions } from '../../lib/tx/operations';

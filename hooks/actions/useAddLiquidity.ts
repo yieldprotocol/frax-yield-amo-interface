@@ -7,12 +7,16 @@ import { AMOActions } from '../../lib/tx/operations';
 import useAddLiqPreview from '../protocol/useAddLiqPreview';
 import useTenderly from '../useTenderly';
 import useAddSeries from './useAddSeries';
+import usePool from '../protocol/usePool';
 
 export const useAddLiquidity = (pool: IPool | undefined, input: string) => {
   const { address: account } = useAccount();
   const { contract: amoContract, address: amoAddress, contractInterface } = useAMO();
   const { usingTenderly } = useTenderly();
-  const { baseNeeded, fyTokenNeeded, minRatio, maxRatio, baseNeeded_, fyTokenNeeded_ } = useAddLiqPreview(pool!, input);
+  const { baseNeeded, fyTokenNeeded, minRatio, maxRatio, baseNeeded_, fyTokenNeeded_ } = useAddLiqPreview(
+    pool?.address!,
+    input
+  );
   const { seriesAdded, addSeries } = useAddSeries(pool!);
   const { handleTransact, isTransacting, txSubmitted } = useTransaction(pool);
 
