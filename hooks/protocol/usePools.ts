@@ -1,24 +1,38 @@
+import { useMemo } from 'react';
 import useSWR from 'swr';
-// import { useNetwork } from 'wagmi';
-import yieldEnv from '../../config/yieldEnv';
-import { FRAX_AMO } from '../../constants';
+import { useNetwork } from 'wagmi';
 import { getPools } from '../../lib/protocol';
 import { IPoolMap } from '../../lib/protocol/types';
 import useDefaultProvider from '../useDefaultProvider';
+import useTenderly from '../useTenderly';
 import useContracts from './useContracts';
 
 const usePools = () => {
-  const chainId = 1;
-  const amoAddress = yieldEnv.addresses[chainId][FRAX_AMO];
-  // const { activeChain } = useNetwork();
+  const { chain } = useNetwork();
+  const chainId = useMemo(() => (chain ? chain.id : 1), [chain]);
   const provider = useDefaultProvider();
-  const contractMap = useContracts();
+
+  const { usingTenderly, tenderlyProvider, tenderlyStartBlock } = useTenderly();
+  const contractMap = useContracts(provider);
+  const tenderlyContractMap = useContracts(tenderlyProvider!);
+
+  const key = `/pools?chainId=${chainId}&usingTenderly=${usingTenderly}`;
 
   const { data, error } = useSWR(
-    provider ? `/pools/${chainId}/${amoAddress}` : null,
-    () => getPools(provider!, contractMap!, chainId, amoAddress),
+    key,
+    () =>
+      getPools(
+        provider,
+        contractMap!,
+        chainId,
+        usingTenderly,
+        tenderlyContractMap,
+        tenderlyStartBlock,
+        tenderlyProvider
+      ),
     {
       revalidateOnFocus: false,
+      dedupingInterval: 3_600_000, // dont duplicate a request w/ same key for 1hr
     }
   );
 

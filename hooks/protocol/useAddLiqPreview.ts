@@ -1,105 +1,54 @@
+import { calcPoolRatios, mint } from '@yield-protocol/ui-math';
 import { BigNumber, ethers } from 'ethers';
+import { formatUnits } from 'ethers/lib/utils';
 import { useEffect, useState } from 'react';
 import { DEFAULT_SLIPPAGE, SLIPPAGE_KEY } from '../../constants';
-import { AddLiquidityActions } from '../../lib/protocol/liquidity/types';
 import { IPool } from '../../lib/protocol/types';
-import { fyTokenForMint, mint, mintWithBase } from '../../utils/yieldMath';
+import { calculateSlippage, splitLiquidity } from '../../utils/yieldMath';
 import { useLocalStorage } from '../useLocalStorage';
 
-const useAddLiqPreview = (
-  pool: IPool,
-  baseAmount: string,
-  method: AddLiquidityActions | undefined,
-  fyTokenAmount = '',
-  updatingFyTokenAmount = false
-) => {
-  const [lpTokenPreview, setLpTokenPreview] = useState<string>('');
+const useAddLiqPreview = (pool: IPool, input: string) => {
+  const [slippageTolerance] = useLocalStorage(SLIPPAGE_KEY, DEFAULT_SLIPPAGE);
 
-  // mint state
+  const [lpTokenPreview, setLpTokenPreview] = useState<string>('');
   const [baseNeeded, setBaseNeeded] = useState<BigNumber>(ethers.constants.Zero);
   const [baseNeeded_, setBaseNeeded_] = useState<string>('');
   const [fyTokenNeeded, setFyTokenNeeded] = useState<BigNumber>(ethers.constants.Zero);
   const [fyTokenNeeded_, setFyTokenNeeded_] = useState<string>('');
-
-  // mintWithBase state
-  const [canTradeForFyToken, setCanTradeForFyToken] = useState<boolean>(true);
-
-  // settings
-  const [slippageTolerance] = useLocalStorage(SLIPPAGE_KEY, DEFAULT_SLIPPAGE);
-  const slippageTolerance_ = +slippageTolerance / 100; // find better way (currently slippage in localStorage looks like "1" for "1%")
+  const [minRatio, setMinRatio] = useState<BigNumber>();
+  const [maxRatio, setMaxRatio] = useState<BigNumber>();
 
   useEffect(() => {
-    setCanTradeForFyToken(true); // reset
-
     (async () => {
-      if (pool && method) {
-        const { totalSupply, decimals, contract, getTimeTillMaturity, ts, g1 } = pool;
-        const timeTillMaturity = getTimeTillMaturity().toString();
+      if (pool) {
+        const { totalSupply, decimals, baseReserves, fyTokenReserves } = pool;
+        const _input = ethers.utils.parseUnits(input || '0', decimals);
+        const realReserves = fyTokenReserves.sub(totalSupply);
 
-        const [cachedBaseReserves, cachedFyTokenReserves] = await contract.getCache();
-        const cachedRealReserves = cachedFyTokenReserves.sub(totalSupply);
+        const [baseToPool, fyTokenToBorrow] = splitLiquidity(baseReserves, realReserves, _input, true) as [
+          BigNumber,
+          BigNumber
+        ];
+        const fyTokenToBorrowWithSlippage = BigNumber.from(calculateSlippage(fyTokenToBorrow, undefined, true));
 
-        const _baseAmount = ethers.utils.parseUnits(baseAmount || '0', decimals);
-        const _fyTokenAmount = ethers.utils.parseUnits(fyTokenAmount || '0', decimals);
+        // estimate lp tokens minted based on reserves
+        const [minted] = mint(baseReserves, realReserves, totalSupply, baseToPool, true);
 
-        try {
-          if (method === AddLiquidityActions.MINT) {
-            // if minting with both base and fyToken, calculate how much fyToken (or base) is needed based on reserves ratios
-            const [xPortion, yPortion] = mint(
-              cachedBaseReserves,
-              cachedRealReserves,
-              totalSupply,
-              updatingFyTokenAmount ? _fyTokenAmount : _baseAmount, // use the input value
-              !updatingFyTokenAmount // dependent upon what value we are trying to derive (i.e.: we want baseNeeded when inputting fyTokenAmount, so fromBase is false)
-            );
+        setBaseNeeded(baseToPool);
+        setBaseNeeded_(formatUnits(baseToPool, decimals));
+        setFyTokenNeeded(fyTokenToBorrowWithSlippage);
+        setFyTokenNeeded_(formatUnits(fyTokenToBorrowWithSlippage, decimals));
+        setLpTokenPreview(formatUnits(minted, decimals));
 
-            // assigning to more meaningful variables for clarity
-            const _fyTokenNeeded = yPortion;
-            const _baseNeeded = yPortion;
-            const lpTokensMinted = updatingFyTokenAmount ? yPortion : xPortion;
-
-            setBaseNeeded(_baseNeeded);
-            setBaseNeeded_(ethers.utils.formatUnits(_baseNeeded, decimals));
-            setFyTokenNeeded(_fyTokenNeeded);
-            setFyTokenNeeded_(ethers.utils.formatUnits(_fyTokenNeeded, decimals));
-            setLpTokenPreview(ethers.utils.formatUnits(lpTokensMinted, decimals));
-          } else {
-            // minting with base
-            const [fyTokenToBuy] = fyTokenForMint(
-              cachedBaseReserves,
-              cachedRealReserves,
-              cachedFyTokenReserves,
-              _baseAmount,
-              timeTillMaturity,
-              ts,
-              g1,
-              decimals,
-              slippageTolerance_
-            );
-
-            const [minted] = mintWithBase(
-              cachedBaseReserves,
-              cachedFyTokenReserves,
-              cachedRealReserves,
-              fyTokenToBuy,
-              timeTillMaturity,
-              ts,
-              g1,
-              decimals
-            );
-
-            setCanTradeForFyToken(!fyTokenToBuy.eq(ethers.constants.Zero));
-            setLpTokenPreview(ethers.utils.formatUnits(minted, decimals));
-          }
-        } catch (e) {
-          setCanTradeForFyToken(false);
-          console.log(e);
-        }
+        // calculate min and max ratios
+        const [minRatio, maxRatio] = calcPoolRatios(baseReserves, realReserves, +slippageTolerance);
+        setMinRatio(minRatio);
+        setMaxRatio(maxRatio);
       }
     })();
-  }, [baseAmount, fyTokenAmount, method, pool, slippageTolerance_, updatingFyTokenAmount]);
+  }, [input, pool, slippageTolerance]);
 
-  return { lpTokenPreview, fyTokenNeeded, fyTokenNeeded_, canTradeForFyToken, baseNeeded, baseNeeded_ };
+  return { lpTokenPreview, fyTokenNeeded, fyTokenNeeded_, baseNeeded, baseNeeded_, minRatio, maxRatio };
 };
 
 export default useAddLiqPreview;

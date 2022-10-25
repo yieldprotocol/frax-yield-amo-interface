@@ -1,4 +1,3 @@
-import { FC } from 'react';
 import tw from 'tailwind-styled-components';
 import { IPool } from '../../lib/protocol/types';
 import AssetLogo from '../common/AssetLogo';
@@ -21,7 +20,7 @@ interface IPoolSelectItem {
   action?: (pool: IPool) => void;
 }
 
-const PoolSelectItem: FC<IPoolSelectItem> = ({ pool, action }) => (
+const PoolSelectItem = ({ pool, action }: IPoolSelectItem) => (
   <Outer
     style={{
       background: pool.alternateColor,

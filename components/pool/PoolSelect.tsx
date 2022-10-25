@@ -1,5 +1,6 @@
-import { FC, useState } from 'react';
+import { useState } from 'react';
 import tw from 'tailwind-styled-components';
+import usePools from '../../hooks/protocol/usePools';
 import { IPool } from '../../lib/protocol/types';
 import PoolSelectItem from './PoolSelectItem';
 import PoolSelectModal from './PoolSelectModal';
@@ -20,8 +21,9 @@ interface IPoolSelect {
   poolsLoading?: boolean;
 }
 
-const PoolSelect: FC<IPoolSelect> = ({ pools, pool, setPool, poolsLoading }) => {
+const PoolSelect = ({ pools, pool, setPool, poolsLoading }: IPoolSelect) => {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const { error } = usePools();
 
   return (
     <div className="h-12">
@@ -36,7 +38,13 @@ const PoolSelect: FC<IPoolSelect> = ({ pools, pool, setPool, poolsLoading }) => 
           }}
         >
           <ButtonInner>
-            {pools ? 'Select Series' : poolsLoading ? 'Series loading...' : 'No Series Detected'}
+            {error
+              ? 'Error fetching pools'
+              : pools
+              ? 'Select Series'
+              : poolsLoading
+              ? 'Series loading...'
+              : 'No Series Detected'}
           </ButtonInner>
         </ButtonOuter>
       )}

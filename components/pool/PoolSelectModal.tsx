@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import tw from 'tailwind-styled-components';
 import { IPool } from '../../lib/protocol/types';
 import CloseButton from '../common/CloseButton';
@@ -35,9 +35,8 @@ interface IMaturitySelect {
   color: string;
 }
 
-const PoolSelectModal: FC<IPoolSelectModal> = ({ pools, open, setOpen, action }) => {
-  const _pools = Object.values(pools);
-  const [poolList, setPoolList] = useState<IPool[]>(_pools);
+const PoolSelectModal = ({ pools, open, setOpen, action }: IPoolSelectModal) => {
+  const [poolList, setPoolList] = useState<IPool[]>(pools);
   const [maturities, setMaturities] = useState<IMaturitySelect[]>([]);
   const [maturityFilter, setMaturityFilter] = useState<string | undefined>();
   const [showMatureFilter, setShowMatureFilter] = useState<boolean>(false);
@@ -52,20 +51,20 @@ const PoolSelectModal: FC<IPoolSelectModal> = ({ pools, open, setOpen, action })
 
   const handleSort = useCallback(
     () =>
-      _pools
+      pools
         .sort((a, b) => (a.base.symbol < b.base.symbol ? 1 : -1)) // sort alphabetically by base
         .sort((a, b) => (a.maturity < b.maturity ? 1 : -1)), // closest maturity first
     // .sort((a, b) => (a.base.balance.gte(b.base.balance) ? 1 : -1)) // sort by base balance
     // .sort((a, b) => (a.isMature ? -1 : 1)); // mature pools at the end
-    [_pools]
+    [pools]
   );
 
   const handleFilter = useCallback(
     () =>
-      _pools
+      pools
         .filter((p) => (showMatureFilter ? true : !p.isMature))
         .filter((p) => (maturityFilter ? p.maturity_ === maturityFilter : true)),
-    [maturityFilter, _pools, showMatureFilter]
+    [maturityFilter, pools, showMatureFilter]
   );
 
   useEffect(() => {
@@ -88,8 +87,8 @@ const PoolSelectModal: FC<IPoolSelectModal> = ({ pools, open, setOpen, action })
   }, [handleFilter]);
 
   useEffect(() => {
-    setHasMature(!!Object.values(_pools).find((m) => m.isMature));
-  }, [_pools]);
+    setHasMature(!!Object.values(pools).find((m) => m.isMature));
+  }, [pools]);
 
   return (
     <Modal isOpen={open} setIsOpen={setOpen}>

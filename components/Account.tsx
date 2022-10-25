@@ -1,10 +1,12 @@
-// import { ConnectButton } from '@rainbow-me/rainbowkit';
 // import InfoDropdown from './InfoDropdown';
 
+import { ConnectButton } from '@rainbow-me/rainbowkit';
+import SettingsDropdown from './SettingsDropdown';
+
 const Account = () => (
-  <div className="flex justify-end items-center">
-    {/* <ConnectButton accountStatus="full" /> */}
-    {/* <InfoDropdown /> */}
+  <div className="flex justify-end items-center gap-2">
+    <ConnectButton accountStatus="full" />
+    <SettingsDropdown />
   </div>
 );
 

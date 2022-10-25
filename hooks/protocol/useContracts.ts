@@ -1,15 +1,15 @@
+import { JsonRpcSigner } from '@ethersproject/providers';
 import { useMemo } from 'react';
+import { useNetwork } from 'wagmi';
 import { CAULDRON, FRAX_AMO, LADLE } from '../../constants';
 import { getContracts } from '../../lib/protocol';
-import useDefaultProvider from '../useDefaultProvider';
+import { Provider } from '../../lib/protocol/types';
 
 export const CONTRACTS_TO_FETCH = [CAULDRON, LADLE, FRAX_AMO];
 
-const useContracts = () => {
-  const provider = useDefaultProvider();
-  // const { activeChain } = useNetwork();
-  const chainId = 1;
-  return useMemo(() => getContracts(provider!, chainId), [provider, chainId]);
+const useContracts = (providerOrSigner: Provider | JsonRpcSigner) => {
+  const { chain } = useNetwork();
+  const chainId = useMemo(() => chain?.id! ?? 1, [chain?.id]);
+  return useMemo(() => getContracts(providerOrSigner, chainId), [providerOrSigner, chainId]);
 };
-
 export default useContracts;

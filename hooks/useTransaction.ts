@@ -3,19 +3,40 @@ import { ContractTransaction } from 'ethers';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 import { useSWRConfig } from 'swr';
-import { useAccount, useBalance, useNetwork } from 'wagmi';
+import { useBalance, useContractRead, useNetwork } from 'wagmi';
+import { FRAX_ADDRESS } from '../constants';
+import { IPool } from '../lib/protocol/types';
+import { AMOActions } from '../lib/tx/operations';
+import useAMO from './protocol/useAMO';
+import useTenderly from './useTenderly';
 import useToasty from './useToasty';
 
-const useTransaction = () => {
-  const { data: account } = useAccount();
-  const { activeChain } = useNetwork();
-  const { refetch } = useBalance({ addressOrName: account?.address, chainId: activeChain?.id });
+const useTransaction = (pool?: IPool) => {
+  const { chain } = useNetwork();
+  const { address, contractInterface } = useAMO();
+  const { refetch: refetchFraxBal } = useBalance({
+    addressOrName: address,
+    token: FRAX_ADDRESS,
+  });
+  const { refetch: refetchAllocations } = useContractRead({
+    addressOrName: address!,
+    contractInterface,
+    functionName: AMOActions.Fn.SHOW_ALLOCATIONS,
+    args: [pool?.seriesId] as AMOActions.Args.SHOW_ALLOCATIONS,
+    enabled: !!pool,
+  });
+  const { refetch: refetchLpBal } = useBalance({
+    addressOrName: address,
+    token: pool?.address,
+  });
+
   const { mutate } = useSWRConfig();
   const { toasty } = useToasty();
+  const { usingTenderly } = useTenderly();
   const addRecentTransaction = useAddRecentTransaction();
 
-  const chainId = activeChain?.id;
-  const explorer = activeChain?.blockExplorers?.default.url;
+  const chainId = chain?.id || 1;
+  const explorer = chain?.blockExplorers?.default.url;
 
   const [isTransacting, setIsTransacting] = useState<boolean>(false);
   const [txSubmitted, setTxSubmitted] = useState<boolean>(false);
@@ -40,9 +61,11 @@ const useTransaction = () => {
           res &&
             toasty(
               async () => {
-                await res?.wait();
-                mutate(`/pools/${chainId}/${account?.address!}`);
-                refetch(); // refetch ETH balance
+                await res.wait();
+                refetchFraxBal(); // refetch FRAX balance
+                refetchAllocations(); // refetch AMO allocations
+                refetchLpBal();
+                mutate(`/pools?chainId=${chainId}&usingTenderly=${usingTenderly}`);
               },
               description,
               explorer && `${explorer}/tx/${res.hash}`

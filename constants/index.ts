@@ -1,9 +1,12 @@
 import { BigNumber, ethers } from 'ethers';
 
+export const FRAX_ADDRESS = '0x853d955acef822db058eb8505911ed77f175b99e';
+
 // contract names
 export const CAULDRON = 'Cauldron';
 export const LADLE = 'Ladle';
-export const FRAX_AMO = 'FraxAMO';
+export const FRAX_AMO = 'AMO';
+export const TIMELOCK = 'Timelock';
 
 /* util constants */
 export const MAX_256 = '0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff';
@@ -23,6 +26,8 @@ export const ETH_BYTES = ethers.utils.formatBytes32String('ETH-A');
 export const BLANK_ADDRESS = ethers.constants.AddressZero;
 
 // localStorage keys
-export const THEME_KEY = 'yieldspace-theme';
-export const SLIPPAGE_KEY = 'yieldspace-slippageTolerance';
+export const THEME_KEY = 'frax-amo-theme';
+export const SLIPPAGE_KEY = 'frax-amo-slippageTolerance';
 export const DEFAULT_SLIPPAGE = '.5'; // .5%
+export const USE_TENDERLY_KEY = 'frax-amo-use-tenderly';
+export const TENDERLY_RPC_URL_KEY = 'frax-amo-tenderly-rpc-url';

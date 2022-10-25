@@ -1,4 +1,3 @@
-import { FC } from 'react';
 import { Switch } from '@headlessui/react';
 
 interface IToggle {
@@ -8,7 +7,7 @@ interface IToggle {
   disabled?: boolean;
 }
 
-const Toggle: FC<IToggle> = ({ enabled, setEnabled, label, disabled }) => (
+const Toggle = ({ enabled, setEnabled, label, disabled }: IToggle) => (
   <Switch.Group>
     <div className="flex gap-2 items-center">
       <Switch

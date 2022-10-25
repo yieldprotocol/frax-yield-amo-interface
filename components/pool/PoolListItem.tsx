@@ -1,6 +1,7 @@
 import Link from 'next/link';
-import { FC } from 'react';
 import tw from 'tailwind-styled-components';
+import { useBalance } from 'wagmi';
+import useAMO from '../../hooks/protocol/useAMO';
 import { IPool } from '../../lib/protocol/types';
 import { cleanValue } from '../../utils/appUtils';
 import AssetLogo from '../common/AssetLogo';
@@ -26,32 +27,37 @@ interface IPoolListItem {
   pool: IPool;
 }
 
-const PoolListItem: FC<IPoolListItem> = ({ pool }) => (
-  <Link href={`/series/${pool.address}`} passHref>
-    <Container>
-      <ItemOuter
-        style={{
-          background: pool.alternateColor,
-        }}
-      >
-        <ItemInner>
-          <div className="z-0 relative items-center flex">
-            <FyTokenLogo pool={pool} height={20} width={20} />
-          </div>
-          <div className="z-1 -ml-5 items-center flex">
-            <AssetLogo image={pool.base.symbol} styleProps="h-[31px] w-[31px] rounded-full" />
-          </div>
-          <Inner>
-            <Header>{pool.displayName}</Header>
-            <PoolDataWrap>
-              <PoolDataLabel>LP Token Balance:</PoolDataLabel>
-              <PoolData>{cleanValue(pool.lpTokenBalance_, pool.base.digitFormat)}</PoolData>
-            </PoolDataWrap>
-          </Inner>
-        </ItemInner>
-      </ItemOuter>
-    </Container>
-  </Link>
-);
+const PoolListItem = ({ pool }: IPoolListItem) => {
+  const { address } = useAMO();
+  const { data: balance } = useBalance({ addressOrName: address, token: pool.address });
+
+  return (
+    <Link href={`/series/${pool.address}`} passHref>
+      <Container>
+        <ItemOuter
+          style={{
+            background: pool.alternateColor,
+          }}
+        >
+          <ItemInner>
+            <div className="z-0 relative items-center flex ml-3">
+              <FyTokenLogo pool={pool} height={20} width={20} />
+            </div>
+            <div className="z-1 -ml-5 items-center flex">
+              <AssetLogo image={pool.base.symbol} styleProps="h-[31px] w-[31px] rounded-full" />
+            </div>
+            <Inner>
+              <Header>{pool.displayName}</Header>
+              <PoolDataWrap>
+                <PoolDataLabel>LP Token Balance:</PoolDataLabel>
+                <PoolData>{cleanValue(balance?.formatted, pool.base.digitFormat)}</PoolData>
+              </PoolDataWrap>
+            </Inner>
+          </ItemInner>
+        </ItemOuter>
+      </Container>
+    </Link>
+  );
+};
 
 export default PoolListItem;

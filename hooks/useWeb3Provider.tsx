@@ -1,28 +1,28 @@
-import {
-  apiProvider,
-  configureChains,
-  darkTheme,
-  getDefaultWallets,
-  RainbowKitProvider,
-  Theme,
-} from '@rainbow-me/rainbowkit';
-import { Chain, chain, createClient, WagmiProvider } from 'wagmi';
+import { darkTheme, getDefaultWallets, RainbowKitProvider, Theme } from '@rainbow-me/rainbowkit';
+import { chain, configureChains, createClient, WagmiConfig } from 'wagmi';
+import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
 import merge from 'lodash.merge';
 import { useColorTheme } from './useColorTheme';
 import { URLS } from '../config/chains';
+import useTenderly from './useTenderly';
+import { ReactNode } from 'react';
 
-export default function Web3Provider({ children }) {
+export default function Web3Provider({ children }: { children: ReactNode }) {
   const { theme: colorTheme } = useColorTheme();
+  const { usingTenderly, tenderlyRpcUrl } = useTenderly();
+
   const { chains, provider } = configureChains(
-    [chain.mainnet, chain.goerli],
-    [apiProvider.jsonRpc((_chain: Chain) => ({ rpcUrl: URLS[_chain.id][0] }))]
+    [chain.mainnet],
+    [
+      jsonRpcProvider({
+        rpc: (chain) => {
+          return { http: usingTenderly ? tenderlyRpcUrl : URLS[chain.id][0] };
+        },
+      }),
+    ]
   );
 
-  const { connectors } = getDefaultWallets({
-    appName: 'Yieldspace App',
-    chains,
-  });
-
+  const { connectors } = getDefaultWallets({ appName: 'Frax AMO', chains });
   const wagmiClient = createClient({
     autoConnect: true,
     connectors,
@@ -31,8 +31,7 @@ export default function Web3Provider({ children }) {
 
   const theme = merge(colorTheme === 'dark' ? darkTheme() : undefined, {
     colors: {
-      accentColor:
-        'linear-gradient(135deg, rgba(247, 149, 51, 0.5), rgba(243, 112, 85, 0.5), rgba(239, 78, 123, 0.5), rgba(161, 102, 171, 0.5), rgba(80, 115, 184, 0.5), rgba(16, 152, 173, 0.5), rgba(7, 179, 155, 0.5), rgba(111, 186, 130, 0.5));',
+      accentColor: '#60a5fab3',
     },
 
     fonts: { body: 'inter' },
@@ -46,10 +45,10 @@ export default function Web3Provider({ children }) {
   } as Theme);
 
   return (
-    <WagmiProvider client={wagmiClient}>
+    <WagmiConfig client={wagmiClient}>
       <RainbowKitProvider chains={chains} theme={theme} showRecentTransactions>
         {children}
       </RainbowKitProvider>
-    </WagmiProvider>
+    </WagmiConfig>
   );
 }

@@ -1,76 +1,41 @@
-import { ethers } from 'ethers';
+import { calcPoolRatios } from '@yield-protocol/ui-math';
+import { BigNumber, ethers } from 'ethers';
 import { useEffect, useState } from 'react';
-import { RemoveLiquidityActions } from '../../lib/protocol/liquidity/types';
+import { DEFAULT_SLIPPAGE, SLIPPAGE_KEY } from '../../constants';
 import { IPool } from '../../lib/protocol/types';
-import { burn, burnForBase, newPoolState, sellFYToken } from '../../utils/yieldMath';
+import { burn } from '../../utils/yieldMath';
+import { useLocalStorage } from '../useLocalStorage';
 
-const useRemoveLiqPreview = (pool: IPool | undefined, lpTokens: string, method: RemoveLiquidityActions) => {
+const useRemoveLiqPreview = (pool: IPool | undefined, lpTokens: string) => {
+  const [slippageTolerance] = useLocalStorage(SLIPPAGE_KEY, DEFAULT_SLIPPAGE);
   const [baseReceived, setBaseReceived] = useState<string>();
   const [fyTokenReceived, setFyTokenReceived] = useState<string>();
-  const [canReceiveAllBase, setCanReceiveAllBase] = useState<boolean>(true);
+  const [minRatio, setMinRatio] = useState<BigNumber>();
+  const [maxRatio, setMaxRatio] = useState<BigNumber>();
 
   useEffect(() => {
-    const getPrevewData = async () => {
-      if (!pool) {
-        setFyTokenReceived('');
-        return setBaseReceived('');
-      }
+    const getPreviewData = async () => {
+      if (!pool) return;
 
-      const { totalSupply, decimals, contract, getTimeTillMaturity, ts, g2 } = pool;
-      const timeTillMaturity = getTimeTillMaturity().toString();
-
+      const { totalSupply, decimals, baseReserves, fyTokenReserves } = pool;
       const _lpTokens = ethers.utils.parseUnits(lpTokens || '0', decimals);
+      const realReserves = fyTokenReserves.sub(totalSupply);
 
-      const [cachedBaseReserves, cachedFyTokenReserves] = await contract.getCache();
-      const cachedRealReserves = cachedFyTokenReserves.sub(totalSupply);
+      const [baseReceived, fyTokenReceived] = burn(baseReserves, realReserves, totalSupply, _lpTokens);
 
-      const [_baseReceived, _fyTokenReceived] = burn(cachedBaseReserves, cachedRealReserves, totalSupply, _lpTokens);
+      setBaseReceived(ethers.utils.formatUnits(baseReceived, decimals));
+      setFyTokenReceived(ethers.utils.formatUnits(fyTokenReceived, decimals));
 
-      const newPool = newPoolState(
-        _baseReceived.mul(-1),
-        _fyTokenReceived.mul(-1),
-        cachedBaseReserves,
-        cachedRealReserves,
-        totalSupply
-      );
-
-      const fyTokenTrade = sellFYToken(
-        newPool.baseReserves,
-        newPool.fyTokenVirtualReserves,
-        _fyTokenReceived,
-        timeTillMaturity,
-        ts,
-        g2,
-        decimals
-      );
-
-      const _canReceiveAllBase = fyTokenTrade.gt(ethers.constants.Zero);
-      setCanReceiveAllBase(_canReceiveAllBase); // check if the user can receive all base, otherwise, default to burn
-
-      if (method === RemoveLiquidityActions.BURN_FOR_BASE && _canReceiveAllBase) {
-        const baseTokenReceived = burnForBase(
-          cachedBaseReserves,
-          cachedFyTokenReserves,
-          cachedRealReserves,
-          _lpTokens,
-          getTimeTillMaturity().toString(),
-          ts,
-          g2,
-          decimals
-        );
-
-        setFyTokenReceived(undefined);
-        return setBaseReceived(ethers.utils.formatUnits(baseTokenReceived, decimals));
-      } else {
-        setBaseReceived(ethers.utils.formatUnits(_baseReceived, decimals));
-        setFyTokenReceived(ethers.utils.formatUnits(_fyTokenReceived, decimals));
-      }
+      // calculate min and max ratios
+      const [minRatio, maxRatio] = calcPoolRatios(baseReserves, realReserves, +slippageTolerance);
+      setMinRatio(minRatio);
+      setMaxRatio(maxRatio);
     };
 
-    getPrevewData();
-  }, [canReceiveAllBase, lpTokens, method, pool]);
+    getPreviewData();
+  }, [lpTokens, pool, slippageTolerance]);
 
-  return { baseReceived, fyTokenReceived, canReceiveAllBase };
+  return { baseReceived, fyTokenReceived, minRatio, maxRatio };
 };
 
 export default useRemoveLiqPreview;

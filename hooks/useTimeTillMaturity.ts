@@ -1,6 +1,6 @@
+import { secondsToFrom } from '@yield-protocol/ui-math';
 import { formatDistanceStrict } from 'date-fns';
 import { useEffect, useState } from 'react';
-import { secondsToFrom } from '../utils/yieldMath';
 
 const useTimeTillMaturity = (maturity: number) => {
   const [secondsTillMaturity, setSecondsTillMaturity] = useState<number>(0);

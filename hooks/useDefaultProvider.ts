@@ -1,17 +1,19 @@
-import { ethers } from 'ethers';
+import { JsonRpcProvider } from '@ethersproject/providers';
 import { useMemo } from 'react';
-// import { useNetwork } from 'wagmi';
+import { useNetwork } from 'wagmi';
 import { URLS } from '../config/chains';
 
 const useDefaultProvider = () => {
-  // const { activeChain } = useNetwork();
-  // const chainId = activeChain?.id;
-  const chainId = 1;
+  const { chain } = useNetwork();
+  const chainId = useMemo(() => (chain ? chain.id : 1), [chain]);
 
-  return useMemo(
-    () => (chainId ? new ethers.providers.StaticJsonRpcProvider(URLS[chainId][0], chainId) : undefined),
-    [chainId]
-  );
+  return useMemo(() => {
+    try {
+      return new JsonRpcProvider(URLS[chainId][0], chainId);
+    } catch (e) {
+      throw new Error('no provider detected');
+    }
+  }, [chainId]);
 };
 
 export default useDefaultProvider;
