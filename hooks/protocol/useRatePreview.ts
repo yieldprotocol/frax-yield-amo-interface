@@ -1,5 +1,5 @@
 import { BigNumber, ethers } from 'ethers';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { cleanValue } from '../../utils/appUtils';
 import { changeRate, sellBase } from '../../utils/yieldMath';
 import usePool from './usePool';
@@ -18,11 +18,8 @@ const useRatePreview = (
   const [fyTokenBought, setFyTokenBought] = useState<BigNumber>(ethers.constants.Zero);
 
   useEffect(() => {
-    console.log('🦄 ~ file: useRatePreview.ts ~ line 15 ~ data ', data);
-  }, [data]);
-
-  useEffect(() => {
     if (data) {
+      console.log('🦄 ~ file: useRatePreview.ts ~ line 26 ~ useEffect ~ data', data);
       const { baseReserves, fyTokenReserves, timeTillMaturity, ts, g1, g2, decimals } = data;
 
       const _baseNeeded = changeRate(baseReserves, fyTokenReserves, timeTillMaturity!, ts, g1, g2, desiredRate || 0);
@@ -39,7 +36,7 @@ const useRatePreview = (
         setFyTokenBought(fyTokenOut);
       }
     }
-  }, []);
+  }, [data, desiredRate, increaseRates]);
 
   return {
     ratePreview,

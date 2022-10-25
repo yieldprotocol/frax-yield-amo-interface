@@ -94,8 +94,8 @@ const usePool = (poolAddress: string | undefined) => {
     [data, timeStretchYears]
   );
 
-  return {
-    data: data
+  const _data = useMemo(() => {
+    return data
       ? ({
           baseReserves: BigNumber.from(data[0]),
           fyTokenReserves: BigNumber.from(data[1]),
@@ -110,7 +110,11 @@ const usePool = (poolAddress: string | undefined) => {
           isMature,
           interestRate,
         } as PoolRes)
-      : undefined,
+      : undefined;
+  }, [data, interestRate, isMature, timeStretchYears, timeTillMaturity]);
+
+  return {
+    data: _data,
     isError,
     isLoading,
   };
