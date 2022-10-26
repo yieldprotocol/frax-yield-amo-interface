@@ -1,6 +1,6 @@
 import Decimal from 'decimal.js';
 import { BigNumber } from 'ethers';
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useContractReads } from 'wagmi';
 import { Pool__factory } from '../../contracts/types';
 import { calculateRate, getTimeStretchYears } from '../../utils/yieldMath';
@@ -31,7 +31,7 @@ const usePool = (poolAddress: string | undefined) => {
     [poolAddress, provider, tenderlyProvider, usingTenderly]
   );
 
-  const { data, isError, isLoading, refetch, isRefetching } = useContractReads({
+  const { data, isError, isLoading, refetch } = useContractReads({
     allowFailure: true,
     contracts: [
       {
