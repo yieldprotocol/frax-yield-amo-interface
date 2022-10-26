@@ -60,7 +60,7 @@ const Widget = () => {
   const [confirmModalOpen, setConfirmModalOpen] = useState<boolean>(false);
   const { pool, desiredRate, baseAmount, updatingRate, increasingRate } = form;
 
-  const { data: poolData } = usePool(pool?.address!);
+  const { data: poolData, isLoading: poolDataLoading } = usePool(pool?.address!);
 
   const interestRate = +poolData?.interestRate! * 100; // formatted to %
   const { baseNeeded_, ratePreview } = useRatePreview(
@@ -147,6 +147,7 @@ const Widget = () => {
               disabled={true}
               unfocused={true}
               setRate={() => null}
+              loading={poolDataLoading}
             />
             <Arrow />
             <InterestRateInput

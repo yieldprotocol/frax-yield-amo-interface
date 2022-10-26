@@ -1,4 +1,6 @@
+import Skeleton from 'react-loading-skeleton';
 import tw from 'tailwind-styled-components';
+import SkeletonWrap from '../common/SkeletonWrap';
 
 type DivProps = {
   $unfocused?: boolean;
@@ -18,25 +20,40 @@ interface IInterestRateInput {
   setRate: (rate: string) => void;
   disabled?: boolean;
   unfocused?: boolean;
+  loading?: boolean;
 }
 
 const Text = tw.div`text-2xl`;
 const Input = tw.input`w-full text-right text-2xl focus:outline-none dark:bg-gray-800 bg-gray-200 py-3 px-3`;
+const SkeletonWrappy = tw.div`w-full text-right text-2xl focus:outline-none dark:bg-gray-800 bg-gray-200 py-3 px-3`;
 
-const InterestRateInput = ({ label, rate, setRate, disabled = false, unfocused = false }: IInterestRateInput) => (
+const InterestRateInput = ({
+  label,
+  rate,
+  setRate,
+  disabled = false,
+  unfocused = false,
+  loading = false,
+}: IInterestRateInput) => (
   <Container $unfocused={unfocused} $disabled={disabled}>
     <div className="p-1 text-center w-24">{label}</div>
 
     <InputContainer>
-      <Input
-        type="number"
-        inputMode="decimal"
-        value={rate}
-        placeholder="0.0"
-        onChange={(e) => setRate(e.target.value)}
-        min="0"
-        disabled={disabled}
-      />
+      {loading ? (
+        <SkeletonWrappy>
+          <SkeletonWrap width={50} />
+        </SkeletonWrappy>
+      ) : (
+        <Input
+          type="number"
+          inputMode="decimal"
+          value={rate}
+          placeholder="0.0"
+          onChange={(e) => setRate(e.target.value)}
+          min="0"
+          disabled={disabled}
+        />
+      )}
       <Text>%</Text>
     </InputContainer>
   </Container>
