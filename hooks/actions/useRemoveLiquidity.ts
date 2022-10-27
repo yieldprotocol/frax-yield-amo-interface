@@ -63,7 +63,7 @@ export const useRemoveLiquidity = (pool: IPool | undefined, input: string) => {
         .connect((usingTenderly ? tenderlyProvider : provider).getSigner(amoAddress))
         .approve(ladle.address, _fyTokenToBurn, { gasLimit: 20_000_000 });
 
-      if (usingTenderly && false) {
+      if (usingTenderly) {
         return await amoContract.removeLiquidityFromAMM(...args, { gasLimit: 20_000_000 });
       }
 
