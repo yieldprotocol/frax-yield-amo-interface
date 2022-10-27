@@ -1,4 +1,11 @@
-import { darkTheme, getDefaultWallets, RainbowKitProvider, Theme, AvatarComponent } from '@rainbow-me/rainbowkit';
+import {
+  darkTheme,
+  getDefaultWallets,
+  RainbowKitProvider,
+  Theme,
+  AvatarComponent,
+  Chain,
+} from '@rainbow-me/rainbowkit';
 import { chain, configureChains, createClient, WagmiConfig } from 'wagmi';
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
 import merge from 'lodash.merge';
@@ -6,13 +13,26 @@ import { useColorTheme } from './useColorTheme';
 import useTenderly from './useTenderly';
 import { ReactNode } from 'react';
 import FRAXMark from '../components/common/logos/FRAXMark';
+import { TENDERLY_FORK_ID } from '../constants';
 
 export default function Web3Provider({ children }: { children: ReactNode }) {
   const { theme: colorTheme } = useColorTheme();
   const { usingTenderly, tenderlyRpcUrl } = useTenderly();
 
+  const mainnet: Chain = {
+    ...chain.mainnet,
+    blockExplorers: {
+      default: usingTenderly
+        ? {
+            name: 'Tenderly',
+            url: `https://dashboard.tenderly.co/Yield/v2/fork/${TENDERLY_FORK_ID}/`,
+          }
+        : chain.mainnet.blockExplorers?.default!,
+    },
+  };
+
   const { chains, provider } = configureChains(
-    [chain.mainnet],
+    [mainnet],
     [
       jsonRpcProvider({
         rpc: (chain) => {
