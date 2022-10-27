@@ -1,5 +1,5 @@
-import TradeWidget from '../../components/trade/Widget';
+import Widget from '../../components/trade/Widget';
 
-const Trade = () => <TradeWidget />;
+const Rates = () => <Widget />;
 
-export default Trade;
+export default Rates;

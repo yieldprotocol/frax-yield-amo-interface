@@ -36,6 +36,7 @@ const usePools = () => {
     }
   );
 
+  console.log('🦄 ~ file: usePools.ts ~ line 44 ~ usePools ~ data', data);
   return {
     data: data as IPoolMap | undefined,
     loading: !data && !error,
