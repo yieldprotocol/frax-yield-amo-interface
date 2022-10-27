@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { toast } from 'react-toastify';
 import { useSWRConfig } from 'swr';
 import { useBalance, useContractRead, useNetwork } from 'wagmi';
-import { FRAX_ADDRESS } from '../constants';
+import { FRAX_ADDRESS, TENDERLY_FORK_ID, TENDERLY_RPC_URL_KEY } from '../constants';
 import { IPool } from '../lib/protocol/types';
 import { AMOActions } from '../lib/tx/operations';
 import useAMO from './protocol/useAMO';
@@ -38,7 +38,9 @@ const useTransaction = (pool?: IPool) => {
   const addRecentTransaction = useAddRecentTransaction();
 
   const chainId = chain?.id || 1;
-  const explorer = chain?.blockExplorers?.default.url;
+  const explorer = usingTenderly
+    ? `https://dashboard.tenderly.co/Yield/v2/fork/${TENDERLY_FORK_ID}/`
+    : chain?.blockExplorers?.default.url;
 
   const [isTransacting, setIsTransacting] = useState<boolean>(false);
   const [txSubmitted, setTxSubmitted] = useState<boolean>(false);
@@ -71,7 +73,7 @@ const useTransaction = (pool?: IPool) => {
                 refetchLpBal();
               },
               description,
-              explorer && `${explorer}/tx/${res.hash}`
+              explorer && `${explorer}/${usingTenderly ? '' : `tx/${res.hash}`}`
             );
         }
         return res;
