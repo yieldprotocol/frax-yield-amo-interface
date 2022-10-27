@@ -5,7 +5,6 @@ import { useAccount, useContractWrite, usePrepareContractWrite } from 'wagmi';
 import useAMO from '../protocol/useAMO';
 import { AMOActions } from '../../lib/tx/operations';
 import useRatePreview from '../protocol/useRatePreview';
-import { ethers } from 'ethers';
 import useTenderly from '../useTenderly';
 import useAddSeries from './useAddSeries';
 import useContracts from '../protocol/useContracts';
