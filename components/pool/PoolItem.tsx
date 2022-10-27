@@ -69,7 +69,7 @@ const PoolItem = () => {
 
   const { base } = pool;
 
-  if (error && !allocations && !isLoading) {
+  if (error) {
     return (
       <BorderWrap>
         <Inner>
