@@ -1,6 +1,7 @@
 import { AppProps } from 'next/dist/shared/lib/router/router';
 import '../styles/globals.css';
 import '@rainbow-me/rainbowkit/styles.css';
+import 'react-loading-skeleton/dist/skeleton.css';
 import dynamic from 'next/dynamic';
 import Toasty from '../components/common/Toasty';
 

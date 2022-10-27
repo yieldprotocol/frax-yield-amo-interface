@@ -8,10 +8,12 @@ import { FRAX_ADDRESS } from '../constants';
 import { IPool } from '../lib/protocol/types';
 import { AMOActions } from '../lib/tx/operations';
 import useAMO from './protocol/useAMO';
+import usePool from './protocol/usePool';
 import useTenderly from './useTenderly';
 import useToasty from './useToasty';
 
 const useTransaction = (pool?: IPool) => {
+  const { refetch: refetchPool } = usePool(pool?.address!);
   const { chain } = useNetwork();
   const { address, contractInterface } = useAMO();
   const { refetch: refetchFraxBal } = useBalance({
@@ -62,10 +64,11 @@ const useTransaction = (pool?: IPool) => {
             toasty(
               async () => {
                 await res.wait();
+
+                refetchPool();
                 refetchFraxBal(); // refetch FRAX balance
                 refetchAllocations(); // refetch AMO allocations
                 refetchLpBal();
-                mutate(`/pools?chainId=${chainId}&usingTenderly=${usingTenderly}`);
               },
               description,
               explorer && `${explorer}/tx/${res.hash}`

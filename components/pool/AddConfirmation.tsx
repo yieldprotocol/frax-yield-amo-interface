@@ -37,7 +37,7 @@ const ConfirmItem = ({ value, asset, pool }: { value: string; asset: IAsset; poo
 
 const AddConfirmation = ({ form, action, disabled, loading }: IAddConfirmation) => {
   const { pool, input } = form;
-  const { lpTokenPreview } = useAddLiquidityPreview(pool!, input);
+  const { lpTokenPreview } = useAddLiquidityPreview(pool?.address!, input);
   const timeTillMaturity_ = useTimeTillMaturity(pool?.maturity!);
   const maturityDescription = pool?.isMature ? `Mature` : `${timeTillMaturity_} until maturity`;
 

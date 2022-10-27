@@ -2,7 +2,7 @@ import { ethers } from 'ethers';
 import { IPool } from '../../lib/protocol/types';
 import { cleanValue, valueAtDigits } from '../../utils/appUtils';
 import useTransaction from '../useTransaction';
-import { useAccount, useBalance, useContractWrite, usePrepareContractWrite } from 'wagmi';
+import { useAccount, useContractWrite, usePrepareContractWrite } from 'wagmi';
 import useAMO from '../protocol/useAMO';
 import useRemoveLiqPreview from '../protocol/useRemoveLiqPreview';
 import { AMOActions } from '../../lib/tx/operations';
@@ -12,18 +12,20 @@ import useDefaultProvider from '../useDefaultProvider';
 import { LADLE } from '../../constants';
 import { Ladle } from '../../contracts/types';
 import { parseUnits } from 'ethers/lib/utils';
+import usePool from '../protocol/usePool';
 
 export const useRemoveLiquidity = (pool: IPool | undefined, input: string) => {
   const { address: account } = useAccount();
+  const { data: poolData } = usePool(pool?.address);
   const { address: amoAddress, contractInterface, contract: amoContract } = useAMO();
   const provider = useDefaultProvider();
   const { usingTenderly, tenderlyProvider } = useTenderly();
   const contracts = useContracts(usingTenderly ? tenderlyProvider : provider);
-  const { minRatio, maxRatio, fyTokenReceived } = useRemoveLiqPreview(pool!, input);
-  const { handleTransact, isTransacting, txSubmitted } = useTransaction();
+  const { minRatio, maxRatio, fyTokenReceived } = useRemoveLiqPreview(pool?.address!, input);
+  const { handleTransact, isTransacting, txSubmitted } = useTransaction(pool);
 
-  const cleanInput = cleanValue(input || '0', pool?.decimals);
-  const _input = ethers.utils.parseUnits(cleanInput, pool?.decimals);
+  const cleanInput = cleanValue(input || '0', poolData?.decimals);
+  const _input = ethers.utils.parseUnits(cleanInput, poolData?.decimals);
   const args = [pool?.seriesId, _input, minRatio, maxRatio] as AMOActions.Args.REMOVE_LIQUIDITY;
 
   const { config, error } = usePrepareContractWrite({

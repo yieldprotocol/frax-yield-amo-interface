@@ -1,11 +1,12 @@
-import { FC } from 'react';
+import { ReactNode } from 'react';
 import { Popover, Transition } from '@headlessui/react';
 
 interface IPopover {
   open: boolean;
+  children: ReactNode;
 }
 
-const Pop: FC<IPopover> = ({ open, children }) => (
+const Pop = ({ open, children }: IPopover) => (
   <Popover className="relative">
     {open && (
       <Transition show={open} enter="transition duration-100 ease-out" leave="transition duration-75 ease-out">

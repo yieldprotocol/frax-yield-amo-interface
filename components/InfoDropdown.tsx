@@ -8,7 +8,7 @@ type ButtonProps = {
   $active: boolean;
 };
 
-const Button = tw.button<ButtonProps>`${(p) =>
+const Button = tw.button<ButtonProps>`${(p: any) =>
   p.$active
     ? 'dark:text-gray-50 text-gray-800'
     : 'dark:text-gray-400 text-gray-600'} flex rounded-md items-center w-full px-2 py-2`;

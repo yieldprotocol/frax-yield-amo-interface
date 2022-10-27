@@ -11,7 +11,7 @@ const Inner = tw.div`
   flex p-3 gap-3
 `;
 
-const Outer = tw.button<ButtonProps>`${(p) =>
+const Outer = tw.button<ButtonProps>`${(p: any) =>
   p.$selectable ? 'hover:opacity-80' : 'cursor-default'} w-full flex p-[1px]
 rounded-lg gap-3 align-middle items-center`;
 

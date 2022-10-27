@@ -6,7 +6,7 @@ import useAMO from '../protocol/useAMO';
 import useTenderly from '../useTenderly';
 
 const useAddSeries = (pool: IPool | undefined) => {
-  const { amoContract, amoAddress, timelockAddress } = useAMO();
+  const { contract: amoContract, address: amoAddress } = useAMO();
   const { usingTenderly } = useTenderly();
 
   const [seriesAdded, setSeriesAdded] = useState(false);

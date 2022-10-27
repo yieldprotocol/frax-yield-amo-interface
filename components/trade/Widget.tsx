@@ -11,7 +11,6 @@ import { useAccount, useBalance, useNetwork } from 'wagmi';
 import useRatePreview from '../../hooks/protocol/useRatePreview';
 import { FRAX_ADDRESS } from '../../constants';
 import Toggle from '../common/Toggle';
-import CopyWrap from '../common/CopyWrap';
 import Button from '../common/Button';
 import useAMO from '../../hooks/protocol/useAMO';
 import { useChangeRate } from '../../hooks/actions/useChangeRate';
@@ -21,6 +20,7 @@ import CloseButton from '../common/CloseButton';
 import useInputValidation from '../../hooks/useInputValidation';
 import RateConfirmation from './RateConfirmation';
 import { cleanValue } from '../../utils/appUtils';
+import usePool from '../../hooks/protocol/usePool';
 
 const Inner = tw.div`m-4 text-center`;
 const Grid = tw.div`grid my-5 auto-rows-auto gap-2`;
@@ -52,7 +52,6 @@ const Widget = () => {
   const { data: baseBalance } = useBalance({
     addressOrName: amoAddress,
     token: FRAX_ADDRESS,
-    chainId,
     enabled: !!amoAddress,
   });
   const { data: pools } = usePools();
@@ -60,9 +59,12 @@ const Widget = () => {
   const [form, setForm] = useState<IWidgetForm>(INITIAL_FORM_STATE);
   const [confirmModalOpen, setConfirmModalOpen] = useState<boolean>(false);
   const { pool, desiredRate, baseAmount, updatingRate, increasingRate } = form;
-  const interestRate = +pool?.interestRate! * 100; // formatted to %
-  const { baseNeededWad, baseNeeded_, ratePreview } = useRatePreview(
-    pool!,
+
+  const { data: poolData, isLoading: poolDataLoading } = usePool(pool?.address!);
+
+  const interestRate = +poolData?.interestRate! * 100; // formatted to %
+  const { baseNeeded_, ratePreview } = useRatePreview(
+    pool?.address!,
     +desiredRate / 100,
     baseAmount,
     updatingRate,
@@ -145,6 +147,7 @@ const Widget = () => {
               disabled={true}
               unfocused={true}
               setRate={() => null}
+              loading={poolDataLoading}
             />
             <Arrow />
             <InterestRateInput
@@ -158,15 +161,6 @@ const Widget = () => {
 
         <InputsWrap>
           <div className="flex items-center justify-between mb-1">
-            <div className="whitespace-nowrap text-sm text-left mb-1">
-              {baseNeeded_ && (
-                <CopyWrap value={baseNeededWad} label="copy wad">
-                  <span>
-                    <code>{increasingRate ? AMOActions.Fn.INCREASE_RATES : AMOActions.Fn.DECREASE_RATES}</code> Input
-                  </span>
-                </CopyWrap>
-              )}
-            </div>
             {!updatingRate && (
               <Toggle
                 enabled={increasingRate}

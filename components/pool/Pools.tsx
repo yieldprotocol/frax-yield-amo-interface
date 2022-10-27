@@ -13,7 +13,7 @@ const Pools = () => {
   useEffect(() => {
     if (pools) {
       const filteredPools = Object.values(pools);
-      const sortedPools = filteredPools.sort((a, b) => (a.lpTokenBalance.lte(b.lpTokenBalance) ? 1 : -1));
+      const sortedPools = filteredPools.sort((a, b) => (a.maturity < b.maturity ? 1 : -1));
       setPoolsList(sortedPools);
     }
   }, [pools]);
