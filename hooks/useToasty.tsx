@@ -28,14 +28,14 @@ const Pending = ({ msg, link }: { msg: string; link?: string }) => (
 
 const Success = ({ msg, link }: { msg: string; link?: string }) => (
   <Body>
-    <CheckCircleIcon color="#10b981" height="25px" width="25px" />
+    <CheckCircleIcon color="#10b981" height="35px" width="35px" />
     <Inner msg={msg} link={link} />
   </Body>
 );
 
 const Error = ({ msg, link }: { msg: string; link?: string }) => (
   <Body>
-    <ExclamationCircleIcon color="#ef4444" height="25px" width="25px" />
+    <ExclamationCircleIcon color="#ef4444" height="35px" width="35px" />
     <Inner msg={msg} link={link} />
   </Body>
 );
