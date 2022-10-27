@@ -56,7 +56,7 @@ export const useChangeRate = (
     enabled: !!(contractInterface && amoAddress && !usingTenderly),
   });
 
-  const { write } = useContractWrite(config);
+  const { writeAsync } = useContractWrite(config);
   const { handleTransact, isTransacting, txSubmitted } = useTransaction(pool);
 
   // description to use in toast
@@ -93,10 +93,10 @@ export const useChangeRate = (
         }
       }
 
-      return await write?.()!;
+      return writeAsync?.()!;
     };
 
-    handleTransact(() => _changeRate(), description);
+    handleTransact(_changeRate, description);
   };
 
   return { changeRate, isTransacting, txSubmitted };
