@@ -96,7 +96,7 @@ const PoolSelectModal = ({ pools, open, setOpen, action }: IPoolSelectModal) => 
         <TopRow>
           <Header>Select Series</Header>
           {maturityFilter && <ClearButton onClick={handleClearFilters}>Clear Filters</ClearButton>}
-          <CloseButton action={() => setOpen(false)} height="1.2rem" width="1.2rem" />
+          <CloseButton action={() => setOpen(false)} />
         </TopRow>
         {maturities && (
           <>

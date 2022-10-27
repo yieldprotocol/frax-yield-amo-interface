@@ -1,6 +1,6 @@
 import { toast } from 'react-toastify';
 import tw from 'tailwind-styled-components';
-import { CheckCircleIcon, ExclamationCircleIcon } from '@heroicons/react/solid';
+import { CheckCircleIcon, ExclamationCircleIcon } from '@heroicons/react/20/solid';
 
 const Body = tw.div`flex gap-3 items-center align-middle`;
 const Text = tw.div` text-sm`;
@@ -28,14 +28,14 @@ const Pending = ({ msg, link }: { msg: string; link?: string }) => (
 
 const Success = ({ msg, link }: { msg: string; link?: string }) => (
   <Body>
-    <CheckCircleIcon color="#10b981" height="35px" width="35px" />
+    <CheckCircleIcon color="#10b981" height="25px" width="25px" />
     <Inner msg={msg} link={link} />
   </Body>
 );
 
 const Error = ({ msg, link }: { msg: string; link?: string }) => (
   <Body>
-    <ExclamationCircleIcon color="#ef4444" height="35px" width="35px" />
+    <ExclamationCircleIcon color="#ef4444" height="25px" width="25px" />
     <Inner msg={msg} link={link} />
   </Body>
 );

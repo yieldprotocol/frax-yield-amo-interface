@@ -1,4 +1,4 @@
-import { InformationCircleIcon } from '@heroicons/react/solid';
+import { InformationCircleIcon } from '@heroicons/react/20/solid';
 import { ReactNode, useState } from 'react';
 import { useColorTheme } from '../../hooks/useColorTheme';
 import Popover from './PopOver';

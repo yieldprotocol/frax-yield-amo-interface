@@ -2,7 +2,7 @@ import { Fragment } from 'react';
 import tw from 'tailwind-styled-components';
 import { Menu, Transition } from '@headlessui/react';
 import { useColorTheme } from '../hooks/useColorTheme';
-import { DotsVerticalIcon } from '@heroicons/react/solid';
+import { EllipsisVerticalIcon } from '@heroicons/react/20/solid';
 
 type ButtonProps = {
   $active: boolean;
@@ -22,7 +22,7 @@ const InfoDropdown = () => {
         {({ open }) => (
           <>
             <Menu.Button className="inline-flex justify-between gap-2 align-middle w-full dark:bg-gray-700/50 px-4 py-2 dark:text-gray-50 text-gray-800 rounded-md bg-gray-100 border-[1px] dark:border-gray-700 border-gray-200 dark:hover:border-gray-600 hover:border-gray-300">
-              <DotsVerticalIcon className="my-auto w-5 h-5 dark:text-gray-50 text-gray-800" aria-hidden="true" />
+              <EllipsisVerticalIcon className="my-auto w-5 h-5 dark:text-gray-50 text-gray-800" aria-hidden="true" />
             </Menu.Button>
             <Transition
               show={open}
