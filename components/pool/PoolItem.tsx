@@ -69,7 +69,7 @@ const PoolItem = () => {
 
   const { base } = pool;
 
-  if (error) {
+  if (error && !isLoading) {
     return (
       <BorderWrap>
         <Inner>
