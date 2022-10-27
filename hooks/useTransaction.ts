@@ -1,4 +1,5 @@
 import { useAddRecentTransaction } from '@rainbow-me/rainbowkit';
+import { SendTransactionResult } from '@wagmi/core';
 import { ContractTransaction } from 'ethers';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
@@ -46,7 +47,7 @@ const useTransaction = (pool?: IPool) => {
   const [txSubmitted, setTxSubmitted] = useState<boolean>(false);
 
   const handleTransact = async (
-    promise: () => Promise<ContractTransaction | undefined> | undefined,
+    promise: () => Promise<SendTransactionResult | ContractTransaction | undefined> | undefined,
     description: string
   ) => {
     try {
