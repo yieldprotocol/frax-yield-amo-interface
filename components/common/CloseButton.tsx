@@ -11,8 +11,8 @@ const CloseButton = ({ action, height, width }: ICloseButton) => {
   return (
     <XMarkIcon
       className="hover:cursor-pointer"
-      height={height || '1rem'}
-      width={width || '1rem'}
+      height={height || '1.5rem'}
+      width={width || '1.5rem'}
       color={theme === 'dark' ? '#e4e4e7' : '#18181b'}
       onClick={action}
     />

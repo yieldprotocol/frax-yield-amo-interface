@@ -203,7 +203,7 @@ const Widget = () => {
               </div>
               <div> </div>
               <div className="justify-self-end">
-                <CloseButton action={() => setConfirmModalOpen(false)} height="1.2rem" width="1.2rem" />
+                <CloseButton action={() => setConfirmModalOpen(false)} />
               </div>
             </TopRow>
             <RateConfirmation
