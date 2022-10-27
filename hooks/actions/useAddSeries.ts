@@ -29,7 +29,7 @@ const useAddSeries = (pool: IPool | undefined) => {
       return await amoContract?.addSeries(...args);
     }
 
-    return await write?.()!;
+    return write?.()!;
   };
 
   // check if series is added

@@ -5,7 +5,6 @@ import { useAccount, useContractWrite, usePrepareContractWrite } from 'wagmi';
 import useAMO from '../protocol/useAMO';
 import { AMOActions } from '../../lib/tx/operations';
 import useRatePreview from '../protocol/useRatePreview';
-import { ethers } from 'ethers';
 import useTenderly from '../useTenderly';
 import useAddSeries from './useAddSeries';
 import useContracts from '../protocol/useContracts';
@@ -56,7 +55,7 @@ export const useChangeRate = (
     enabled: !!(contractInterface && amoAddress && !usingTenderly),
   });
 
-  const { write } = useContractWrite(config);
+  const { writeAsync } = useContractWrite(config);
   const { handleTransact, isTransacting, txSubmitted } = useTransaction(pool);
 
   // description to use in toast
@@ -93,10 +92,10 @@ export const useChangeRate = (
         }
       }
 
-      return await write?.()!;
+      return writeAsync?.()!;
     };
 
-    handleTransact(() => _changeRate(), description);
+    handleTransact(_changeRate, description);
   };
 
   return { changeRate, isTransacting, txSubmitted };

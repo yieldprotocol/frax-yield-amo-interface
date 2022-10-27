@@ -2,6 +2,7 @@ import { useState } from 'react';
 import tw from 'tailwind-styled-components';
 import usePools from '../../hooks/protocol/usePools';
 import { IPool } from '../../lib/protocol/types';
+import Spinner from '../common/Spinner';
 import PoolSelectItem from './PoolSelectItem';
 import PoolSelectModal from './PoolSelectModal';
 
@@ -38,6 +39,7 @@ const PoolSelect = ({ pools, pool, setPool, poolsLoading }: IPoolSelect) => {
           }}
         >
           <ButtonInner>
+            {poolsLoading && <Spinner />}
             {error
               ? 'Error fetching pools'
               : pools

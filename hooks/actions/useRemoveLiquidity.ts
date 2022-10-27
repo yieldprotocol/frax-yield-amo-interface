@@ -36,7 +36,7 @@ export const useRemoveLiquidity = (pool: IPool | undefined, input: string) => {
     enabled: !!(contractInterface && amoAddress && !usingTenderly),
   });
 
-  const { write } = useContractWrite(config);
+  const { writeAsync } = useContractWrite(config);
 
   const removeLiquidity = async () => {
     if (!account) throw new Error('no connected account');
@@ -47,7 +47,7 @@ export const useRemoveLiquidity = (pool: IPool | undefined, input: string) => {
       return;
     }
 
-    if (!write && !usingTenderly) {
+    if (!writeAsync && !usingTenderly) {
       console.log('🦄 ~ file: useAddLiquidity.ts ~ line 38 ~ addLiquidity ~ !write');
       return;
     }
@@ -67,10 +67,10 @@ export const useRemoveLiquidity = (pool: IPool | undefined, input: string) => {
         return await amoContract.removeLiquidityFromAMM(...args, { gasLimit: 20_000_000 });
       }
 
-      await write?.()!;
+      return writeAsync?.()!;
     };
 
-    handleTransact(() => removeLiq(), description);
+    handleTransact(removeLiq, description);
   };
 
   return { removeLiquidity, isRemovingLiq: isTransacting, removeSubmitted: txSubmitted };

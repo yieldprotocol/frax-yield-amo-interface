@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import tw from 'tailwind-styled-components';
 import usePools from '../../hooks/protocol/usePools';
 import { IPool } from '../../lib/protocol/types';
+import Spinner from '../common/Spinner';
 import PoolListItem from './PoolListItem';
 
 const Container = tw.div`p-2 max-w-lg`;
@@ -18,11 +19,14 @@ const Pools = () => {
     }
   }, [pools]);
 
-  if (loading) return null;
-
   return (
     <Container>
-      {!poolsList?.length && <div>Your pool positions will show here.</div>}
+      {!poolsList?.length && (
+        <>
+          <div>Series loading...</div>
+          <Spinner />
+        </>
+      )}
       {poolsList.map((p) => (
         <PoolListItem pool={p} key={p.address} />
       ))}
