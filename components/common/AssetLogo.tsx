@@ -7,7 +7,7 @@ interface IAssetLogo {
 }
 
 const AssetLogo = ({ image, styleProps }: IAssetLogo) => {
-  const mark = marks[image];
+  const mark = (marks as any)[image];
   return (
     <div
       className={`${styleProps ? styleProps : ' h-[24px] w-[24px] rounded-full'}`}

@@ -10,11 +10,11 @@ type ButtonProps = {
 };
 
 const Input = tw.input`text-right caret-gray-800 dark:caret-gray-50 text-md appearance-none dark:bg-gray-800 bg-gray-200 dark:focus:text-gray-50 focus:text-gray-800 dark:text-gray-300 text-gray-800 leading-tight focus:outline-none `;
-const InputWrap = tw.div<ButtonProps>`${(p) =>
+const InputWrap = tw.div<ButtonProps>`${(p: any) =>
   p.$active
     ? 'border-primary-500 hover:border-primary-500/70'
     : 'border-gray-600 hover:border-gray-500'} rounded-full flex px-2 py-1 border-[1px] items-center`;
-const Button = tw.div<ButtonProps>`${(p) =>
+const Button = tw.div<ButtonProps>`${(p: any) =>
   p.$active
     ? 'bg-primary-500 border-primary-500 hover:border-primary-500/70'
     : 'border-gray-600 hover:border-gray-500'} cursor-pointer rounded-full flex px-2 py-1 border-[1px] items-center`;
@@ -50,7 +50,7 @@ const SlippageSetting = () => {
                   inputMode="decimal"
                   value={setting === DEFAULT_SLIPPAGE ? '' : setting}
                   placeholder=".5"
-                  onChange={(e) => setSetting(e.target.value)}
+                  onChange={(e: any) => setSetting(e.target.value)}
                   min="0"
                 />
                 <span className="dark:text-gray-200 ml-[1px]">%</span>

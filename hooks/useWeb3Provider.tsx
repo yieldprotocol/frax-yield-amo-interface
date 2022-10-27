@@ -3,7 +3,6 @@ import { chain, configureChains, createClient, WagmiConfig } from 'wagmi';
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
 import merge from 'lodash.merge';
 import { useColorTheme } from './useColorTheme';
-import { URLS } from '../config/chains';
 import useTenderly from './useTenderly';
 import { ReactNode } from 'react';
 import FRAXMark from '../components/common/logos/FRAXMark';
@@ -17,7 +16,7 @@ export default function Web3Provider({ children }: { children: ReactNode }) {
     [
       jsonRpcProvider({
         rpc: (chain) => {
-          return { http: usingTenderly ? tenderlyRpcUrl : URLS[chain.id][0] };
+          return { http: usingTenderly ? tenderlyRpcUrl : `https://mainnet.infura.io/v3/${process.env.infuraKey}` };
         },
       }),
     ]
