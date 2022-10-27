@@ -17,6 +17,7 @@ const Toasty = () => {
       closeButton={({ closeToast }) => (
         <XIcon height="1rem" width="1rem" color={theme === 'dark' ? '#e4e4e7' : '#18181b'} onClick={closeToast} />
       )}
+      autoClose={5000}
     />
   );
 };
