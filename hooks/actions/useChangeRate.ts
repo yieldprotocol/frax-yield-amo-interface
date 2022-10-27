@@ -29,7 +29,7 @@ export const useChangeRate = (
   const { contract: amoContract, address: amoAddress, contractInterface } = useAMO();
   const { usingTenderly, tenderlyProvider } = useTenderly();
   const increaseRates = method === AMOActions.Fn.INCREASE_RATES;
-  const { baseNeeded, baseNeeded_, ratePreview, fyTokenBought } = useRatePreview(
+  const { baseNeeded, baseNeeded_, ratePreview, fyTokenBought, minBaseBought, minFyTokenBought } = useRatePreview(
     pool?.address!,
     input,
     undefined,
@@ -42,9 +42,9 @@ export const useChangeRate = (
 
   // incRates === minFraxReceived, decRates === minFyFraxReceived
   // minFraxReceived from sellFYToken
-  const minFraxReceived = ethers.constants.Zero;
+  const minFraxReceived = minBaseBought;
   // minFyFraxReceived from sellBase
-  const minFyFraxReceived = ethers.constants.Zero;
+  const minFyFraxReceived = minFyTokenBought;
   const minReceived = increaseRates ? minFraxReceived : minFyFraxReceived;
   const args = [pool?.seriesId, baseNeeded, minReceived];
 
