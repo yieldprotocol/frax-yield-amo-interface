@@ -1,6 +1,6 @@
 import { toast } from 'react-toastify';
 import tw from 'tailwind-styled-components';
-import { CheckCircleIcon, ExclamationCircleIcon } from '@heroicons/react/solid';
+import { CheckCircleIcon, ExclamationCircleIcon } from '@heroicons/react/20/solid';
 
 const Body = tw.div`flex gap-3 items-center align-middle`;
 const Text = tw.div` text-sm`;

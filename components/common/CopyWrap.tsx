@@ -1,4 +1,4 @@
-import { CheckCircleIcon, ClipboardCheckIcon } from '@heroicons/react/outline';
+import { CheckCircleIcon, ClipboardDocumentIcon } from '@heroicons/react/20/solid';
 import { useState, useEffect, ReactNode } from 'react';
 import { copyToClipboard } from '../../utils/appUtils';
 import InfoIcon from './InfoIcon';
@@ -29,7 +29,7 @@ const CopyWrap = ({ children, value, label }: Props) => {
         <CheckCircleIcon className="h-4 w-4" />
       ) : (
         <InfoIcon infoText={label}>
-          <ClipboardCheckIcon className="h-4 w-4" />
+          <ClipboardDocumentIcon className="h-4 w-4" />
         </InfoIcon>
       )}
     </div>

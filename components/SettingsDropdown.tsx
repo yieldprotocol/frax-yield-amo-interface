@@ -1,7 +1,7 @@
 import { Fragment, useContext } from 'react';
 import tw from 'tailwind-styled-components';
 import { Menu, Transition } from '@headlessui/react';
-import { DotsVerticalIcon } from '@heroicons/react/solid';
+import { EllipsisVerticalIcon } from '@heroicons/react/20/solid';
 import Toggle from './common/Toggle';
 import { Settings, SettingsContext } from '../contexts/SettingsContext';
 import { useLocalStorage } from '../hooks/useLocalStorage';
@@ -29,7 +29,7 @@ const SettingsDropdown = () => {
         {({ open }) => (
           <>
             <Menu.Button className="inline-flex justify-between gap-2 align-middle w-full dark:bg-gray-700/50 px-1.5 py-2 dark:text-gray-50 text-gray-800 rounded-md bg-gray-100 border-[1px] dark:border-gray-700 border-gray-200 dark:hover:border-gray-600 hover:border-gray-300">
-              <DotsVerticalIcon className="my-auto w-5 h-5 dark:text-gray-50 text-gray-800" aria-hidden="true" />
+              <EllipsisVerticalIcon className="my-auto w-5 h-5 dark:text-gray-50 text-gray-800" aria-hidden="true" />
             </Menu.Button>
             <Transition
               show={open}

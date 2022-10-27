@@ -1,5 +1,5 @@
 import tw from 'tailwind-styled-components';
-import { PlusIcon, ArrowDownIcon, LightningBoltIcon } from '@heroicons/react/solid';
+import { PlusIcon, ArrowDownIcon, BoltIcon, FireIcon, ArrowsUpDownIcon } from '@heroicons/react/20/solid';
 
 type ArrowProps = {
   $hasToggle: boolean;
@@ -17,9 +17,10 @@ interface IArrow {
   toggleDirection?: () => void;
   isPlusIcon?: boolean;
   isBolt?: boolean;
+  isFire?: boolean;
 }
 
-const Arrow = ({ toggleDirection, isPlusIcon, isBolt }: IArrow) => (
+const Arrow = ({ toggleDirection, isPlusIcon, isBolt, isFire }: IArrow) => (
   <Container>
     <Outer>
       <IconWrap>
@@ -27,9 +28,11 @@ const Arrow = ({ toggleDirection, isPlusIcon, isBolt }: IArrow) => (
           {isPlusIcon ? (
             <PlusIcon className="justify-self-center text-primary-500" height={18} width={18} />
           ) : isBolt ? (
-            <LightningBoltIcon className="justify-self-center text-primary-500" height={18} width={18} />
+            <BoltIcon className="justify-self-center text-yellow-500" height={18} width={18} />
+          ) : isFire ? (
+            <FireIcon className="justify-self-center text-orange-500" height={18} width={18} />
           ) : (
-            <ArrowDownIcon className="justify-self-center text-primary-500" height={18} width={18} />
+            <ArrowsUpDownIcon className="justify-self-center text-primary-500" height={18} width={18} />
           )}
         </IconInner>
       </IconWrap>

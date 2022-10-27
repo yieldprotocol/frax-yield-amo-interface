@@ -1,6 +1,6 @@
 import { Fragment } from 'react';
 import { Popover, Transition } from '@headlessui/react';
-import { CogIcon } from '@heroicons/react/outline';
+import { CogIcon } from '@heroicons/react/20/solid';
 import tw from 'tailwind-styled-components';
 import { DEFAULT_SLIPPAGE, SLIPPAGE_KEY } from '../../constants';
 import { useLocalStorage } from '../../hooks/useLocalStorage';

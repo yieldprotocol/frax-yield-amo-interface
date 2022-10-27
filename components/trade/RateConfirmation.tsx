@@ -22,7 +22,7 @@ import {
   AssetSelectWrap,
   Right,
 } from '../styles/confirm';
-import { ArrowRightIcon, LightningBoltIcon } from '@heroicons/react/solid';
+import { ArrowRightIcon, BoltIcon } from '@heroicons/react/20/solid';
 import useRatePreview from '../../hooks/protocol/useRatePreview';
 
 interface IRateConfirmation {
@@ -83,7 +83,7 @@ const RateConfirmation = ({ form, action, disabled, loading }: IRateConfirmation
             <ConfirmItem value={baseAmount_} asset={pool.base} pool={pool} />
             <Arrow />
             <ConfirmItem value={expectedOutput!} asset={pool.fyToken} pool={pool} />
-            <Arrow isBolt={true} />
+            <Arrow isFire={true} />
             <ConfirmItem value={expectedOutput!} asset={pool.fyToken} pool={pool} />
           </>
         )}

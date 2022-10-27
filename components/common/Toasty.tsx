@@ -1,4 +1,4 @@
-import { XIcon } from '@heroicons/react/solid';
+import { XMarkIcon } from '@heroicons/react/20/solid';
 import { ToastContainer } from 'react-toastify';
 import { useColorTheme } from '../../hooks/useColorTheme';
 import 'react-toastify/dist/ReactToastify.css';
@@ -15,7 +15,7 @@ const Toasty = () => {
       pauseOnHover
       closeOnClick
       closeButton={({ closeToast }) => (
-        <XIcon height="1rem" width="1rem" color={theme === 'dark' ? '#e4e4e7' : '#18181b'} onClick={closeToast} />
+        <XMarkIcon height="1rem" width="1rem" color={theme === 'dark' ? '#e4e4e7' : '#18181b'} onClick={closeToast} />
       )}
       autoClose={5000}
     />
