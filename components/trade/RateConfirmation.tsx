@@ -23,6 +23,7 @@ import {
   Right,
 } from '../styles/confirm';
 import { ArrowRightIcon, LightningBoltIcon } from '@heroicons/react/solid';
+import useRatePreview from '../../hooks/protocol/useRatePreview';
 
 interface IRateConfirmation {
   form: IWidgetForm;
@@ -42,12 +43,22 @@ const ConfirmItem = ({ value, asset, pool, label }: { value: string; asset: IAss
 
 const RateConfirmation = ({ form, action, disabled, loading }: IRateConfirmation) => {
   const { pool, increasingRate, baseAmount, desiredRate } = form;
+  const { baseBought_, fyTokenBought_, minBaseBought_, minFyTokenBought_ } = useRatePreview(
+    pool?.address!,
+    +desiredRate / 100,
+    baseAmount,
+    true,
+    increasingRate
+  );
   const timeTillMaturity_ = useTimeTillMaturity(pool?.maturity!);
   const baseAmount_ = cleanValue(baseAmount, pool?.base.digitFormat!);
 
   const verb = increasingRate ? 'Increase' : 'Decrease';
   const maturityDescription = pool?.isMature ? `Mature` : `${timeTillMaturity_} until maturity`;
-  const minFyFrax = baseAmount_;
+
+  const expectedOutput = increasingRate ? baseBought_ : fyTokenBought_;
+  const minReceived = increasingRate ? minBaseBought_ : minFyTokenBought_;
+  const assetOut = increasingRate ? pool?.base : pool?.fyToken;
 
   if (!pool) return null;
 
@@ -65,15 +76,15 @@ const RateConfirmation = ({ form, action, disabled, loading }: IRateConfirmation
             <Arrow isBolt={true} />
             <ConfirmItem value={baseAmount_} asset={pool.fyToken} pool={pool} />
             <Arrow />
-            <ConfirmItem value={baseAmount_} asset={pool.base} pool={pool} />
+            <ConfirmItem value={expectedOutput!} asset={pool.base} pool={pool} />
           </>
         ) : (
           <>
             <ConfirmItem value={baseAmount_} asset={pool.base} pool={pool} />
             <Arrow />
-            <ConfirmItem value={baseAmount_} asset={pool.fyToken} pool={pool} />
+            <ConfirmItem value={expectedOutput!} asset={pool.fyToken} pool={pool} />
             <Arrow isBolt={true} />
-            <ConfirmItem value={baseAmount_} asset={pool.fyToken} pool={pool} />
+            <ConfirmItem value={expectedOutput!} asset={pool.fyToken} pool={pool} />
           </>
         )}
       </InputsWrap>
@@ -91,13 +102,13 @@ const RateConfirmation = ({ form, action, disabled, loading }: IRateConfirmation
           <DetailWrap>
             <Detail>Expected output</Detail>
             <Detail>
-              {baseAmount_} {pool.base.symbol}
+              {expectedOutput} {pool.base.symbol}
             </Detail>
           </DetailWrap>
           <LineBreak />
           <DetailWrap>
             <DetailGray>Minimum received after slippage</DetailGray>
-            <DetailGray>{minFyFrax}</DetailGray>
+            <DetailGray>{minReceived}</DetailGray>
           </DetailWrap>
           <DetailWrap>
             <Flex>
@@ -110,7 +121,7 @@ const RateConfirmation = ({ form, action, disabled, loading }: IRateConfirmation
       </InputStyleContainer>
       <DisclaimerTextWrap>
         <Italic>
-          Output is estimated. You will receive at least {minFyFrax} in {pool.fyToken.symbol} or the transaction will
+          Output is estimated. You will receive at least {minReceived} in {assetOut?.symbol} or the transaction will
           revert.
         </Italic>
       </DisclaimerTextWrap>
