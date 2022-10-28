@@ -3,7 +3,6 @@ import tw from 'tailwind-styled-components';
 import Account from './Account';
 import YieldMark from './common/YieldMark';
 import NavTabs from './NavTabs';
-import SettingsDropdown from './SettingsDropdown';
 
 const Container = tw.div`
   sticky
