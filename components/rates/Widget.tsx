@@ -6,7 +6,7 @@ import PoolSelect from '../pool/PoolSelect';
 import { IPool } from '../../lib/protocol/types';
 import InterestRateInput from './InterestRateInput';
 import { BorderWrap, Header, InputsWrap } from '../styles/common';
-import Arrow from './Arrow';
+import Icon from './Icon';
 import { useAccount, useBalance, useNetwork } from 'wagmi';
 import useRatePreview from '../../hooks/protocol/useRatePreview';
 import Toggle from '../common/Toggle';
@@ -149,7 +149,7 @@ const Widget = () => {
               setRate={() => null}
               loading={poolDataLoading}
             />
-            <Arrow />
+            <Icon />
             <InterestRateInput
               label={'New'}
               rate={updatingRate ? desiredRate : ratePreview}

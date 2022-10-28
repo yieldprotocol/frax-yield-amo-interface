@@ -26,9 +26,6 @@ const useInputValidation = (
 
   const _input = +input!;
 
-  const aboveMax = !!limits[1] && _input > parseFloat(limits[1].toString());
-  const belowMin = !!limits[0] && _input < parseFloat(limits[0].toString());
-
   useEffect(() => {
     if (!account) {
       return setErrorMsg('Please connect');
@@ -48,7 +45,7 @@ const useInputValidation = (
 
     setErrorMsg(null); // reset
 
-    const { base, isMature } = pool;
+    const { isMature } = pool;
 
     /* Action specific validation */
     switch (action) {
