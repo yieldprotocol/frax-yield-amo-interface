@@ -1,4 +1,3 @@
-import { JsxElement } from 'typescript';
 import DAIMark from '../components/common/logos/DAIMark';
 import ETHMark from '../components/common/logos/ETHMark';
 import FRAXMark from '../components/common/logos/FRAXMark';
