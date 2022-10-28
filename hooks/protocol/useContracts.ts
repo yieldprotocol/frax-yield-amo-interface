@@ -1,11 +1,11 @@
 import { JsonRpcSigner } from '@ethersproject/providers';
 import { useMemo } from 'react';
 import { useNetwork } from 'wagmi';
-import { CAULDRON, FRAX_AMO, LADLE } from '../../constants';
+import { FRAX_AMO, LADLE } from '../../constants';
 import { getContracts } from '../../lib/protocol';
 import { Provider } from '../../lib/protocol/types';
 
-export const CONTRACTS_TO_FETCH = [CAULDRON, LADLE, FRAX_AMO];
+export const CONTRACTS_TO_FETCH = [LADLE, FRAX_AMO];
 
 const useContracts = (providerOrSigner: Provider | JsonRpcSigner) => {
   const { chain } = useNetwork();
