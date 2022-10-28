@@ -1,7 +1,6 @@
 import { BaseProvider, Web3Provider } from '@ethersproject/providers';
-import { BigNumber, Contract, ethers } from 'ethers';
+import { Contract, ethers } from 'ethers';
 import { ERC20Permit, FYToken } from '../../contracts/types';
-import { IDomain, ISignable } from '../tx/types';
 
 export type Provider = Web3Provider | ethers.providers.InfuraProvider | ethers.providers.JsonRpcProvider | BaseProvider;
 
