@@ -1,16 +1,16 @@
 import { format } from 'date-fns';
 import { BigNumber, Contract, ethers } from 'ethers';
-import { CAULDRON, FRAX_ADDRESS, FRAX_AMO, LADLE } from '../../constants';
+import { CAULDRON, FRAX_ADDRESS, LADLE } from '../../constants';
 import { Pool__factory } from '../../contracts/types';
 import { IAsset, IContractMap, IPoolMap, IPoolRoot, Provider } from './types';
-import { hexToRgb, cleanValue, formatFyTokenSymbol, getSeason, SeasonType } from '../../utils/appUtils';
+import { hexToRgb, formatFyTokenSymbol, getSeason, SeasonType } from '../../utils/appUtils';
 import yieldEnv from '../../config/yieldEnv';
 import { CONTRACTS_TO_FETCH } from '../../hooks/protocol/useContracts';
 import * as contractTypes from '../../contracts/types';
 import { ERC20Permit__factory } from '../../contracts/types/factories/ERC20Permit__factory';
 import { FYToken__factory } from '../../contracts/types/factories/FYToken__factory';
-import { PoolAddedEvent } from '../../contracts/types/Ladle';
-import { SeriesAddedEvent } from '../../contracts/types/Cauldron';
+import { PoolAddedEvent, PoolAddedEventFilter } from '../../contracts/types/Ladle';
+import { SeriesAddedEvent, SeriesAddedEventFilter } from '../../contracts/types/Cauldron';
 import { JsonRpcProvider, JsonRpcSigner } from '@ethersproject/providers';
 
 const { seasonColors } = yieldEnv;
@@ -26,7 +26,7 @@ const formatMaturity = (maturity: number) => format(new Date(maturity * 1000), '
  * @returns  {string[]}
  */
 export const getPoolAddresses = async (ladle: contractTypes.Ladle, fromBlock?: number): Promise<string[]> => {
-  const poolAddedEvents = await ladle.queryFilter('PoolAdded' as ethers.EventFilter, fromBlock);
+  const poolAddedEvents = await ladle.queryFilter('PoolAdded' as PoolAddedEventFilter, fromBlock);
   const pools = poolAddedEvents.map((e: PoolAddedEvent) => e.args.pool);
   const filtered = pools.filter((p) => !invalidPools.includes(p)) as string[];
   return filtered;
@@ -42,12 +42,12 @@ export const getPoolAddresses = async (ladle: contractTypes.Ladle, fromBlock?: n
 export const getSeriesEvents = async (
   cauldron: contractTypes.Cauldron,
   fromBlock?: number
-): Promise<SeriesAddedEvent[]> => await cauldron.queryFilter('SeriesAdded' as ethers.EventFilter, fromBlock);
+): Promise<SeriesAddedEvent[]> => await cauldron.queryFilter('SeriesAdded' as SeriesAddedEventFilter, fromBlock);
 
 /**
  * Gets all pool data
  *
- * @param provider
+ * @param provider connected provider or default chain provider
  * @param contractMap
  * @param chainId currently connected chain id or mainnet as default
  * @param usingTenderly if using tenderly testing environment
@@ -67,7 +67,6 @@ export const getPools = async (
 ): Promise<IPoolMap | undefined> => {
   console.log('fetching pools');
 
-  const account = (yieldEnv.addresses as any)[chainId][FRAX_AMO];
   const ladle = contractMap[LADLE] as contractTypes.Ladle;
   const cauldron = contractMap[CAULDRON] as contractTypes.Cauldron;
 
@@ -110,8 +109,8 @@ export const getPools = async (
         poolContract.symbol(),
       ]);
 
-      const base = await getAsset(provider, baseAddress, account, false, chainId);
-      const fyToken = await getAsset(provider, fyTokenAddress, account, true, chainId);
+      const base = await getAsset(provider, baseAddress, false);
+      const fyToken = await getAsset(provider, fyTokenAddress, true);
       const seriesId = fyTokenToSeries.get(fyTokenAddress);
 
       const newPool = {
@@ -177,54 +176,30 @@ export const getContracts = (providerOrSigner: Provider | JsonRpcSigner, chainId
 
 /**
  * Gets token/asset data and balances if there is an account provided
- * @param tokenAddress
- * @param account can be null if there is no account
+ * @param provider
+ * @param address token address
  * @param isFyToken optional
  * @returns
  */
-export const getAsset = async (
-  provider: Provider,
-  tokenAddress: string,
-  account: string | null = null,
-  isFyToken: boolean = false,
-  chainId: number
-): Promise<IAsset> => {
-  const ERC20 = ERC20Permit__factory.connect(tokenAddress, provider);
-  const FYTOKEN = FYToken__factory.connect(tokenAddress, provider);
+export const getAsset = async (provider: Provider, address: string, isFyToken: boolean = false): Promise<IAsset> => {
+  let contract: contractTypes.ERC20Permit | contractTypes.FYToken;
 
-  const [symbol, decimals, name] = await Promise.all([
-    isFyToken ? FYTOKEN.symbol() : ERC20.symbol(),
-    isFyToken ? FYTOKEN.decimals() : ERC20.decimals(),
-    isFyToken ? FYTOKEN.name() : ERC20.name(),
-  ]);
-
-  let version: string;
-
-  try {
-    version = isFyToken ? await FYTOKEN.version() : await ERC20.version();
-  } catch (error) {
-    version = '1';
-    console.log('🦄 ~ file: index.ts ~ line 251 ~ error', error);
+  if (isFyToken) {
+    contract = FYToken__factory.connect(address, provider);
+  } else {
+    contract = ERC20Permit__factory.connect(address, provider);
   }
 
-  const balance = account ? await getBalance(provider, tokenAddress, account, isFyToken) : ethers.constants.Zero;
+  const [symbol, decimals, name] = await Promise.all([contract.symbol(), contract.decimals(), contract.name()]);
 
-  const contract = isFyToken ? FYTOKEN : ERC20;
-  const getAllowance = async (acc: string, spender: string) =>
-    isFyToken ? FYTOKEN.allowance(acc, spender) : ERC20.allowance(acc, spender);
   const symbol_ = symbol === 'WETH' ? 'ETH' : symbol;
 
   return {
-    address: tokenAddress,
-    domain: { name, version, chainId, verifyingContract: contract.address },
-    version: symbol === 'USDC' ? '2' : '1',
+    address,
     name,
     symbol: isFyToken ? formatFyTokenSymbol(symbol) : symbol_,
     decimals,
-    balance,
-    balance_: cleanValue(ethers.utils.formatUnits(balance, decimals), decimals),
     contract,
-    getAllowance,
     digitFormat: 4,
   };
 };

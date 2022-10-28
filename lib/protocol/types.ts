@@ -42,17 +42,11 @@ export interface IPool extends IPoolRoot {
   maturity_: string;
 }
 
-export interface IAsset extends ISignable {
+export interface IAsset {
   address: string;
-  version: string;
   name: string;
   symbol: string;
   decimals: number;
-  balance: BigNumber;
-  balance_: string;
-  digitFormat: number;
-  domain: IDomain;
-
   contract: ERC20Permit | FYToken;
-  getAllowance: (account: string, spender: string) => Promise<BigNumber>;
+  digitFormat: number;
 }
