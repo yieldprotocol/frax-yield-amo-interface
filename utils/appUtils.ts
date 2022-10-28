@@ -9,29 +9,6 @@ export const copyToClipboard = (str: string) => {
   document.body.removeChild(el);
 };
 
-export const clearCachedItems = (keys: string[]) => {
-  if (keys.length > 0) {
-    keys.forEach((k: string) => {
-      window.localStorage.removeItem(k);
-    });
-  } else window.localStorage.clear();
-};
-
-/**
- * Convert array to chunks of arrays with size n
- * @param a any array
- * @param size chunk size
- * @returns array of any[]
- */
-export const chunkArray = (a: any[], size: number) =>
-  Array.from(new Array(Math.ceil(a.length / size)), (_, i) => a.slice(i * size, i * size + size));
-
-/* log to console + any extra action required, extracted  */
-export const toLog = (message: string, type: string = 'info') => {
-  // eslint-disable-next-line no-console
-  console.log(message);
-};
-
 /* Trunctate a string value to a certain number of 'decimal' point */
 export const cleanValue = (input: string | undefined, decimals: number = 18) => {
   const re = new RegExp(`(\\d+\\.\\d{${decimals}})(\\d)`);
@@ -45,10 +22,6 @@ export const cleanValue = (input: string | undefined, decimals: number = 18) => 
   }
   return '0.0';
 };
-
-/* handle Address/hash shortening */
-export const abbreviateHash = (addr: string, buffer: number = 5) =>
-  `${addr?.substring(0, buffer)}...${addr?.substring(addr.length - buffer)}`;
 
 /**
  * Number formatting if reqd.

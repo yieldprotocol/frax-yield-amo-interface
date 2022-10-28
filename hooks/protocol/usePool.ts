@@ -1,9 +1,9 @@
+import { calcInterestRate, getTimeStretchYears } from '@yield-protocol/ui-math';
 import Decimal from 'decimal.js';
 import { BigNumber } from 'ethers';
 import { useMemo } from 'react';
 import { useContractReads } from 'wagmi';
 import { Pool__factory } from '../../contracts/types';
-import { calculateRate, getTimeStretchYears } from '../../utils/yieldMath';
 import useDefaultProvider from '../useDefaultProvider';
 import useTenderly from '../useTenderly';
 
@@ -94,7 +94,7 @@ const usePool = (poolAddress: string | undefined) => {
   const interestRate = useMemo(
     () =>
       data && timeStretchYears && data[1] && data[0]
-        ? calculateRate(BigNumber.from(data[1]), BigNumber.from(data[0]), timeStretchYears!).toString()
+        ? calcInterestRate(BigNumber.from(data[0]), BigNumber.from(data[1]), BigNumber.from(data[3])).toString()
         : undefined,
     [data, timeStretchYears]
   );

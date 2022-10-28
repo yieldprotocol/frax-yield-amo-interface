@@ -1,9 +1,8 @@
-import { calculateSlippage, sellFYToken } from '@yield-protocol/ui-math';
+import { calculateSlippage, changeRateNonTv, sellBase, sellFYToken } from '@yield-protocol/ui-math';
 import { BigNumber, ethers } from 'ethers';
 import { formatUnits } from 'ethers/lib/utils';
 import { useEffect, useState } from 'react';
 import { cleanValue, valueAtDigits } from '../../utils/appUtils';
-import { changeRate, sellBase } from '../../utils/yieldMath';
 import usePool from './usePool';
 
 const useRatePreview = (
@@ -32,7 +31,15 @@ const useRatePreview = (
     if (data) {
       const { baseReserves, fyTokenReserves, timeTillMaturity, ts, g1, g2, decimals } = data;
 
-      const _baseNeeded = changeRate(baseReserves, fyTokenReserves, timeTillMaturity!, ts, g1, g2, desiredRate || 0);
+      const _baseNeeded = changeRateNonTv(
+        baseReserves,
+        fyTokenReserves,
+        timeTillMaturity!,
+        ts,
+        g1,
+        g2,
+        desiredRate || 0
+      );
 
       setBaseNeeded(_baseNeeded);
       setBaseNeeded_(cleanValue(ethers.utils.formatUnits(_baseNeeded, decimals), 2));
@@ -42,7 +49,7 @@ const useRatePreview = (
       // if not increasing rates we buy fyToken and burn it
       // need fyTokenBought for approval
       if (!increaseRates) {
-        const fyTokenOut = sellBase(baseReserves, fyTokenReserves, _baseNeeded, timeTillMaturity!, ts, g2, decimals); // using base amount as proxy for fyToken in
+        const fyTokenOut = sellBase(baseReserves, fyTokenReserves, _baseNeeded, timeTillMaturity!, ts, g1, decimals); // using base amount as proxy for fyToken in
         setFyTokenBought(fyTokenOut);
         setFyTokenBought_(valueAtDigits(formatUnits(fyTokenOut, decimals), 2));
 
