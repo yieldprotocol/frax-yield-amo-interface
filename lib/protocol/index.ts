@@ -2,7 +2,7 @@ import { format } from 'date-fns';
 import { Contract } from 'ethers';
 import { FRAX_ADDRESS, LADLE } from '../../constants';
 import { Pool__factory } from '../../contracts/types';
-import { IAsset, IContractMap, IPoolMap, IPoolRoot, Provider } from './types';
+import { IAsset, IContractMap, IPool, IPoolMap, IPoolRoot, Provider } from './types';
 import { hexToRgb, formatFyTokenSymbol, getSeason, SeasonType } from '../../utils/appUtils';
 import yieldEnv from '../../config/yieldEnv';
 import { CONTRACTS_TO_FETCH } from '../../hooks/protocol/useContracts';
@@ -101,6 +101,7 @@ export const getPools = async (
       return { ...(await pools), [address]: _chargePool(newPool, chainId) };
     } catch (e) {
       console.log('error fetching pool', e);
+      return pools;
     }
   }, {});
 };
