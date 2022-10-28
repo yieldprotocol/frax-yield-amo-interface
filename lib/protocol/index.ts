@@ -10,7 +10,6 @@ import * as contractTypes from '../../contracts/types';
 import { ERC20Permit__factory } from '../../contracts/types/factories/ERC20Permit__factory';
 import { FYToken__factory } from '../../contracts/types/factories/FYToken__factory';
 import { PoolAddedEvent, PoolAddedEventFilter } from '../../contracts/types/Ladle';
-import { SeriesAddedEvent, SeriesAddedEventFilter } from '../../contracts/types/Cauldron';
 import { JsonRpcProvider, JsonRpcSigner } from '@ethersproject/providers';
 
 const { seasonColors } = yieldEnv;
