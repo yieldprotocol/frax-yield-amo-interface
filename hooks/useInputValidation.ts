@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAccount, useBalance, useNetwork } from 'wagmi';
-import { FRAX_ADDRESS } from '../constants';
+import { FRAX_ADDRESS } from '../config/assets';
 import { IPool } from '../lib/protocol/types';
 import { AMOActions } from '../lib/tx/operations';
 import useAMO from './protocol/useAMO';

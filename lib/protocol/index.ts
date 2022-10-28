@@ -1,8 +1,8 @@
 import { format } from 'date-fns';
 import { Contract } from 'ethers';
-import { FRAX_ADDRESS, LADLE } from '../../constants';
+import { LADLE } from '../../constants';
 import { Pool__factory } from '../../contracts/types';
-import { IAsset, IContractMap, IPool, IPoolMap, IPoolRoot, Provider } from './types';
+import { IAsset, IContractMap, IPoolMap, IPoolRoot, Provider } from './types';
 import { hexToRgb, formatFyTokenSymbol, getSeason, SeasonType } from '../../utils/appUtils';
 import yieldEnv from '../../config/yieldEnv';
 import { CONTRACTS_TO_FETCH } from '../../hooks/protocol/useContracts';
@@ -11,6 +11,7 @@ import { ERC20Permit__factory } from '../../contracts/types/factories/ERC20Permi
 import { FYToken__factory } from '../../contracts/types/factories/FYToken__factory';
 import { PoolAddedEvent, PoolAddedEventFilter } from '../../contracts/types/Ladle';
 import { JsonRpcProvider, JsonRpcSigner } from '@ethersproject/providers';
+import { FRAX_ADDRESS } from '../../config/assets';
 
 const { seasonColors } = yieldEnv;
 const invalidPools = ['0x57002Dd4609fd79f65e2e2a4bE9aa6e901Af9D9C'];
