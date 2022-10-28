@@ -50,21 +50,3 @@ export namespace AMOActions {
     ];
   }
 }
-
-export namespace LadleActions {
-  export enum Fn {
-    FORWARD_PERMIT = 'forwardPermit',
-  }
-
-  export namespace Args {
-    export type FORWARD_PERMIT = [
-      token: string,
-      spender: string,
-      amount: BigNumberish,
-      deadline: BigNumberish,
-      v: BigNumberish,
-      r: BytesLike,
-      s: BytesLike
-    ];
-  }
-}
