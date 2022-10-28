@@ -3,7 +3,6 @@ import { SendTransactionResult } from '@wagmi/core';
 import { ContractTransaction } from 'ethers';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
-import { useSWRConfig } from 'swr';
 import { useBalance, useContractRead, useNetwork } from 'wagmi';
 import { FRAX_ADDRESS } from '../config/assets';
 import { TENDERLY_FORK_ID } from '../constants';
@@ -34,12 +33,10 @@ const useTransaction = (pool?: IPool) => {
     token: pool?.address,
   });
 
-  const { mutate } = useSWRConfig();
   const { toasty } = useToasty();
   const { usingTenderly } = useTenderly();
   const addRecentTransaction = useAddRecentTransaction();
 
-  const chainId = chain?.id || 1;
   const explorer = usingTenderly
     ? `https://dashboard.tenderly.co/Yield/v2/fork/${TENDERLY_FORK_ID}/`
     : chain?.blockExplorers?.default.url;

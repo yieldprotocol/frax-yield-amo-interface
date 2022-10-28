@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-const getStorageValue = (key: string, defaultValue: string, account?: string) => {
+const getStorageValue = (key: string, defaultValue: string) => {
   const itemInLocalStorage: string | boolean | null = JSON.parse(localStorage.getItem(key)!);
   return itemInLocalStorage ?? defaultValue;
 };
