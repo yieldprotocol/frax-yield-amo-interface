@@ -10,9 +10,8 @@ import Button from '../common/Button';
 import { useContractRead } from 'wagmi';
 import { AMOActions } from '../../lib/tx/operations';
 import useAMO from '../../hooks/protocol/useAMO';
-import { formatUnits, Interface } from 'ethers/lib/utils';
+import { formatUnits } from 'ethers/lib/utils';
 import SkeletonWrap from '../common/SkeletonWrap';
-import abi from '../../contracts/abis/AMO.json';
 
 const Inner = tw.div`m-4 text-center`;
 const ButtonWrap = tw.div`flex justify-between gap-10`;

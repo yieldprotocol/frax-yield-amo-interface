@@ -22,7 +22,6 @@ import {
   AssetSelectWrap,
   Right,
 } from '../styles/confirm';
-import { ArrowRightIcon, BoltIcon } from '@heroicons/react/20/solid';
 import useRatePreview from '../../hooks/protocol/useRatePreview';
 
 interface IRateConfirmation {

@@ -1,5 +1,5 @@
 import tw from 'tailwind-styled-components';
-import { PlusIcon, ArrowDownIcon, BoltIcon, FireIcon, ArrowsUpDownIcon } from '@heroicons/react/20/solid';
+import { PlusIcon, BoltIcon, FireIcon, ArrowsUpDownIcon } from '@heroicons/react/20/solid';
 
 type ArrowProps = {
   $hasToggle: boolean;

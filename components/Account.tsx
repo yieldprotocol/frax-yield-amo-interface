@@ -1,5 +1,3 @@
-// import InfoDropdown from './InfoDropdown';
-
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import SettingsDropdown from './SettingsDropdown';
 
