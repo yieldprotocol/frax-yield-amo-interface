@@ -1,11 +1,9 @@
 import { calculateSlippage, sellFYToken } from '@yield-protocol/ui-math';
 import { BigNumber, ethers } from 'ethers';
-import { formatUnits, parseUnits } from 'ethers/lib/utils';
+import { formatUnits } from 'ethers/lib/utils';
 import { useEffect, useState } from 'react';
-import { DEFAULT_SLIPPAGE, SLIPPAGE_KEY } from '../../constants';
 import { cleanValue, valueAtDigits } from '../../utils/appUtils';
 import { changeRate, sellBase } from '../../utils/yieldMath';
-import { useLocalStorage } from '../useLocalStorage';
 import usePool from './usePool';
 
 const useRatePreview = (
