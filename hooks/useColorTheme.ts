@@ -1,12 +1,17 @@
-import { useEffect } from 'react';
+import { useContext, useEffect } from 'react';
 import { THEME_KEY } from '../constants';
+import { SettingsContext } from '../contexts/SettingsContext';
 import { useLocalStorage } from './useLocalStorage';
 
 const LIGHT = 'light';
 const DARK = 'dark';
 
 export const useColorTheme = () => {
-  const [theme, setTheme] = useLocalStorage(THEME_KEY, DARK);
+  const {
+    state: { theme: themeSetting },
+  } = useContext(SettingsContext);
+
+  const [theme, setTheme] = useLocalStorage(THEME_KEY, themeSetting);
 
   const toggleTheme = () => {
     // Whenever the user explicitly chooses light mode

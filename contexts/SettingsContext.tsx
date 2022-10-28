@@ -4,21 +4,29 @@ import { useLocalStorage } from '../hooks/useLocalStorage';
 
 interface ISettingsContextState {
   usingTenderly: boolean;
+  theme: 'light' | 'dark';
 }
 
-type SettingsContextAction = UseTenderlyAction;
+type SettingsContextAction = UseTenderlyAction | ThemeAction;
 
 export type UseTenderlyAction = {
   type: Settings.USING_TENDERLY;
   payload: boolean;
 };
 
+export type ThemeAction = {
+  type: Settings.THEME;
+  payload: 'light' | 'dark';
+};
+
 export enum Settings {
   USING_TENDERLY = 'usingTenderly',
+  THEME = 'theme',
 }
 
 const initState: ISettingsContextState = {
   usingTenderly: false,
+  theme: 'dark',
 };
 
 const SettingsContext = createContext<{ state: ISettingsContextState; dispatch: Dispatch<SettingsContextAction> }>({
