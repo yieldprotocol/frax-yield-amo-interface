@@ -23,6 +23,7 @@ interface IPoolSelect {
 }
 
 const PoolSelect = ({ pools, pool, setPool, poolsLoading }: IPoolSelect) => {
+  console.log('🦄 ~ file: PoolSelect.tsx ~ line 26 ~ PoolSelect ~ pools', pools);
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const { error } = usePools();
 

@@ -1,7 +1,7 @@
 import { BaseProvider, Web3Provider } from '@ethersproject/providers';
-import { BigNumber, Contract, ethers } from 'ethers';
+import { Contract, ethers } from 'ethers';
 import { ERC20Permit, FYToken } from '../../contracts/types';
-import { IDomain, ISignable } from '../tx/types';
+import { ISignable } from '../tx/types';
 
 export type Provider = Web3Provider | ethers.providers.InfuraProvider | ethers.providers.JsonRpcProvider | BaseProvider;
 
@@ -19,12 +19,8 @@ export interface IPoolRoot {
   symbol: string;
   maturity: number;
   seriesId: string;
-  fyTokenAddress: string;
-  baseAddress: string;
-
-  base: IAsset;
-  fyToken: IAsset;
-
+  fyToken: string;
+  base: string;
   isMature: boolean;
 }
 
@@ -43,16 +39,16 @@ export interface IPool extends IPoolRoot {
 }
 
 export interface IAsset extends ISignable {
-  address: string;
-  version: string;
-  name: string;
   symbol: string;
   decimals: number;
-  balance: BigNumber;
-  balance_: string;
+  name: string;
   digitFormat: number;
-  domain: IDomain;
+}
 
-  contract: ERC20Permit | FYToken;
-  getAllowance: (account: string, spender: string) => Promise<BigNumber>;
+export interface IBase extends IAsset {
+  contract: ERC20Permit;
+}
+
+export interface IFyToken extends IAsset {
+  contract: FYToken;
 }

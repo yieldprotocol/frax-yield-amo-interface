@@ -50,10 +50,7 @@ const PoolSelectModal = ({ pools, open, setOpen, action }: IPoolSelectModal) => 
   };
 
   const handleSort = useCallback(
-    () =>
-      pools
-        .sort((a, b) => (a.base.symbol < b.base.symbol ? 1 : -1)) // sort alphabetically by base
-        .sort((a, b) => (a.maturity < b.maturity ? 1 : -1)), // closest maturity first
+    () => pools.sort((a, b) => (a.maturity < b.maturity ? 1 : -1)), // closest maturity first
     // .sort((a, b) => (a.base.balance.gte(b.base.balance) ? 1 : -1)) // sort by base balance
     // .sort((a, b) => (a.isMature ? -1 : 1)); // mature pools at the end
     [pools]

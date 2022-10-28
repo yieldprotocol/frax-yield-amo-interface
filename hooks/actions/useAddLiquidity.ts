@@ -7,8 +7,10 @@ import { AMOActions } from '../../lib/tx/operations';
 import useAddLiqPreview from '../protocol/useAddLiqPreview';
 import useTenderly from '../useTenderly';
 import useAddSeries from './useAddSeries';
+import useBase from '../protocol/useBase';
 
 export const useAddLiquidity = (pool: IPool | undefined, input: string) => {
+  const { data: base } = useBase(pool?.base!);
   const { address: account } = useAccount();
   const { contract: amoContract, address: amoAddress, contractInterface } = useAMO();
   const { usingTenderly } = useTenderly();
@@ -46,7 +48,7 @@ export const useAddLiquidity = (pool: IPool | undefined, input: string) => {
     }
 
     // description to use in toast
-    const description = `Add ${valueAtDigits(baseNeeded_, 4)} ${pool.base.symbol}
+    const description = `Add ${valueAtDigits(baseNeeded_, 4)} ${base?.symbol}
      and ${valueAtDigits(fyTokenNeeded_, 4)} ${pool.fyToken.symbol} as liquidity`;
 
     const addLiq = async () => {

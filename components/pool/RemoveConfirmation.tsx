@@ -16,6 +16,7 @@ import {
   InputsWrap,
   Italic,
 } from '../styles/confirm';
+import useBase from '../../hooks/protocol/useBase';
 
 interface IRemoveConfirmation {
   form: IRemoveLiquidityForm;
@@ -35,6 +36,7 @@ const ConfirmItem = ({ value, pool }: { value: string; pool: IPool }) => (
 
 const RemoveConfirmation = ({ form, action, disabled, loading }: IRemoveConfirmation) => {
   const { pool, lpTokens } = form;
+  const { data: base } = useBase(pool?.base!);
   const { baseReceived, fyTokenReceived } = useRemoveLiqPreview(pool?.address!, lpTokens);
 
   if (!pool) return null;
@@ -47,13 +49,13 @@ const RemoveConfirmation = ({ form, action, disabled, loading }: IRemoveConfirma
       <InputStyleContainer>
         <DetailsWrap>
           <DetailWrap>
-            <Detail>Estimated {pool.base.symbol} Received</Detail>
-            <Detail>{cleanValue(baseReceived, pool.base.digitFormat)}</Detail>
+            <Detail>Estimated {base?.symbol} Received</Detail>
+            <Detail>{cleanValue(baseReceived, base?.digitFormat)}</Detail>
           </DetailWrap>
           {fyTokenReceived && (
             <DetailWrap>
               <Detail>
-                Estimated {pool.fyToken.symbol} Received and Burned for {pool.base.symbol}
+                Estimated {pool.fyToken.symbol} Received and Burned for {base?.symbol}
               </Detail>
               <Detail>{cleanValue(fyTokenReceived, pool.fyToken.digitFormat)}</Detail>
             </DetailWrap>

@@ -24,6 +24,7 @@ import {
 } from '../styles/confirm';
 import { ArrowRightIcon, BoltIcon } from '@heroicons/react/20/solid';
 import useRatePreview from '../../hooks/protocol/useRatePreview';
+import useBase from '../../hooks/protocol/useBase';
 
 interface IRateConfirmation {
   form: IWidgetForm;
@@ -43,6 +44,7 @@ const ConfirmItem = ({ value, asset, pool, label }: { value: string; asset: IAss
 
 const RateConfirmation = ({ form, action, disabled, loading }: IRateConfirmation) => {
   const { pool, increasingRate, baseAmount, desiredRate } = form;
+  const { data: base } = useBase(pool?.base!);
   const { baseBought_, fyTokenBought_, minBaseBought_, minFyTokenBought_ } = useRatePreview(
     pool?.address!,
     +desiredRate / 100,
@@ -51,7 +53,7 @@ const RateConfirmation = ({ form, action, disabled, loading }: IRateConfirmation
     increasingRate
   );
   const timeTillMaturity_ = useTimeTillMaturity(pool?.maturity!);
-  const baseAmount_ = cleanValue(baseAmount, pool?.base.digitFormat!);
+  const baseAmount_ = cleanValue(baseAmount, base?.digitFormat!);
 
   const verb = increasingRate ? 'Increase' : 'Decrease';
   const maturityDescription = pool?.isMature ? `Mature` : `${timeTillMaturity_} until maturity`;
@@ -72,15 +74,15 @@ const RateConfirmation = ({ form, action, disabled, loading }: IRateConfirmation
       <InputsWrap>
         {increasingRate ? (
           <>
-            <ConfirmItem value={baseAmount_} asset={pool.base} pool={pool} />
+            <ConfirmItem value={baseAmount_} asset={base!} pool={pool} />
             <Arrow isBolt={true} />
             <ConfirmItem value={baseAmount_} asset={pool.fyToken} pool={pool} />
             <Arrow />
-            <ConfirmItem value={expectedOutput!} asset={pool.base} pool={pool} />
+            <ConfirmItem value={expectedOutput!} asset={base!} pool={pool} />
           </>
         ) : (
           <>
-            <ConfirmItem value={baseAmount_} asset={pool.base} pool={pool} />
+            <ConfirmItem value={baseAmount_} asset={base!} pool={pool} />
             <Arrow />
             <ConfirmItem value={expectedOutput!} asset={pool.fyToken} pool={pool} />
             <Arrow isFire={true} />
@@ -102,7 +104,7 @@ const RateConfirmation = ({ form, action, disabled, loading }: IRateConfirmation
           <DetailWrap>
             <Detail>Expected output</Detail>
             <Detail>
-              {expectedOutput} {pool.base.symbol}
+              {expectedOutput} {base?.symbol}
             </Detail>
           </DetailWrap>
           <LineBreak />

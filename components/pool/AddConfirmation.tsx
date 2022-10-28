@@ -18,6 +18,7 @@ import {
   DetailWrap,
   DetailsWrap,
 } from '../styles/confirm';
+import useBase from '../../hooks/protocol/useBase';
 
 interface IAddConfirmation {
   form: IAddLiquidityForm;
@@ -37,6 +38,7 @@ const ConfirmItem = ({ value, asset, pool }: { value: string; asset: IAsset; poo
 
 const AddConfirmation = ({ form, action, disabled, loading }: IAddConfirmation) => {
   const { pool, input } = form;
+  const { data: base } = useBase(pool?.base!);
   const { lpTokenPreview } = useAddLiquidityPreview(pool?.address!, input);
   const timeTillMaturity_ = useTimeTillMaturity(pool?.maturity!);
   const maturityDescription = pool?.isMature ? `Mature` : `${timeTillMaturity_} until maturity`;
@@ -46,7 +48,7 @@ const AddConfirmation = ({ form, action, disabled, loading }: IAddConfirmation) 
   return (
     <Container>
       <InputsWrap>
-        <ConfirmItem value={valueAtDigits(input, pool.base.digitFormat)} asset={pool.base} pool={pool!} />
+        <ConfirmItem value={valueAtDigits(input, base?.digitFormat!)} asset={base!} pool={pool!} />
       </InputsWrap>
       <InputStyleContainer>
         <DetailsWrap>

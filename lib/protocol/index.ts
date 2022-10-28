@@ -135,16 +135,15 @@ export const getPools = async (
 };
 
 /* add on extra/calculated ASYNC series info and contract instances */
-const _chargePool = (_pool: IPoolRoot, _chainId: number) => {
-  const season = getSeason(_pool.maturity);
-  const oppSeason = (_season: SeasonType) => getSeason(_pool.maturity + 23670000);
+export const extraPoolData = (maturity: number, _chainId: number) => {
+  const season = getSeason(maturity);
+  const oppSeason = (_season: SeasonType) => getSeason(maturity + 23670000);
   const [startColor, endColor, textColor]: string[] = (seasonColors as any)[_chainId][season];
   const [oppStartColor, oppEndColor, oppTextColor]: string[] = (seasonColors as any)[_chainId][oppSeason(season)];
 
   return {
-    ..._pool,
-    displayName: `${_pool.base.symbol} ${formatMaturity(_pool.maturity)}`,
-    maturity_: formatMaturity(_pool.maturity),
+    displayName: `${formatMaturity(maturity)}`,
+    maturity_: formatMaturity(maturity),
     season,
     startColor,
     endColor,
@@ -207,8 +206,6 @@ export const getAsset = async (
     console.log('🦄 ~ file: index.ts ~ line 251 ~ error', error);
   }
 
-  const balance = account ? await getBalance(provider, tokenAddress, account, isFyToken) : ethers.constants.Zero;
-
   const contract = isFyToken ? FYTOKEN : ERC20;
   const getAllowance = async (acc: string, spender: string) =>
     isFyToken ? FYTOKEN.allowance(acc, spender) : ERC20.allowance(acc, spender);
@@ -216,15 +213,10 @@ export const getAsset = async (
 
   return {
     address: tokenAddress,
-    domain: { name, version, chainId, verifyingContract: contract.address },
     version: symbol === 'USDC' ? '2' : '1',
     name,
     symbol: isFyToken ? formatFyTokenSymbol(symbol) : symbol_,
     decimals,
-    balance,
-    balance_: cleanValue(ethers.utils.formatUnits(balance, decimals), decimals),
-    contract,
-    getAllowance,
     digitFormat: 4,
   };
 };

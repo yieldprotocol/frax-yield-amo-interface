@@ -3,8 +3,8 @@ import { ReadContractsContract } from '@wagmi/core/dist/declarations/src/actions
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useContractReads, useNetwork } from 'wagmi';
 import { FRAX_ADDRESS, LADLE } from '../../constants';
-import { ERC20Permit__factory, Ladle, Pool, Pool__factory } from '../../contracts/types';
-import { getPoolAddresses } from '../../lib/protocol';
+import { Ladle, Pool__factory } from '../../contracts/types';
+import { extraPoolData, getPoolAddresses } from '../../lib/protocol';
 import { IPoolMap } from '../../lib/protocol/types';
 import useDefaultProvider from '../useDefaultProvider';
 import useTenderly from '../useTenderly';
@@ -44,7 +44,7 @@ const usePools = () => {
 
       return filtered;
     }
-  }, [contractMap, provider, tenderlyContractMap, tenderlyProvider, tenderlyStartBlock, usingTenderly]);
+  }, []);
 
   useEffect(() => {
     (async () => {
@@ -81,23 +81,30 @@ const usePools = () => {
     enabled: !!contracts.length,
   });
 
-  const _data = useMemo(() => {
-    if (!poolAddresses) return;
+  const _data: IPoolMap | undefined = useMemo(() => {
+    if (!poolAddresses || !data) return;
 
     const chunked = _.chunk(data, funcs.length);
     const poolData = chunked.reduce((acc, c, i) => {
-      const [name, maturity, fyToken, symbol, base] = c;
+      const [name, maturity, fyToken, symbol, base] = c as unknown as [
+        name: string,
+        maturity: number,
+        fyToken: string,
+        symbol: string,
+        base: string
+      ];
       const address = poolAddresses[i];
-      return { ...acc, [address]: { name, maturity, fyToken, symbol, address, base } };
+      return {
+        ...acc,
+        [address]: { name, maturity, fyToken, symbol, address, base, ...extraPoolData(maturity, chainId) },
+      };
     }, {});
 
     return poolData;
-  }, [data, funcs.length, poolAddresses]);
-
-  console.log('🦄 ~ file: usePools.ts ~ line 47 ~ usePools ~ data', _data);
+  }, [chainId, data, funcs.length, poolAddresses]);
 
   return {
-    data: data as IPoolMap | undefined,
+    data: _data,
     loading: isLoading,
     error,
   };

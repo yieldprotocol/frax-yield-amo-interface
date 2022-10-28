@@ -1,4 +1,5 @@
 import tw from 'tailwind-styled-components';
+import useBase from '../../hooks/protocol/useBase';
 import { IPool } from '../../lib/protocol/types';
 import AssetLogo from '../common/AssetLogo';
 
@@ -20,20 +21,24 @@ interface IPoolSelectItem {
   action?: (pool: IPool) => void;
 }
 
-const PoolSelectItem = ({ pool, action }: IPoolSelectItem) => (
-  <Outer
-    style={{
-      background: pool.alternateColor,
-    }}
-    key={pool.address}
-    onClick={() => action && action!(pool)}
-    $selectable={!!action}
-  >
-    <Inner>
-      <AssetLogo image={pool.base.symbol} />
-      {pool.displayName}
-    </Inner>
-  </Outer>
-);
+const PoolSelectItem = ({ pool, action }: IPoolSelectItem) => {
+  const { data: base } = useBase(pool.base);
+
+  return (
+    <Outer
+      style={{
+        background: pool.alternateColor,
+      }}
+      key={pool.address}
+      onClick={() => action && action!(pool)}
+      $selectable={!!action}
+    >
+      <Inner>
+        <AssetLogo image={base?.symbol!} />
+        {pool.displayName}
+      </Inner>
+    </Outer>
+  );
+};
 
 export default PoolSelectItem;

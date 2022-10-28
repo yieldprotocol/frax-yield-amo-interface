@@ -2,10 +2,12 @@ import Link from 'next/link';
 import tw from 'tailwind-styled-components';
 import { useBalance } from 'wagmi';
 import useAMO from '../../hooks/protocol/useAMO';
+import useBase from '../../hooks/protocol/useBase';
 import { IPool } from '../../lib/protocol/types';
 import { cleanValue } from '../../utils/appUtils';
 import AssetLogo from '../common/AssetLogo';
 import FyTokenLogo from '../common/FyTokenLogo';
+import SkeletonWrap from '../common/SkeletonWrap';
 
 const Container = tw.button`w-full my-1.5 dark:hover:opacity-80 hover:bg-gray-400/50 dark:bg-gray-800/80 bg-gray-300 rounded-md shadow-md`;
 const Inner = tw.div`align-middle text-left p-3`;
@@ -29,6 +31,7 @@ interface IPoolListItem {
 
 const PoolListItem = ({ pool }: IPoolListItem) => {
   const { address } = useAMO();
+  const { data: base } = useBase(pool.base);
   const { data: balance } = useBalance({ addressOrName: address, token: pool.address });
 
   return (
@@ -44,13 +47,13 @@ const PoolListItem = ({ pool }: IPoolListItem) => {
               <FyTokenLogo pool={pool} height={20} width={20} />
             </div>
             <div className="z-1 -ml-5 items-center flex">
-              <AssetLogo image={pool.base.symbol} styleProps="h-[31px] w-[31px] rounded-full" />
+              <AssetLogo image={base?.symbol!} styleProps="h-[31px] w-[31px] rounded-full" />
             </div>
             <Inner>
               <Header>{pool.displayName}</Header>
               <PoolDataWrap>
                 <PoolDataLabel>LP Token Balance:</PoolDataLabel>
-                <PoolData>{cleanValue(balance?.formatted, pool.base.digitFormat)}</PoolData>
+                <PoolData>{cleanValue(balance?.formatted, base?.digitFormat)}</PoolData>
               </PoolDataWrap>
             </Inner>
           </ItemInner>
