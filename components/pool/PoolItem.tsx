@@ -10,9 +10,8 @@ import Button from '../common/Button';
 import { useContractRead } from 'wagmi';
 import { AMOActions } from '../../lib/tx/operations';
 import useAMO from '../../hooks/protocol/useAMO';
-import { formatUnits, Interface } from 'ethers/lib/utils';
+import { formatUnits } from 'ethers/lib/utils';
 import SkeletonWrap from '../common/SkeletonWrap';
-import abi from '../../contracts/abis/AMO.json';
 
 const Inner = tw.div`m-4 text-center`;
 const ButtonWrap = tw.div`flex justify-between gap-10`;
@@ -28,7 +27,7 @@ const Top = tw.div`h-[120px] rounded-t-lg`;
 const Middle = tw.div`grid gap-3 justify-start px-5 text-left`;
 
 export const Logo = ({ symbol }: { symbol: string }) => {
-  const mark = (marks as any)[symbol];
+  const mark = marks[symbol];
   return (
     <div className="absolute">
       <div className="flex align-middle justify-center items-center h-[56px] w-[56px] dark:bg-gray-800 bg-gray-200 rounded-full border-[2px] dark:border-gray-800 border-gray-200 relative -mt-[28px]">

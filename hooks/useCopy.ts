@@ -4,7 +4,7 @@ import { copyToClipboard } from '../utils/appUtils';
 const useCopy = (value: string) => {
   const [copied, setCopied] = useState<boolean>(false);
 
-  const copy = (e: any) => {
+  const copy = (e: ClipboardEvent) => {
     setCopied(true);
     copyToClipboard(value);
   };

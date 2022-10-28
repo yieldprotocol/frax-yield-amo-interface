@@ -12,7 +12,7 @@ interface Props {
 const CopyWrap = ({ children, value, label }: Props) => {
   const [copied, setCopied] = useState<boolean>(false);
 
-  const copy = (e: any) => {
+  const copy = (e: ClipboardEvent) => {
     e.stopPropagation();
     setCopied(true);
     copyToClipboard(value);

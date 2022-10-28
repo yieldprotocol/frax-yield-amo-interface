@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAccount, useBalance, useNetwork } from 'wagmi';
-import { FRAX_ADDRESS } from '../constants';
+import { FRAX_ADDRESS } from '../config/assets';
 import { IPool } from '../lib/protocol/types';
 import { AMOActions } from '../lib/tx/operations';
 import useAMO from './protocol/useAMO';
@@ -26,9 +26,6 @@ const useInputValidation = (
 
   const _input = +input!;
 
-  const aboveMax = !!limits[1] && _input > parseFloat(limits[1].toString());
-  const belowMin = !!limits[0] && _input < parseFloat(limits[0].toString());
-
   useEffect(() => {
     if (!account) {
       return setErrorMsg('Please connect');
@@ -48,7 +45,7 @@ const useInputValidation = (
 
     setErrorMsg(null); // reset
 
-    const { base, isMature } = pool;
+    const { isMature } = pool;
 
     /* Action specific validation */
     switch (action) {

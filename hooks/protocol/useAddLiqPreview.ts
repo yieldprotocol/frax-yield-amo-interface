@@ -1,9 +1,8 @@
-import { calcPoolRatios, mint } from '@yield-protocol/ui-math';
+import { calcPoolRatios, calculateSlippage, mint, splitLiquidity } from '@yield-protocol/ui-math';
 import { BigNumber, ethers } from 'ethers';
 import { formatUnits } from 'ethers/lib/utils';
 import { useEffect, useState } from 'react';
 import { DEFAULT_SLIPPAGE, SLIPPAGE_KEY } from '../../constants';
-import { calculateSlippage, splitLiquidity } from '../../utils/yieldMath';
 import { useLocalStorage } from '../useLocalStorage';
 import usePool from './usePool';
 

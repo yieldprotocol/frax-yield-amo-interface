@@ -13,15 +13,14 @@ const Pools = () => {
 
   useEffect(() => {
     if (pools) {
-      const filteredPools = Object.values(pools);
-      const sortedPools = filteredPools.sort((a, b) => (a.maturity < b.maturity ? 1 : -1));
+      const sortedPools = Object.values(pools).sort((a, b) => (a.maturity < b.maturity ? 1 : -1));
       setPoolsList(sortedPools);
     }
   }, [pools]);
 
   return (
     <Container>
-      {!poolsList?.length && (
+      {!poolsList?.length && loading && (
         <>
           <div>Series loading...</div>
           <Spinner />

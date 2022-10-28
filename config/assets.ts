@@ -1,3 +1,1 @@
-export const ETH_BASED_ASSETS = ['WETH', 'ETH'];
-export const DAI_PERMIT_ASSETS = ['DAI'];
-export const NON_PERMIT_ASSETS = ['ETH', 'WETH'];
+export const FRAX_ADDRESS = '0x853d955acef822db058eb8505911ed77f175b99e';

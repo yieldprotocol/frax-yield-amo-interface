@@ -12,11 +12,11 @@ import Modal from '../common/Modal';
 import AddConfirmation from './AddConfirmation';
 import CloseButton from '../common/CloseButton';
 import useInputValidation from '../../hooks/useInputValidation';
-import { useAccount, useBalance, useNetwork, useProvider } from 'wagmi';
+import { useAccount, useBalance, useNetwork } from 'wagmi';
 import { useAddLiquidity } from '../../hooks/actions/useAddLiquidity';
 import { AMOActions } from '../../lib/tx/operations';
 import useAMO from '../../hooks/protocol/useAMO';
-import { FRAX_ADDRESS } from '../../constants';
+import { FRAX_ADDRESS } from '../../config/assets';
 
 const Inner = tw.div`m-4 text-center`;
 const HeaderSmall = tw.div`align-middle text-sm font-bold justify-start text-left`;

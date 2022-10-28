@@ -6,10 +6,9 @@ import PoolSelect from '../pool/PoolSelect';
 import { IPool } from '../../lib/protocol/types';
 import InterestRateInput from './InterestRateInput';
 import { BorderWrap, Header, InputsWrap } from '../styles/common';
-import Arrow from './Arrow';
+import Icon from './Icon';
 import { useAccount, useBalance, useNetwork } from 'wagmi';
 import useRatePreview from '../../hooks/protocol/useRatePreview';
-import { FRAX_ADDRESS } from '../../constants';
 import Toggle from '../common/Toggle';
 import Button from '../common/Button';
 import useAMO from '../../hooks/protocol/useAMO';
@@ -21,6 +20,7 @@ import useInputValidation from '../../hooks/useInputValidation';
 import RateConfirmation from './RateConfirmation';
 import { cleanValue } from '../../utils/appUtils';
 import usePool from '../../hooks/protocol/usePool';
+import { FRAX_ADDRESS } from '../../config/assets';
 
 const Inner = tw.div`m-4 text-center`;
 const Grid = tw.div`grid my-5 auto-rows-auto gap-2`;
@@ -149,7 +149,7 @@ const Widget = () => {
               setRate={() => null}
               loading={poolDataLoading}
             />
-            <Arrow />
+            <Icon />
             <InterestRateInput
               label={'New'}
               rate={updatingRate ? desiredRate : ratePreview}

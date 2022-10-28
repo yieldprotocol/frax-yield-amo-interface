@@ -1,4 +1,4 @@
-import Widget from '../../components/trade/Widget';
+import Widget from '../../components/rates/Widget';
 
 const Rates = () => <Widget />;
 

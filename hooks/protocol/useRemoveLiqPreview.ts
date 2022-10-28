@@ -1,8 +1,7 @@
-import { calcPoolRatios } from '@yield-protocol/ui-math';
+import { burn, calcPoolRatios } from '@yield-protocol/ui-math';
 import { BigNumber, ethers } from 'ethers';
 import { useEffect, useState } from 'react';
 import { DEFAULT_SLIPPAGE, SLIPPAGE_KEY } from '../../constants';
-import { burn } from '../../utils/yieldMath';
 import { useLocalStorage } from '../useLocalStorage';
 import usePool from './usePool';
 
