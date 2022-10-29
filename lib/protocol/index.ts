@@ -12,6 +12,7 @@ import { FYToken__factory } from '../../contracts/types/factories/FYToken__facto
 import { PoolAddedEvent, PoolAddedEventFilter } from '../../contracts/types/Ladle';
 import { JsonRpcProvider, JsonRpcSigner } from '@ethersproject/providers';
 import { FRAX_ADDRESS } from '../../config/assets';
+import { EthersMulticall, MulticallService } from '@yield-protocol/ui-multicall';
 
 const { seasonColors } = yieldEnv;
 const invalidPools = ['0x57002Dd4609fd79f65e2e2a4bE9aa6e901Af9D9C'];
@@ -67,24 +68,30 @@ export const getPools = async (
     poolsAdded = Array.from(poolSet.values());
   }
 
+  const multicall = new MulticallService((usingTenderly ? tenderlyProvider : provider) as JsonRpcProvider).getMulticall(
+    chainId
+  );
+
+  const latestTimestamp = (await provider.getBlock('latest')).timestamp;
+
   return poolsAdded.reduce(async (pools: any, x) => {
     const { seriesId, pool: address } = x.args;
     const poolContract = Pool__factory.connect(address, usingTenderly ? tenderlyProvider! : provider);
 
     try {
       // only frax
-      const baseAddress = await poolContract.base();
+      const baseAddress = await multicall.wrap(poolContract).base();
       if (baseAddress.toLowerCase() !== FRAX_ADDRESS) return await pools;
 
       const [name, maturity, fyTokenAddress, symbol] = await Promise.all([
-        poolContract.name(),
-        poolContract.maturity(),
-        poolContract.fyToken(),
-        poolContract.symbol(),
+        multicall.wrap(poolContract).name(),
+        multicall.wrap(poolContract).maturity(),
+        multicall.wrap(poolContract).fyToken(),
+        multicall.wrap(poolContract).symbol(),
       ]);
 
-      const base = await getAsset(provider, baseAddress, false);
-      const fyToken = await getAsset(provider, fyTokenAddress, true);
+      const base = await getAsset(provider, multicall, baseAddress, false);
+      const fyToken = await getAsset(provider, multicall, fyTokenAddress, true);
 
       const newPool = {
         address,
@@ -96,7 +103,7 @@ export const getPools = async (
         baseAddress,
         base,
         fyToken,
-        isMature: maturity < (await provider.getBlock('latest')).timestamp,
+        isMature: maturity < latestTimestamp,
       } as IPoolRoot;
 
       return { ...(await pools), [address]: _chargePool(newPool, chainId) };
@@ -155,7 +162,12 @@ export const getContracts = (providerOrSigner: Provider | JsonRpcSigner, chainId
  * @param isFyToken optional
  * @returns
  */
-export const getAsset = async (provider: Provider, address: string, isFyToken: boolean = false): Promise<IAsset> => {
+export const getAsset = async (
+  provider: Provider,
+  multicall: EthersMulticall,
+  address: string,
+  isFyToken: boolean = false
+): Promise<IAsset> => {
   let contract: contractTypes.ERC20Permit | contractTypes.FYToken;
 
   if (isFyToken) {
@@ -164,7 +176,11 @@ export const getAsset = async (provider: Provider, address: string, isFyToken: b
     contract = ERC20Permit__factory.connect(address, provider);
   }
 
-  const [symbol, decimals, name] = await Promise.all([contract.symbol(), contract.decimals(), contract.name()]);
+  const [symbol, decimals, name] = await Promise.all([
+    multicall.wrap(contract).symbol(),
+    multicall.wrap(contract).decimals(),
+    multicall.wrap(contract).name(),
+  ]);
 
   return {
     address,
