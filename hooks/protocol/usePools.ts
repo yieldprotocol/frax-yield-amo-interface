@@ -1,19 +1,15 @@
-import { useMemo } from 'react';
 import useSWR from 'swr';
-import { useNetwork } from 'wagmi';
 import { getPools } from '../../lib/protocol';
 import { IPoolMap } from '../../lib/protocol/types';
+import useChainId from '../useChainId';
 import useDefaultProvider from '../useDefaultProvider';
 import useTenderly from '../useTenderly';
 import useContracts from './useContracts';
 
 const usePools = (pools?: { [chainId: number]: IPoolMap | undefined }) => {
-  const { chain } = useNetwork();
-  const chainId = useMemo(() => (chain ? chain.id : 1), [chain]);
+  const chainId = useChainId();
   const provider = useDefaultProvider();
-
   const { usingTenderly, tenderlyProvider, tenderlyStartBlock } = useTenderly();
-
   const contractMap = useContracts(provider);
   const tenderlyContractMap = useContracts(tenderlyProvider!);
 
