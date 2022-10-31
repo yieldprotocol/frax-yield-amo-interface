@@ -23,10 +23,10 @@ export const ETH_BYTES = ethers.utils.formatBytes32String('ETH-A');
 
 export const BLANK_ADDRESS = ethers.constants.AddressZero;
 
+export const BLANK_VAULT = '0x000000000000000000000000';
+
 // localStorage keys
 export const THEME_KEY = 'frax-amo-theme';
 export const SLIPPAGE_KEY = 'frax-amo-slippageTolerance';
 export const DEFAULT_SLIPPAGE = '.5'; // .5%
 export const USE_TENDERLY_KEY = 'frax-amo-use-tenderly';
-export const TENDERLY_RPC_URL_KEY = 'frax-amo-tenderly-rpc-url';
-export const TENDERLY_FORK_ID = '48aa91dc-c833-4124-a108-d61354bdbc01';

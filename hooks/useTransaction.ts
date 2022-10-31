@@ -5,7 +5,6 @@ import { useState } from 'react';
 import { toast } from 'react-toastify';
 import { useBalance, useContractRead, useNetwork } from 'wagmi';
 import { FRAX_ADDRESS } from '../config/assets';
-import { TENDERLY_FORK_ID } from '../constants';
 import { IPool } from '../lib/protocol/types';
 import { AMOActions } from '../lib/tx/operations';
 import useAMO from './protocol/useAMO';
@@ -38,7 +37,7 @@ const useTransaction = (pool?: IPool) => {
   const addRecentTransaction = useAddRecentTransaction();
 
   const explorer = usingTenderly
-    ? `https://dashboard.tenderly.co/Yield/v2/fork/${TENDERLY_FORK_ID}/`
+    ? `https://dashboard.tenderly.co/Yield/v2/fork/${process.env.tenderlyForkId}/`
     : chain?.blockExplorers?.default.url;
 
   const [isTransacting, setIsTransacting] = useState<boolean>(false);

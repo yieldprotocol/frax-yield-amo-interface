@@ -46,6 +46,5 @@ export interface IAsset {
   name: string;
   symbol: string;
   decimals: number;
-  contract: ERC20Permit | FYToken;
   digitFormat: number;
 }
