@@ -20,6 +20,7 @@ import RateConfirmation from './RateConfirmation';
 import { cleanValue } from '../../utils/appUtils';
 import usePool from '../../hooks/protocol/usePool';
 import { FRAX_ADDRESS } from '../../config/assets';
+import useChainId from '../../hooks/useChainId';
 
 const Inner = tw.div`m-4 text-center`;
 const Grid = tw.div`grid my-5 auto-rows-auto gap-2`;
@@ -44,10 +45,8 @@ const INITIAL_FORM_STATE: IWidgetForm = {
 
 const Widget = ({ pools }: { pools: IPoolMap | undefined }) => {
   const { address: account } = useAccount();
-
   const { address: amoAddress } = useAMO();
-  const { chain } = useNetwork();
-  const chainId = chain?.id || 1;
+  const chainId = useChainId();
   const { data: baseBalance } = useBalance({
     addressOrName: amoAddress,
     token: FRAX_ADDRESS,

@@ -4,6 +4,7 @@ import { FRAX_ADDRESS } from '../config/assets';
 import { IPool } from '../lib/protocol/types';
 import { AMOActions } from '../lib/tx/operations';
 import useAMO from './protocol/useAMO';
+import useChainId from './useChainId';
 
 const useInputValidation = (
   input: string | undefined,
@@ -13,12 +14,12 @@ const useInputValidation = (
 ) => {
   const { address: account } = useAccount();
   const { address: amoAddress } = useAMO();
-  const { chain } = useNetwork();
+  const chainId = useChainId();
   const { data: fraxBal } = useBalance({
     addressOrName: amoAddress,
     token: FRAX_ADDRESS,
-    chainId: chain?.id,
-    enabled: !!(amoAddress && chain),
+    chainId,
+    enabled: !!amoAddress,
   });
   const { data: lpTokenBal } = useBalance({ addressOrName: amoAddress, token: pool?.address, enabled: !!pool });
 

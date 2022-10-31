@@ -1,11 +1,10 @@
 import { JsonRpcProvider } from '@ethersproject/providers';
 import { useMemo } from 'react';
-import { useNetwork } from 'wagmi';
 import rpcUrls from '../config/chains';
+import useChainId from './useChainId';
 
 const useDefaultProvider = () => {
-  const { chain } = useNetwork();
-  const chainId = useMemo(() => (chain ? chain.id : 1), [chain]); // default to mainnet
+  const chainId = useChainId();
 
   return useMemo(() => {
     try {

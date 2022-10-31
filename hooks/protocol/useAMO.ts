@@ -1,16 +1,15 @@
 import { useMemo } from 'react';
-import { useNetwork } from 'wagmi';
 import yieldEnv from '../../config/yieldEnv';
 import { FRAX_AMO, TIMELOCK } from '../../constants';
 import { AMO__factory } from '../../contracts/types';
+import useChainId from '../useChainId';
 import useDefaultProvider from '../useDefaultProvider';
 import useTenderly from '../useTenderly';
 
 const useAMO = () => {
   const { usingTenderly, tenderlyProvider } = useTenderly();
   const provider = useDefaultProvider();
-  const { chain } = useNetwork();
-  const chainId = chain?.id! || 1;
+  const chainId = useChainId();
 
   // set the amo's timelock address
   const timelockAddress = useMemo(() => {
