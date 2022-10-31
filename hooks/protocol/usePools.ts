@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import useSWR from 'swr';
 import { useNetwork } from 'wagmi';
 import { getPools } from '../../lib/protocol';
@@ -14,26 +14,13 @@ const usePools = (pools?: { [chainId: number]: IPoolMap }) => {
 
   const { usingTenderly, tenderlyProvider, tenderlyStartBlock } = useTenderly();
 
-  const [poolsToUse, setPoolsToUse] = useState<IPoolMap>();
-
-  useEffect(() => {
-    if (pools && pools[chainId]) {
-      if (usingTenderly) {
-        return setPoolsToUse(pools[0]); // 0 is tenderly chain id
-      }
-
-      setPoolsToUse(pools[chainId]);
-    }
-  }, [chainId, pools, usingTenderly]);
-
   const contractMap = useContracts(provider);
   const tenderlyContractMap = useContracts(tenderlyProvider!);
 
   const key = `/pools?chainId=${chainId}&usingTenderly=${usingTenderly}`;
 
-  // don't need to get pools if we already got them from ssr
   const { data, error } = useSWR(
-    poolsToUse ? null : key,
+    pools && pools[chainId] ? null : key, // don't need to get pools if we already got them from ssr
     () =>
       getPools(
         provider,
@@ -47,11 +34,12 @@ const usePools = (pools?: { [chainId: number]: IPoolMap }) => {
     {
       revalidateOnFocus: false,
       dedupingInterval: 3_600_000, // dont duplicate a request w/ same key for 1hr
+      fallbackData: pools && pools[chainId],
     }
   );
 
   return {
-    data: poolsToUse || data,
+    data,
     loading: !data && !error,
     error,
   };

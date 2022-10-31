@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import tw from 'tailwind-styled-components';
 import InputWrap from '../pool/InputWrap';
-import usePools from '../../hooks/protocol/usePools';
 import PoolSelect from '../pool/PoolSelect';
 import { IPool, IPoolMap } from '../../lib/protocol/types';
 import InterestRateInput from './InterestRateInput';
