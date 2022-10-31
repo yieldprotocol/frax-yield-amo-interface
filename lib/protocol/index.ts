@@ -210,7 +210,7 @@ export const getAsset = async (
 
 export const getPoolsSSR = async () => {
   // returns a chain id mapped to a IPoolMap, with tenderly as chain id '0'
-  return await VALID_CHAINS.reduce(async (acc: any, chainId) => {
+  return VALID_CHAINS.reduce(async (acc, chainId) => {
     const isTenderly = chainId === 0;
     const chainIdToUse = isTenderly ? TENDERLY_MAPPED_CHAIN : chainId;
 
@@ -242,5 +242,5 @@ export const getPoolsSSR = async () => {
         tenderlyProvider
       ),
     };
-  }, {});
+  }, Promise.resolve(<{ [chainId: number]: IPoolMap | undefined }>{}));
 };

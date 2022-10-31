@@ -12,7 +12,7 @@ const Rates = ({ pools }: InferGetStaticPropsType<typeof getStaticProps>) => {
   return <Widget pools={data} />;
 };
 
-export const getStaticProps: GetStaticProps<{ pools: { [chainId: number]: IPoolMap } | undefined }> = async () => {
+export const getStaticProps: GetStaticProps<{ pools: { [chainId: number]: IPoolMap | undefined } }> = async () => {
   const pools = await getPoolsSSR();
   return { props: { pools } };
 };

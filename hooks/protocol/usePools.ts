@@ -7,7 +7,7 @@ import useDefaultProvider from '../useDefaultProvider';
 import useTenderly from '../useTenderly';
 import useContracts from './useContracts';
 
-const usePools = (pools?: { [chainId: number]: IPoolMap }) => {
+const usePools = (pools?: { [chainId: number]: IPoolMap | undefined }) => {
   const { chain } = useNetwork();
   const chainId = useMemo(() => (chain ? chain.id : 1), [chain]);
   const provider = useDefaultProvider();
