@@ -68,17 +68,6 @@ const PoolItem = () => {
 
   const { base } = pool;
 
-  if (error && !isLoading) {
-    return (
-      <BorderWrap>
-        <Inner>
-          <BackButton onClick={() => router.back()} />
-          No allocations found
-        </Inner>
-      </BorderWrap>
-    );
-  }
-
   return (
     <BorderWrap>
       <Inner>
@@ -98,37 +87,73 @@ const PoolItem = () => {
               <PoolDataWrap>
                 <PoolDataLabel>Frax in contract</PoolDataLabel>
                 <PoolData>
-                  {isLoading ? <SkeletonWrap /> : cleanValue(formatUnits(allocations![0], base.decimals), 2)}
+                  {isLoading ? (
+                    <SkeletonWrap />
+                  ) : allocations ? (
+                    cleanValue(formatUnits(allocations[0], base.decimals), 2)
+                  ) : (
+                    '0'
+                  )}
                 </PoolData>
               </PoolDataWrap>
               <PoolDataWrap>
                 <PoolDataLabel>Frax as collateral</PoolDataLabel>
                 <PoolData>
-                  {isLoading ? <SkeletonWrap /> : cleanValue(formatUnits(allocations![1], base.decimals), 2)}
+                  {isLoading ? (
+                    <SkeletonWrap />
+                  ) : allocations ? (
+                    cleanValue(formatUnits(allocations[1], base.decimals), 2)
+                  ) : (
+                    '0'
+                  )}
                 </PoolData>
               </PoolDataWrap>
               <PoolDataWrap>
                 <PoolDataLabel>Frax in LP</PoolDataLabel>
                 <PoolData>
-                  {isLoading ? <SkeletonWrap /> : cleanValue(formatUnits(allocations![2], base.decimals), 2)}
+                  {isLoading ? (
+                    <SkeletonWrap />
+                  ) : allocations ? (
+                    cleanValue(formatUnits(allocations[2], base.decimals), 2)
+                  ) : (
+                    '0'
+                  )}
                 </PoolData>
               </PoolDataWrap>
               <PoolDataWrap>
                 <PoolDataLabel>fyFrax in contract</PoolDataLabel>
                 <PoolData>
-                  {isLoading ? <SkeletonWrap /> : cleanValue(formatUnits(allocations![3], base.decimals), 2)}
+                  {isLoading ? (
+                    <SkeletonWrap />
+                  ) : allocations ? (
+                    cleanValue(formatUnits(allocations[3], base.decimals), 2)
+                  ) : (
+                    '0'
+                  )}
                 </PoolData>
               </PoolDataWrap>
               <PoolDataWrap>
                 <PoolDataLabel>fyFrax in LP</PoolDataLabel>
                 <PoolData>
-                  {isLoading ? <SkeletonWrap /> : cleanValue(formatUnits(allocations![4], base.decimals), 2)}
+                  {isLoading ? (
+                    <SkeletonWrap />
+                  ) : allocations ? (
+                    cleanValue(formatUnits(allocations[4], base.decimals), 2)
+                  ) : (
+                    '0'
+                  )}
                 </PoolData>
               </PoolDataWrap>
               <PoolDataWrap>
                 <PoolDataLabel>LP owned</PoolDataLabel>
                 <PoolData>
-                  {isLoading ? <SkeletonWrap /> : cleanValue(formatUnits(allocations![5], base.decimals), 2)}
+                  {isLoading ? (
+                    <SkeletonWrap />
+                  ) : allocations ? (
+                    cleanValue(formatUnits(allocations[5], base.decimals), 2)
+                  ) : (
+                    '0'
+                  )}
                 </PoolData>
               </PoolDataWrap>
             </div>
