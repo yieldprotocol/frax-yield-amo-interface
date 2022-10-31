@@ -4,8 +4,9 @@ import useSWR from 'swr/immutable';
 import { SettingsContext } from '../contexts/SettingsContext';
 import { getTenderlyStartBlock } from '../lib/protocol';
 
+export const TENDERLY_FORK_RPC_URL = `https://rpc.tenderly.co/fork/${process.env.tenderlyForkId}`;
+
 const useTenderly = () => {
-  const TENDERLY_FORK_RPC_URL = 'https://rpc.tenderly.co/fork/48aa91dc-c833-4124-a108-d61354bdbc01';
   const {
     state: { usingTenderly },
   } = useContext(SettingsContext);

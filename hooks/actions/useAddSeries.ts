@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useContractWrite, usePrepareContractWrite } from 'wagmi';
+import { BLANK_VAULT } from '../../constants';
 import { IPool } from '../../lib/protocol/types';
 import { AMOActions } from '../../lib/tx/operations';
 import useAMO from '../protocol/useAMO';
@@ -37,7 +38,7 @@ const useAddSeries = (pool: IPool | undefined) => {
     (async () => {
       if (pool) {
         const series = await amoContract?.series(pool.seriesId);
-        const isAdded = series?.vaultId != '0x000000000000000000000000';
+        const isAdded = series?.vaultId != BLANK_VAULT;
         setSeriesAdded(isAdded);
       }
     })();

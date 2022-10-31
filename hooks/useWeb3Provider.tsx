@@ -10,14 +10,13 @@ import { chain, configureChains, createClient, WagmiConfig } from 'wagmi';
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
 import merge from 'lodash.merge';
 import { useColorTheme } from './useColorTheme';
-import useTenderly from './useTenderly';
+import useTenderly, { TENDERLY_FORK_RPC_URL } from './useTenderly';
 import { ReactNode } from 'react';
 import FRAXMark from '../components/common/logos/FRAXMark';
-import { TENDERLY_FORK_ID } from '../constants';
 
 export default function Web3Provider({ children }: { children: ReactNode }) {
   const { theme: colorTheme } = useColorTheme();
-  const { usingTenderly, tenderlyRpcUrl } = useTenderly();
+  const { usingTenderly } = useTenderly();
 
   const mainnet: Chain = {
     ...chain.mainnet,
@@ -25,7 +24,7 @@ export default function Web3Provider({ children }: { children: ReactNode }) {
       default: usingTenderly
         ? {
             name: 'Tenderly',
-            url: `https://dashboard.tenderly.co/Yield/v2/fork/${TENDERLY_FORK_ID}/`,
+            url: `https://dashboard.tenderly.co/Yield/v2/fork/${process.env.tenderlyForkId}/`,
           }
         : chain.mainnet.blockExplorers?.default!,
     },
@@ -36,7 +35,9 @@ export default function Web3Provider({ children }: { children: ReactNode }) {
     [
       jsonRpcProvider({
         rpc: (chain) => {
-          return { http: usingTenderly ? tenderlyRpcUrl : `https://mainnet.infura.io/v3/${process.env.infuraKey}` };
+          return {
+            http: usingTenderly ? TENDERLY_FORK_RPC_URL : `https://mainnet.infura.io/v3/${process.env.infuraKey}`,
+          };
         },
       }),
     ]
