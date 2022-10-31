@@ -13,12 +13,11 @@ import { PoolAddedEvent, PoolAddedEventFilter } from '../../contracts/types/Ladl
 import { JsonRpcProvider, JsonRpcSigner } from '@ethersproject/providers';
 import { FRAX_ADDRESS } from '../../config/assets';
 import { EthersMulticall, MulticallService } from '@yield-protocol/ui-multicall';
-import { TENDERLY_MAPPED_CHAIN, VALID_CHAINS } from '../../pages/rates';
 import { TENDERLY_FORK_RPC_URL } from '../../hooks/useTenderly';
+import rpcUrls, { TENDERLY_MAPPED_CHAIN, VALID_CHAINS } from '../../config/chains';
+import invalidPools from '../../config/invalidPools';
 
 const { seasonColors } = yieldEnv;
-const invalidPools = ['0x57002Dd4609fd79f65e2e2a4bE9aa6e901Af9D9C'];
-
 const formatMaturity = (maturity: number) => format(new Date(maturity * 1000), 'MMMM dd, yyyy');
 
 export const getTenderlyStartBlock = async (tenderlyProvider: JsonRpcProvider) => {
@@ -34,7 +33,7 @@ export const getProvider = (chainId: number) => {
   if (chainId === 0) {
     return new JsonRpcProvider(TENDERLY_FORK_RPC_URL);
   }
-  return new JsonRpcProvider(`https://mainnet.infura.io/v3/${process.env.infuraKey}`);
+  return new JsonRpcProvider(rpcUrls[chainId]);
 };
 
 /**
