@@ -12,11 +12,12 @@ import { AMOActions } from '../../lib/tx/operations';
 import useAMO from '../../hooks/protocol/useAMO';
 import { formatUnits } from 'ethers/lib/utils';
 import SkeletonWrap from '../common/SkeletonWrap';
+import InfoIcon from '../common/InfoIcon';
 
 const Inner = tw.div`m-4 text-center`;
 const ButtonWrap = tw.div`flex justify-between gap-10`;
 const PoolDataWrap = tw.div`grid my-5 gap-2 flex-nowrap`;
-const PoolDataLabel = tw.div`text-md dark:text-gray-400 text-gray-500`;
+const PoolDataLabel = tw.div`flex text-md dark:text-gray-400 text-gray-500`;
 const PoolData = tw.div`text-xl font-semibold dark:text-gray-100 text-gray-800`;
 
 const Wrap = tw.div`mx-auto min-h-[492px] 
@@ -66,18 +67,7 @@ const PoolItem = () => {
 
   if (!pool) return null;
 
-  const { base } = pool;
-
-  if (error && !isLoading) {
-    return (
-      <BorderWrap>
-        <Inner>
-          <BackButton onClick={() => router.back()} />
-          No allocations found
-        </Inner>
-      </BorderWrap>
-    );
-  }
+  const { base, fyToken } = pool;
 
   return (
     <BorderWrap>
@@ -96,39 +86,93 @@ const PoolItem = () => {
                 <Header>{pool.displayName}</Header>
               </CopyWrap>
               <PoolDataWrap>
-                <PoolDataLabel>Frax in contract</PoolDataLabel>
+                <PoolDataLabel>
+                  Frax in contract
+                  <InfoIcon infoText={`Amount of unallocated ${base.symbol} in the AMO`} icon></InfoIcon>
+                </PoolDataLabel>
                 <PoolData>
-                  {isLoading ? <SkeletonWrap /> : cleanValue(formatUnits(allocations![0], base.decimals), 2)}
+                  {isLoading ? (
+                    <SkeletonWrap />
+                  ) : allocations ? (
+                    cleanValue(formatUnits(allocations[0], base.decimals), 2)
+                  ) : (
+                    '0'
+                  )}
                 </PoolData>
               </PoolDataWrap>
               <PoolDataWrap>
-                <PoolDataLabel>Frax as collateral</PoolDataLabel>
+                <PoolDataLabel>
+                  Frax as collateral
+                  <InfoIcon infoText={`${base.symbol} being used as collateral to borrow ${fyToken.symbol}`} icon />
+                </PoolDataLabel>
                 <PoolData>
-                  {isLoading ? <SkeletonWrap /> : cleanValue(formatUnits(allocations![1], base.decimals), 2)}
+                  {isLoading ? (
+                    <SkeletonWrap />
+                  ) : allocations ? (
+                    cleanValue(formatUnits(allocations[1], base.decimals), 2)
+                  ) : (
+                    '0'
+                  )}
                 </PoolData>
               </PoolDataWrap>
               <PoolDataWrap>
-                <PoolDataLabel>Frax in LP</PoolDataLabel>
+                <PoolDataLabel>
+                  Frax in LP
+                  <InfoIcon infoText={`The ${base.symbol} the AMO LP tokens can claim`} icon />
+                </PoolDataLabel>
                 <PoolData>
-                  {isLoading ? <SkeletonWrap /> : cleanValue(formatUnits(allocations![2], base.decimals), 2)}
+                  {isLoading ? (
+                    <SkeletonWrap />
+                  ) : allocations ? (
+                    cleanValue(formatUnits(allocations[2], base.decimals), 2)
+                  ) : (
+                    '0'
+                  )}
                 </PoolData>
               </PoolDataWrap>
               <PoolDataWrap>
-                <PoolDataLabel>fyFrax in contract</PoolDataLabel>
+                <PoolDataLabel>
+                  fyFrax in contract
+                  <InfoIcon infoText={`${fyToken.symbol} sitting in the AMO (should be 0)`} icon />
+                </PoolDataLabel>
                 <PoolData>
-                  {isLoading ? <SkeletonWrap /> : cleanValue(formatUnits(allocations![3], base.decimals), 2)}
+                  {isLoading ? (
+                    <SkeletonWrap />
+                  ) : allocations ? (
+                    cleanValue(formatUnits(allocations[3], base.decimals), 2)
+                  ) : (
+                    '0'
+                  )}
                 </PoolData>
               </PoolDataWrap>
               <PoolDataWrap>
-                <PoolDataLabel>fyFrax in LP</PoolDataLabel>
+                <PoolDataLabel>
+                  fyFrax in LP
+                  <InfoIcon infoText={`The ${fyToken.symbol} the AMO LP tokens can claim`} icon />
+                </PoolDataLabel>
                 <PoolData>
-                  {isLoading ? <SkeletonWrap /> : cleanValue(formatUnits(allocations![4], base.decimals), 2)}
+                  {isLoading ? (
+                    <SkeletonWrap />
+                  ) : allocations ? (
+                    cleanValue(formatUnits(allocations[4], base.decimals), 2)
+                  ) : (
+                    '0'
+                  )}
                 </PoolData>
               </PoolDataWrap>
               <PoolDataWrap>
-                <PoolDataLabel>LP owned</PoolDataLabel>
+                <PoolDataLabel>
+                  LP owned
+                  <InfoIcon infoText={`The number of LP tokens owned by the AMO`} icon />
+                </PoolDataLabel>
                 <PoolData>
-                  {isLoading ? <SkeletonWrap /> : cleanValue(formatUnits(allocations![5], base.decimals), 2)}
+                  {isLoading ? (
+                    <SkeletonWrap />
+                  ) : allocations ? (
+                    cleanValue(formatUnits(allocations[5], base.decimals), 2)
+                  ) : (
+                    '0'
+                  )}
                 </PoolData>
               </PoolDataWrap>
             </div>
