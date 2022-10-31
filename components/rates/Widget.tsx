@@ -3,7 +3,7 @@ import tw from 'tailwind-styled-components';
 import InputWrap from '../pool/InputWrap';
 import usePools from '../../hooks/protocol/usePools';
 import PoolSelect from '../pool/PoolSelect';
-import { IPool } from '../../lib/protocol/types';
+import { IPool, IPoolMap } from '../../lib/protocol/types';
 import InterestRateInput from './InterestRateInput';
 import { BorderWrap, Header, InputsWrap } from '../styles/common';
 import Icon from './Icon';
@@ -43,7 +43,7 @@ const INITIAL_FORM_STATE: IWidgetForm = {
   increasingRate: true,
 };
 
-const Widget = () => {
+const Widget = ({ pools }: { pools: IPoolMap | undefined }) => {
   const { address: account } = useAccount();
 
   const { address: amoAddress } = useAMO();
@@ -54,7 +54,6 @@ const Widget = () => {
     token: FRAX_ADDRESS,
     enabled: !!amoAddress,
   });
-  const { data: pools } = usePools();
 
   const [form, setForm] = useState<IWidgetForm>(INITIAL_FORM_STATE);
   const [confirmModalOpen, setConfirmModalOpen] = useState<boolean>(false);

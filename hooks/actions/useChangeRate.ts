@@ -10,7 +10,7 @@ import useAddSeries from './useAddSeries';
 import useContracts from '../protocol/useContracts';
 import useDefaultProvider from '../useDefaultProvider';
 import { LADLE } from '../../constants';
-import { Ladle } from '../../contracts/types';
+import { FYToken__factory, Ladle } from '../../contracts/types';
 /**
  * Increase or decrease rates based on the desired rate (input) using an estimated amount of frax
  * Increasing rates entails minting fyFrax from frax and selling into the pool
@@ -79,7 +79,11 @@ export const useChangeRate = (
       // need to add approval to contract
       // add approval for amount of fyToken bought from pool and burned, only if decreasing rates
       if (!increaseRates) {
-        await pool.fyToken.contract
+        const fyTokenContract = FYToken__factory.connect(
+          pool.fyToken.address,
+          usingTenderly ? tenderlyProvider : provider
+        );
+        await fyTokenContract
           .connect((usingTenderly ? tenderlyProvider : provider).getSigner(amoAddress))
           .approve(ladle.address, fyTokenBought, { gasLimit: 20_000_000 });
       }

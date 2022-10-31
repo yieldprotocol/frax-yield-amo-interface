@@ -2,6 +2,7 @@ import { JsonRpcProvider } from '@ethersproject/providers';
 import { useCallback, useContext, useMemo } from 'react';
 import useSWR from 'swr/immutable';
 import { SettingsContext } from '../contexts/SettingsContext';
+import { getTenderlyStartBlock } from '../lib/protocol';
 
 const useTenderly = () => {
   const TENDERLY_FORK_RPC_URL = 'https://rpc.tenderly.co/fork/48aa91dc-c833-4124-a108-d61354bdbc01';
@@ -13,14 +14,8 @@ const useTenderly = () => {
 
   const getStartBlock = useCallback(async () => {
     if (tenderlyProvider) {
-      try {
-        return +(await tenderlyProvider.send('tenderly_getForkBlockNumber', []));
-      } catch (e) {
-        console.log('could not get tenderly start block', e);
-        return undefined;
-      }
+      return getTenderlyStartBlock(tenderlyProvider);
     }
-    return undefined;
   }, []);
 
   const { data: startBlock } = useSWR('/tenderlyStartBlock', getStartBlock, {

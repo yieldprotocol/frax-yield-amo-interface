@@ -13,11 +13,28 @@ import { PoolAddedEvent, PoolAddedEventFilter } from '../../contracts/types/Ladl
 import { JsonRpcProvider, JsonRpcSigner } from '@ethersproject/providers';
 import { FRAX_ADDRESS } from '../../config/assets';
 import { EthersMulticall, MulticallService } from '@yield-protocol/ui-multicall';
+import { TENDERLY_MAPPED_CHAIN, VALID_CHAINS } from '../../pages/rates';
 
 const { seasonColors } = yieldEnv;
 const invalidPools = ['0x57002Dd4609fd79f65e2e2a4bE9aa6e901Af9D9C'];
 
 const formatMaturity = (maturity: number) => format(new Date(maturity * 1000), 'MMMM dd, yyyy');
+
+export const getTenderlyStartBlock = async (tenderlyProvider: JsonRpcProvider) => {
+  try {
+    return +(await tenderlyProvider.send('tenderly_getForkBlockNumber', []));
+  } catch (e) {
+    console.log('could not get tenderly start block', e);
+    return 0;
+  }
+};
+
+export const getProvider = (chainId: number) => {
+  if (chainId === 0) {
+    return new JsonRpcProvider(`https://rpc.tenderly.co/fork/${process.env.tenderlyForkId}`);
+  }
+  return new JsonRpcProvider(`https://mainnet.infura.io/v3/${process.env.infuraKey}`);
+};
 
 /**
  * Gets all relevant pool addresses from events given a provider
@@ -187,7 +204,43 @@ export const getAsset = async (
     name,
     symbol: isFyToken ? formatFyTokenSymbol(symbol) : symbol,
     decimals,
-    contract,
     digitFormat: 4,
   };
+};
+
+export const getPoolsSSR = async () => {
+  // returns a chain id mapped to a IPoolMap, with tenderly as chain id '0'
+  return await VALID_CHAINS.reduce(async (acc: any, chainId) => {
+    const isTenderly = chainId === 0;
+    const chainIdToUse = isTenderly ? TENDERLY_MAPPED_CHAIN : chainId;
+
+    const provider = getProvider(chainIdToUse);
+    const contractMap = getContracts(provider, chainIdToUse);
+
+    // if not tenderly
+    if (!isTenderly) {
+      return {
+        ...(await acc),
+        [chainId]: await getPools(provider, contractMap!, chainIdToUse, false, undefined, undefined),
+      };
+    }
+
+    // tenderly
+    const tenderlyProvider = getProvider(0);
+    const tenderlyContractMap = getContracts(tenderlyProvider, chainIdToUse);
+    const tenderlyStartBlock = await getTenderlyStartBlock(tenderlyProvider);
+
+    return {
+      ...(await acc),
+      [chainId]: await getPools(
+        provider,
+        contractMap!,
+        chainIdToUse,
+        isTenderly,
+        tenderlyContractMap,
+        tenderlyStartBlock,
+        tenderlyProvider
+      ),
+    };
+  }, {});
 };

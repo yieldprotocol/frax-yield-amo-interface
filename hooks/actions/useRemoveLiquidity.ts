@@ -10,7 +10,7 @@ import useTenderly from '../useTenderly';
 import useContracts from '../protocol/useContracts';
 import useDefaultProvider from '../useDefaultProvider';
 import { LADLE } from '../../constants';
-import { Ladle } from '../../contracts/types';
+import { FYToken__factory, Ladle } from '../../contracts/types';
 import { parseUnits } from 'ethers/lib/utils';
 import usePool from '../protocol/usePool';
 
@@ -59,7 +59,11 @@ export const useRemoveLiquidity = (pool: IPool | undefined, input: string) => {
       const _fyTokenToBurn = parseUnits(fyTokenReceived!, pool.fyToken.decimals);
 
       // need to add approval to contract
-      await pool.fyToken.contract
+      const fyTokenContract = FYToken__factory.connect(
+        pool.fyToken.address,
+        usingTenderly ? tenderlyProvider : provider
+      );
+      await fyTokenContract
         .connect((usingTenderly ? tenderlyProvider : provider).getSigner(amoAddress))
         .approve(ladle.address, _fyTokenToBurn, { gasLimit: 20_000_000 });
 
