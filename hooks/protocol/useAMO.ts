@@ -13,13 +13,13 @@ const useAMO = () => {
 
   // set the amo's timelock address
   const timelockAddress = useMemo(() => {
-    return (yieldEnv.addresses as any)[chainId][TIMELOCK] as string;
+    return yieldEnv.addresses[chainId][TIMELOCK] as string;
   }, [chainId]);
 
   // set the amo contract
   const contract = useMemo(() => {
     return AMO__factory.connect(
-      (yieldEnv.addresses as any)[chainId][FRAX_AMO],
+      yieldEnv.addresses[chainId][FRAX_AMO],
       usingTenderly ? tenderlyProvider.getSigner(timelockAddress) : provider
     );
   }, [chainId, provider, tenderlyProvider, timelockAddress, usingTenderly]);
@@ -27,7 +27,7 @@ const useAMO = () => {
   // set the amo address
   const address = useMemo(() => {
     if (!chainId) return;
-    return (yieldEnv.addresses as any)[chainId][FRAX_AMO] as string;
+    return yieldEnv.addresses[chainId][FRAX_AMO] as string;
   }, [chainId]);
 
   return {

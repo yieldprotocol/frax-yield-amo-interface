@@ -1,4 +1,7 @@
-const yieldEnv = {
+const yieldEnv: {
+  addresses: { [chainId: number]: { [name: string]: string } };
+  seasonColors: { [chainId: number]: { [season: string]: string[] } };
+} = {
   addresses: {
     1: {
       Cauldron: '0xc88191f8cb8e6d4a668b047c1c8503432c3ca867',
